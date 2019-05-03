@@ -1,0 +1,16 @@
+*/node_modules/
+*/dist/
+*/test/
+package-lock.json
+npm-debug.log*
+.editorconfig
+backend/web/
+backend/statics/
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

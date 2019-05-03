@@ -1,0 +1,19 @@
+{
+    "version":"v0.1",
+    "author":"liori",
+    "mysql":{
+        "host":"localhost",
+        "user":"root",
+        "password":"123",
+        "prot":"3012",
+        "database":"table"
+    },
+    "useIdentCode":true,
+    "identCode":"zyc",
+    "charset":"utf-8",
+    "hostName":"localhost",
+    "port":"3010",
+    "staticWebName":"web",
+    "staticWebPath":"./",
+    "?staticWebPath":"staticWebPath表示相对后台文件夹backend的相对位置"
+}
