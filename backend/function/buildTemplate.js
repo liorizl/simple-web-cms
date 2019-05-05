@@ -1,6 +1,5 @@
 const template=(title)=>{
-    return `
-<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />

@@ -2,7 +2,6 @@
 */dist/
 */test/
 package-lock.json
-readme.md
 npm-debug.log*
 .editorconfig
 backend/web/
