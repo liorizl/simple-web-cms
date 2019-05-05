@@ -4,7 +4,7 @@
 * 下载代码,fontend和backend不需要放在一起.分别安装所需的包:在文件目录下进入命令行输入npm install(npm i),如下图<br>
 ![](http://125.65.109.138:3012/static/otherimg/01.png)<br>
 ![](http://125.65.109.138:3012/static/otherimg/02.png)
-* 使用mysql工具将backend下的数据库文件lioricms.sql导入到mysql数据库。
+* 使用mysql工具数据库文件lioricms.sql导入到mysql数据库。
 * 修改后台配置文件(backend/config/config.json)
 ```
 {
