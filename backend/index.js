@@ -25,7 +25,7 @@ app.use(cors({
 app.use(async (ctx,next)=>{
     const path=ctx.path;
     if(/^\/admin\//i.test(path)){
-        if(/^\/admin\/login|^\/admin\/getident|^\/admin\/checkIdentcode/i.test(path)){
+        if(/^\/admin\/login|^\/admin\/getident|^\/admin\/checkIdentcode|^\/admin\/getWebName/i.test(path)){
             await next()
         }else{
             if(!ctx.cookies.get('user')||!ctx.session.liori||ctx.cookies.get('user')!==ctx.session.liori){

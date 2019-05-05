@@ -1,6 +1,6 @@
 <template>
     <div class="login">
-        <div class="btitle">成都大华医学美容医院</div>
+        <div class="btitle">{{webName}}</div>
         <div class="ftitle">网站后台管理系统</div>
         <div class="loginCon" @keyup.enter="login">
             <div class="inputDiv">
@@ -27,6 +27,9 @@
                 {{status}}
             </div>
         </div>
+        <div class="codeUrl">
+            源码地址:<a href="https://github.com/liorizl/simple-web-cms" target="_blank">https://github.com/liorizl/simple-web-cms</a>
+        </div>
     </div>
 </template>
 
@@ -41,7 +44,8 @@
             useIdentCode:null,
             identCode:'', 
             recordSession:true,
-            status:''
+            status:'',
+            webName:null,
         }
       },
       created:function(){
@@ -69,6 +73,14 @@
         }).then(res=>{
             if(res.status===200){
                 this.useIdentCode=res.data===1?true:false
+            }
+        })
+        this.axios({
+            url:'/admin/getWebName'
+        }).then(res=>{
+            if(res.status===200){
+                console.log(res.data)
+                this.webName=res.data.webName
             }
         })
       },
@@ -119,7 +131,7 @@
 
 <style lang="less" scoped>
 .login{width:100%;height:100vh;margin:0;background:#fff url('../assets/images/bg2.jpg') top center;overflow:hidden;}
-.btitle{width:100%;margin-top:100px;text-align: center;font:bold 40px/78px 'microsoft yahei';color:rgb(211,234,255);}
+.btitle{width:100%;margin-top:100px;height:78px;text-align: center;font:bold 40px/78px 'microsoft yahei';color:rgb(211,234,255);}
 .ftitle{width:100%;margin-top:10px;text-align: center;font:bold 30px/50px 'microsoft yahei';color:rgb(211,234,255);}
 .loginCon{
     width:400px;
@@ -141,4 +153,8 @@
     margin:20px auto 30px auto;display: flex;justify-content:center;border-radius: 5px;color:#FFF;font-size:20px;letter-spacing: 5px;
 }
 .errMes{text-align:center;color:#F00;margin:0 auto 20px auto;}
+.codeUrl{
+    width:400px;margin:140px auto;text-align: center;height:40px;color:#FFF;
+    a{color:#FFF;}
+}
 </style>

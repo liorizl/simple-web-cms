@@ -38,4 +38,9 @@ module.exports=[
         url:'/getIp',
         middleware:noNeedLogin.getIp
     },
+    {
+        method:'get',
+        url:'/admin/getWebName',
+        middleware:noNeedLogin.getWebName
+    }
 ]

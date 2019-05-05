@@ -250,7 +250,7 @@ const repalaceArtInCol=async (tagStr,regExpAll,tag,...arg)=>{
                 const sqlTemp='select * from tagtemp where id='+tempId;
                 const reTemp=await mysql.nquery(sqlTemp);
                 if(reTemp.length===0){
-                    resolve('标签'+tag+'错误：标签模版找不到<br>')
+                    resolve('标签'+tag.replace(/^ */,'')+'错误：标签模版找不到<br>')
                 }
                 else{
                     let sql,idAll,sqlCondi,order;
@@ -780,6 +780,13 @@ const replaceShortTag=(temp,reSql,argArr=[],...args)=>{   //参数temp,reSql={se
                                     tempStr=tempStr.replace(resReg[0],resReg[1]);
                                 }
                                 break;
+                            case 'webauthor':
+                                if(webset){
+                                    tempStr=tempStr.replace(resReg[0],webset.author);
+                                }else{
+                                    tempStr=tempStr.replace(resReg[0],resReg[1]);
+                                }
+                                break;    
                             case 'keywords':
                                 if(!reSqlObj.keywords&&webset.keyword){
                                     tempStr=tempStr.replace(resReg[0],webset.keyword);

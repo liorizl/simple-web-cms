@@ -2,10 +2,11 @@
 */dist/
 */test/
 package-lock.json
+readme.md
 npm-debug.log*
 .editorconfig
 backend/web/
-backend/statics/
+backend/config/
 
 # Editor directories and files
 .idea

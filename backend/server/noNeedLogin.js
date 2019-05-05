@@ -57,5 +57,10 @@ module.exports={
     },
     getIp:ctx=>{
         ctx.body='var returnIp=\"'+ip.address()+'\"'
+    },
+    getWebName:async ctx=>{
+        const sql='select webName from websetting where id=1';
+        const result=await mysql.nquery(sql);
+        ctx.body=result[0]
     }
 }
