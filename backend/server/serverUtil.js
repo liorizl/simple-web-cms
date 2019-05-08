@@ -1,6 +1,7 @@
 const mysql = require('../function/mysql.js');
 const multiparty = require('multiparty');
 const config=require("../config/config.json");
+const util=require('../util/util.js');
 module.exports={
     getCol:(arr)=>{
         let x=0,y=0;
@@ -76,6 +77,7 @@ module.exports={
         return new Promise(async resolve=>{
             const sql='delete from '+table+' where id='+id;
             const result=await mysql.nquery(sql);
+            if(table==='columns') util.changeRedisCols(id,'dele')
             if(result.affectedRows===1){
                 resolve({myStatus:1,table:table})
             }

@@ -6,6 +6,8 @@ const util=require('./util/util.js');
 const session=require('koa-session');
 const config=require("./config/config.json");
 const cors=require('koa2-cors');
+const mysql = require('./function/mysql.js');
+const redisClient = require('./function/redis.js');
 const app = new Koa();
 const router=new Router();
 app.use(bodyParser());
@@ -39,6 +41,16 @@ app.use(async (ctx,next)=>{
         await next();
     }
 })
+const initCols=async ()=>{
+    const colObj={}
+    const sqlAll='select * from columns where isUse="true"';
+    const resultAll=await mysql.nquery(sqlAll);
+    resultAll.forEach(res=>{
+        colObj[res.id]=res;
+    })
+    redisClient.set('cols',JSON.stringify(colObj),()=>{console.log('redis数据初始化成功...')});
+}
+initCols();
 const noNeedLogin=require('./router/noNeedLogin.js');
 const routerBasic=require('./router/routerBasic.js');
 const routerCol=require('./router/routerCol.js');

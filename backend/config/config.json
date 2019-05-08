@@ -4,9 +4,9 @@
     "mysql":{
         "host":"localhost",
         "user":"root",
-        "password":"123",
-        "prot":"3012",
-        "database":"table"
+        "password":"psd",
+        "prot":"3306",
+        "database":"lioricms"
     },
     "useIdentCode":true,
     "identCode":"zyc",
@@ -15,5 +15,9 @@
     "port":"3010",
     "staticWebName":"web",
     "staticWebPath":"./",
-    "?staticWebPath":"staticWebPath表示相对后台文件夹backend的相对位置"
+    "?staticWebPath":"staticWebPath表示相对后台文件夹backend的相对位置",
+    "redis":{
+        "host":"localhost",
+        "port":6379
+    }
 }

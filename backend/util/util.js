@@ -1,5 +1,7 @@
 const fs=require('fs');
 const config=require("../config/config.json");
+const mysql = require('../function/mysql.js');
+const redisClient = require('../function/redis.js');
 const util={
     dateFormat:(time=null)=>{
         time=time||new Date();
@@ -97,6 +99,68 @@ const util={
         }else{
             return false
         }
+    },
+    compare:(property,order,orders)=>{      //重新排序数组orders格式[['id','desc'],['cid','desc'],['title','asc']]
+        return function(a,b){
+            let v1=a[property];
+            let v2=b[property];
+            const type=(property1,order1)=>{
+                if(typeof a[property1]==='number'&&typeof b[property1]==='number'){
+                    if(order1==='desc'){
+                        return b[property1]-a[property1]
+                    }
+                    else if(order1==='asc'){
+                        return a[property1]-b[property1]
+                    }
+                }
+                else if(typeof a[property1]==='string'&&typeof b[property1]==='string'){
+                    if(order1==='desc'){
+                        return a[property1]<b[property1]?1:-1
+                    }
+                    else if(order1==='asc'){
+                        return a[property1]<b[property1]?-1:1
+                    }
+                }
+            }
+            if(v1===v2){
+                const compare2=(property2,order2,index)=>{
+                    if(b[property2]===a[property2]){
+                        if(orders[index+1]){
+                            return compare2(orders[index+1][0],orders[index+1][1],index+1)
+                        }
+                    }
+                    else{
+                        return type(property2,order2)
+                    }
+                }
+                if(orders[1]) return compare2(orders[1][0],orders[1][1],1)
+            }
+            else{
+                return type(property,order)
+            }
+        }
+    },
+    changeRedisCols:async (id,act)=>{
+        await new Promise((resolve,reject)=>{
+            redisClient.get('cols',(err,v)=>{
+                if(err) reject(err)
+                else resolve(JSON.parse(v))
+            })
+        }).then(async colArr=>{
+            if(act==='edit'){
+                const editCol=await mysql.nquery('select * from columns where id='+id);
+                colArr[id]=editCol[0]
+                
+            }
+            else if(act==='add'){
+                const insertCol=await mysql.nquery('select * from columns where id='+id);
+                colArr[id]=insertCol[0];
+            }
+            else if(act==='dele'){
+                delete colArr[id]
+            }
+            redisClient.set('cols',JSON.stringify(colArr))
+        })
     },
     changeIndent:(myStr,oldInd,newInd)=>{
         let arr=[];

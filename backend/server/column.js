@@ -2,13 +2,15 @@ const mysql = require('../function/mysql.js');
 const util=require('../util/util.js');
 const serverUtil=require('./serverUtil.js');
 const buildCol=require('../function/buildCol.js');
+const redisClient = require('../function/redis.js');
 module.exports={
     upColumn:async ctx=>{
+        const id=parseInt(ctx.query.id)||null;
         await serverUtil.getForm(ctx.req).then(async value=>{
             const cid=new Date().getTime();
             const aid=parseInt(value.position[0])===0?0:parseInt(value.cid[0]);
             let sql,myStatus,insertId;
-            if(ctx.query.id){
+            if(id){
                 sql='update columns set ultimate="'+serverUtil.getCheckbox(value.ultimate[0])+'",aid='+parseInt(value.aid[0])+',title="'+value.colName[0]+'",alias="'+value.colNamePin[0]+'",' +
                     'path1="'+value.path1[0]+'",path2="'+value.path2[0]+'",colImg="'+value.colImg[0]+'",' +
                     'keyword="'+value.keyword[0]+'",description="'+value.describe[0]+'",isUse="'+serverUtil.getCheckbox(value.isUse[0])+'",' +
@@ -17,7 +19,7 @@ module.exports={
                     'tempContent="'+value.contentTemp[0]+'",listOrder="'+value.listOrder[0]+'",' +
                     'listActive="'+value.listActive[0]+'",contentOrder="'+value.contentOrder[0]+'",contentActive="'+value.contentActive[0]+'",' +
                     'hits='+parseInt(value.hits[0])+',extendName="'+value.extend[0]+'",showNum='+parseInt(value.showNum[0])+',pageNum='+parseInt(value.pageNum[0])+',' +
-                    'lastEditDate="'+util.dateFormat(new Date())+'" where id='+parseInt(ctx.query.id);
+                    'lastEditDate="'+util.dateFormat(new Date())+'" where id='+id;
             }else{
                 sql='insert into columns(cid,ultimate,is_root,aid,title,alias,path1,path2,colImg,' +
                     'keyword,description,isUse,orderBy,isNav,outUrl,tempMode,tempCover,' +
@@ -30,11 +32,13 @@ module.exports={
                     '"'+value.hits[0]+'","'+value.extend[0]+'","'+value.showNum[0]+'","'+value.pageNum[0]+'","'+util.dateFormat(new Date())+'")';
             }
             let result=await mysql.nquery(sql);
+            if(id) util.changeRedisCols(id,'edit');
+            else util.changeRedisCols(result.insertId,'add');
             if(result){
                 myStatus=1;
                 insertId=result.insertId||null;
             }else{
-                myStatus=0
+                myStatus=0;
             }
             ctx.body={myStatus:myStatus,name:'buildCol',id:insertId};
         })
@@ -106,6 +110,15 @@ module.exports={
         const ulti=ctx.query.ulti==='true'?'false':'true';
         const sql='update columns set ultimate="'+ulti+'" where id='+id;
         const result=await mysql.nquery(sql);
+        await new Promise((resolve,reject)=>{
+            redisClient.get('cols',(err,v)=>{
+                if(err) reject(err)
+                else resolve(JSON.parse(v))
+            })
+        }).then(async colArr=>{
+            colArr[id].ultimate=ulti
+            redisClient.set('cols',JSON.stringify(colArr))
+        })
         if(result.affectedRows===1){
             ctx.body={myStatus:1};
         }else{

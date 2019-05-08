@@ -1,5 +1,6 @@
 const mysql = require('../function/mysql.js');
 const util = require('../util/util.js');
+const redisClient = require('../function/redis.js');
 const beginReplace=async (html,...arg)=>{
     let regMatch,regExpAll,regExpG,promiseArr=[],promiseEnd,sum=null,num=null,pageList=null;
     regExpAll=/\[(litag)\].+\[\/\1\]/;
@@ -243,10 +244,10 @@ const repalaceArtInCol=async (tagStr,regExpAll,tag,...arg)=>{
                 const introCut=parseInt(tarConArr[4])>0?parseInt(tarConArr[4]):0;  //简介截取长度,0为不截取
                 const paging=tarConArr[5]?parseInt(tarConArr[5]):0;
                 const timeStyle=tarConArr[6]?parseInt(tarConArr[6]):0;
-                const sqlCondition=parseInt(tarConArr[7])!==0?tarConArr[7]:'';
-                const orderBy=parseInt(tarConArr[8])!==0?tarConArr[8]:'';
+                const sqlCondition=tarConArr[7]&&parseInt(tarConArr[7])!==0?tarConArr[7]:'';
+                const orderBy=tarConArr[8]&&parseInt(tarConArr[8])!==0?tarConArr[8]:'';
                 let tagParams=[];
-                tagParams=[num,titleCut,introCut,paging,timeStyle,sqlCondition,orderBy];
+                tagParams=[num,titleCut,introCut,paging,timeStyle,orderBy,sqlCondition];
                 const sqlTemp='select * from tagtemp where id='+tempId;
                 const reTemp=await mysql.nquery(sqlTemp);
                 if(reTemp.length===0){
@@ -400,8 +401,58 @@ const repalaceArtInCol=async (tagStr,regExpAll,tag,...arg)=>{
 }
 const recurCol=async(cid,loopStr,tempList,tagParams,webset)=>{
     let htmlTempAll='',x=0,y=0,tempIndent,tempListIndent,tempIndentLoopn;
-    const sqlCondition=tagParams[5]?' and '+tagParams[5]:'';
-    const order=tagParams[6]?' order by '+tagParams[6]:'';
+    const sqlCondition=tagParams[6]?','+tagParams[6]:'';
+    //const order=tagParams[6]?' order by '+tagParams[6]:'';
+    const order=tagParams[5];
+    
+    const condiJudge=(str,col)=>{
+        if(!col) return false
+        let strArr=str.split(','),num=0;
+        strArr=strArr.map(string=>{
+            const objectArr=string.split('=')
+            let object={},objKey=objectArr[0],objValue=objectArr[1];
+            if(/\"/.test(objValue)){
+                objValue=objValue.replace(/\"/g,'');
+            }else{
+                objValue=parseInt(objValue);
+            }
+            object[objKey]=objValue;
+            return object
+        })
+        strArr.forEach(obj=>{
+            let firstKey=Object.keys(obj)[0]
+            if(col[firstKey]!==undefined&&col[firstKey]===obj[firstKey]){
+                num+=1
+            }
+        })
+        if(num===strArr.length){
+            return true
+        }else{
+            return false
+        }
+    }
+    const filterCol= (condition,colObjs)=>{
+        let cols=[]
+        Object.keys(colObjs).forEach(key=>{
+            if(condiJudge(condition,colObjs[key])){
+                cols.push(colObjs[key]);
+            }
+        })
+        if(order){
+            let orderArr=order.split('\,');
+            orderArr=orderArr.map(order=>{
+                return order.split(/ +/)
+            })
+            cols.sort(util.compare(orderArr[0][0],orderArr[0][1],orderArr));
+        }
+        return cols
+    }
+    const allCols=await new Promise((resolve,reject)=>{
+        redisClient.get('cols',(err,v)=>{
+            if(err) reject(err)
+            else resolve(JSON.parse(v))
+        })
+    })
     loopStr=loopStr.replace(/^\r\n/,'').replace(/\r\n *$/,'')   //去除开始和结束的换行符
     return new Promise(async (resolve)=>{
         const replaceRecurcol=async(cid,loopStr,tempList,nowIndex,temp=null,i=null,j=null,loopEnd=null)=>{
@@ -416,8 +467,9 @@ const recurCol=async(cid,loopStr,tempList,tagParams,webset)=>{
             const haveLoopn=/\[(loopn)\].*?\[\/\1\]/s.test(loopStr);
             const expList=/\[(listtemp)\]list\[\/\1\]/;
             const expList1=/ *\[(listtemp)\]list\[\/\1\]/;
-            const sql='select * from columns where aid='+cid+' and isUse="true"'+sqlCondition+order;
-            const resCol=await mysql.nquery(sql);
+            // const sql='select * from columns where aid='+cid+' and isUse="true"'+sqlCondition+order;
+            // const resCol=await mysql.nquery(sql);
+            const resCol=filterCol('aid='+cid+',isUse="true"'+sqlCondition,allCols);
             if(resCol.length===0){
                 let htmlCon;
                 if(tagParams[0]===-1){
