@@ -298,6 +298,8 @@ const repalaceArtInCol=async (tagStr,regExpAll,tag,...arg)=>{
                                 }
                             }
                             tagParams.push(styleClass);
+                            const colOrderBy=tarConArr[10]&&parseInt(tarConArr[10])!==0?tarConArr[10]:'';
+                            if(colOrderBy) tagParams.push(colOrderBy);
                             const regExpLoop=/ *\[(loop)\](.*)\[\/\1\] */s;
                             let isLoop=regExpLoop.exec(temp);
                             if(!isLoop){
@@ -401,10 +403,9 @@ const repalaceArtInCol=async (tagStr,regExpAll,tag,...arg)=>{
 }
 const recurCol=async(cid,loopStr,tempList,tagParams,webset)=>{
     let htmlTempAll='',x=0,y=0,tempIndent,tempListIndent,tempIndentLoopn;
-    const sqlCondition=tagParams[6]?','+tagParams[6]:'';
-    //const order=tagParams[6]?' order by '+tagParams[6]:'';
-    const order=tagParams[5];
-    
+    const sqlCondition=tagParams[6]?','+tagParams[6].toLowerCase():'';
+    const order=tagParams[5]?' order by '+tagParams[5]:'';
+    const colOrder=tagParams[8]?tagParams[8].toLowerCase():null;
     const condiJudge=(str,col)=>{
         if(!col) return false
         let strArr=str.split(','),num=0;
@@ -438,8 +439,8 @@ const recurCol=async(cid,loopStr,tempList,tagParams,webset)=>{
                 cols.push(colObjs[key]);
             }
         })
-        if(order){
-            let orderArr=order.split('\,');
+        if(colOrder){
+            let orderArr=colOrder.split('\,');
             orderArr=orderArr.map(order=>{
                 return order.split(/ +/)
             })
@@ -450,7 +451,9 @@ const recurCol=async(cid,loopStr,tempList,tagParams,webset)=>{
     const allCols=await new Promise((resolve,reject)=>{
         redisClient.get('cols',(err,v)=>{
             if(err) reject(err)
-            else resolve(JSON.parse(v))
+            else {
+                resolve(JSON.parse(v))
+            }
         })
     })
     loopStr=loopStr.replace(/^\r\n/,'').replace(/\r\n *$/,'')   //去除开始和结束的换行符
@@ -469,7 +472,7 @@ const recurCol=async(cid,loopStr,tempList,tagParams,webset)=>{
             const expList1=/ *\[(listtemp)\]list\[\/\1\]/;
             // const sql='select * from columns where aid='+cid+' and isUse="true"'+sqlCondition+order;
             // const resCol=await mysql.nquery(sql);
-            const resCol=filterCol('aid='+cid+',isUse="true"'+sqlCondition,allCols);
+            const resCol=filterCol('aid='+cid+',isuse="true"'+sqlCondition,allCols);
             if(resCol.length===0){
                 let htmlCon;
                 if(tagParams[0]===-1){
@@ -477,9 +480,9 @@ const recurCol=async(cid,loopStr,tempList,tagParams,webset)=>{
                 }else{
                     let sqlArt;
                     if(tagParams[0]>-1&&tagParams[0]!==0){
-                        sqlArt='select * from article where fid='+cid+' limit '+tagParams[0];
+                        sqlArt='select * from article where fid='+cid+order+' limit '+tagParams[0];
                     }else{
-                        sqlArt='select * from article where fid='+cid;
+                        sqlArt='select * from article where fid='+cid+order;
                     }
                     const resArt=await mysql.nquery(sqlArt);
                     htmlCon=resArt.length===0?
@@ -730,7 +733,7 @@ const replaceField=async (html,sqlResult,tempNameList=null,webSetting=[],...args
         return  await replaceShortTag(html,sqlResult,[],null,null,null,null,webSetting);
     }
 }
-const replaceShortTag=(temp,reSql,argArr=[],...args)=>{   //参数temp,reSql={self:[obj],parent:obj},[num,titleCut,introCut,paging,[timeStyle]],artLen,page,url,'build',webSetting=[obj],linefeed
+const replaceShortTag=(temp,reSql,argArr=[],...args)=>{   //参数temp,{self:[obj],parent:obj},[num,titleCut,introCut,paging,timeStyle],artLen,page,url,'build',webSetting=[obj],linefeed
     return new Promise(async resolve=>{
         const regExec=/\[\!--(\w+)--\]/;
         let resEnd='',newReSql,webset;

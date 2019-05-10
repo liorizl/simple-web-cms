@@ -90,7 +90,7 @@
                 </span>
             </li>
             <li class="allLine">
-                <span class="liTitle">排序</span>
+                <span class="liTitle">文章排序</span>
                 <span class="liCon select">
                     <input type="text" v-model="orderBy" name="orderBy" />
                     <select @change="getOrder($event.target,0)">
@@ -110,8 +110,8 @@
                     </select>
                     <select @change="getOrder($event.target,3)">
                         <option value="">添加时间</option>
-                        <option  value="upDate desc">添加时间降序</option>
-                        <option value="upDate asc">添加时间升序</option>
+                        <option  value="uptime desc">添加时间降序</option>
+                        <option value="uptime asc">添加时间升序</option>
                     </select>
                 </span>
             </li>
@@ -119,6 +119,32 @@
                 <span class="liTitle">类名列表</span>
                 <span class="liCon">
                     <input type="text" name="classStr" id="classStr" v-model="classStr" size="60">
+                </span>
+            </li>
+            <li class="allLine" v-if="tagName===2">
+                <span class="liTitle">栏目排序</span>
+                <span class="liCon select">
+                    <input type="text" v-model="colOrderBy" name="colOrderBy" />
+                    <select @change="getColOrder($event.target,0)">
+                        <option value="">排序字段</option>
+                        <option  value="orderBy desc">排序字段降序</option>
+                        <option value="orderBy asc">排序字段升序</option>
+                    </select>
+                    <select @change="getColOrder($event.target,1)">
+                        <option value="">ID</option>
+                        <option  value="id desc">ID降序</option>
+                        <option value="id asc">ID升序</option>
+                    </select>
+                    <select @change="getColOrder($event.target,2)">
+                        <option value="">点击</option>
+                        <option  value="hit desc">点击降序</option>
+                        <option value="hit asc">点击升序</option>
+                    </select>
+                    <select @change="getColOrder($event.target,3)">
+                        <option value="">添加时间</option>
+                        <option  value="uptime desc">添加时间降序</option>
+                        <option value="uptime asc">添加时间升序</option>
+                    </select>
                 </span>
             </li>
         </ul>
@@ -151,7 +177,9 @@ export default {
             timeType:0,
             sqlFilter:0,
             orderBy:0,
+            colOrderBy:0,
             orderByArr:new Array(4),
+            colOrderByArr:new Array(4),
             tagCon:null,
             classStr:0
         }
@@ -208,10 +236,20 @@ export default {
             })
             string=string===''?0:string
             this.orderBy=string.replace(/,$/,'')
-            console.log(this.orderBy)
+        },
+        getColOrder(eTarget,num){
+            let string=''
+            this.colOrderByArr[num]=eTarget.value
+            this.colOrderByArr.forEach((value)=>{
+                if(value){
+                    string=string+value+','
+                }
+            })
+            string=string===''?0:string
+            this.colOrderBy=string.replace(/,$/,'')
         },
         getTag(){
-            let str='',ttagName,tagArr=[],tcolId,tsqlFilter,torderBy,tclassStr
+            let str='',ttagName,tagArr=[],tcolId,tsqlFilter,torderBy,tclassStr,tColOrderBy
             if(this.tagName===1){
                 ttagName='artInCol'
             }
@@ -252,6 +290,16 @@ export default {
                 if(this.tagName===2){
                     tclassStr=this.classStr!==0?'\''+this.classStr+'\'':this.classStr
                     tagArr.push(tclassStr)
+                    if(this.colOrderBy!==0){
+                        if(/\,/.test(this.colOrderBy)){
+                            tColOrderBy='\''+this.colOrderBy+'\''
+                        }else{
+                            tColOrderBy=this.colOrderBy
+                        }
+                    }else{
+                        tColOrderBy=0
+                    }
+                    tagArr.push(tColOrderBy)
                 }
                 for(let i=tagArr.length-1;i>=0;i--){
                     if(parseInt(tagArr[i])===0){

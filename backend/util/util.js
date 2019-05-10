@@ -6,11 +6,11 @@ const util={
     dateFormat:(time=null)=>{
         time=time||new Date();
         const year=time.getFullYear();
-        const month=time.getMonth()+1;
-        const day=time.getDate();
-        const hour=time.getHours();
-        const minute=time.getMinutes();
-        const second=time.getSeconds();
+        const month=time.getMonth()+1<10?'0'+(time.getMonth()+1):time.getMonth()+1;
+        const day=time.getDate()<10?'0'+time.getDate():time.getDate();
+        const hour=time.getHours()<10?'0'+time.getHours():time.getHours();
+        const minute=time.getMinutes()<10?'0'+time.getMinutes():time.getMinutes();
+        const second=time.getSeconds()<10?'0'+time.getSeconds():time.getSeconds();
         const theDate=year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second;
         return theDate
     },
@@ -97,7 +97,7 @@ const util={
         else if(typeof content==='object'&&!Array.isArray(content)&&content!==null){
             return iterationObj(content)
         }else{
-            return false
+            return content
         }
     },
     compare:(property,order,orders)=>{      //重新排序数组orders格式[['id','desc'],['cid','desc'],['title','asc']]
@@ -147,14 +147,10 @@ const util={
                 else resolve(JSON.parse(v))
             })
         }).then(async colArr=>{
-            if(act==='edit'){
-                const editCol=await mysql.nquery('select * from columns where id='+id);
-                colArr[id]=editCol[0]
-                
-            }
-            else if(act==='add'){
-                const insertCol=await mysql.nquery('select * from columns where id='+id);
-                colArr[id]=insertCol[0];
+            if(act==='edit'||act==='add'){
+                let newCol=await mysql.nquery('select * from columns where id='+id);
+                newCol=util.objKeysToLower(newCol);
+                colArr[id]=newCol[0]
             }
             else if(act==='dele'){
                 delete colArr[id]

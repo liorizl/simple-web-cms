@@ -42,13 +42,18 @@ app.use(async (ctx,next)=>{
     }
 })
 const initCols=async ()=>{
-    const colObj={}
-    const sqlAll='select * from columns where isUse="true"';
-    const resultAll=await mysql.nquery(sqlAll);
-    resultAll.forEach(res=>{
-        colObj[res.id]=res;
+    redisClient.get('cols',async (err,v)=>{
+        if(err) {
+            const colObj={}
+            const sqlAll='select * from columns where isUse="true"';
+            let resultAll=await mysql.nquery(sqlAll);
+            resultAll=util.objKeysToLower(resultAll);
+            resultAll.forEach(res=>{
+                colObj[res.id]=res;
+            })
+            redisClient.set('cols',JSON.stringify(colObj),()=>{console.log('redis数据获取成功!')});
+        }
     })
-    redisClient.set('cols',JSON.stringify(colObj),()=>{console.log('redis数据初始化成功...')});
 }
 initCols();
 const noNeedLogin=require('./router/noNeedLogin.js');
