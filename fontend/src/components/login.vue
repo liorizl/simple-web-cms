@@ -79,7 +79,6 @@
             url:'/admin/getWebName'
         }).then(res=>{
             if(res.status===200){
-                console.log(res.data)
                 this.webName=res.data.webName
             }
         })

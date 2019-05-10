@@ -211,7 +211,7 @@ import util from '../../../static/util.js'
                     alert('请选择要'+action+'的文章!')
                     return
                 }
-                if(this.copyAct==='dele'){
+                if(this.copyAct==='dele'&&this.checkArt.length>1){
                     if(!confirm('确定要删除？')){
                         return
                     }
