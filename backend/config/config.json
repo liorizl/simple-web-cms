@@ -1,23 +1,24 @@
 {
-    "version":"v0.1",
-    "author":"liori",
-    "mysql":{
-        "host":"localhost",
-        "user":"root",
-        "password":"psd",
-        "prot":"3306",
-        "database":"lioricms"
+    "version": "v0.1",
+    "author": "liori",
+    "mysql": {
+        "host": "localhost",
+        "user": "root",
+        "password": "liori",
+        "prot": "3306",
+        "database": "mdh_liori"
     },
-    "useIdentCode":true,
-    "identCode":"zyc",
-    "charset":"utf-8",
-    "hostName":"localhost",
-    "port":"3010",
-    "staticWebName":"web",
-    "staticWebPath":"./",
-    "?staticWebPath":"staticWebPath表示相对后台文件夹backend的相对位置",
-    "redis":{
-        "host":"localhost",
-        "port":6379
+    "useIdentCode": true,
+    "identCode": "zyc",
+    "charset": "utf-8",
+    "hostName": "localhost",
+    "port": "3010",
+    "staticWebName": "web",
+    "staticWebPath": "./",
+    "?staticWebPath": "staticWebPath表示相对后台文件夹backend的相对位置",
+    "redis": {
+        "host": "localhost",
+        "port": 6379,
+        "colName": "pcdhcol"
     }
 }

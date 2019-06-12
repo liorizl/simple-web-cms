@@ -1,7 +1,7 @@
-const mysql=require("mysql");
-const config=require("../config/config.json");
-const pool=mysql.createPool(config.mysql);
-const nquery=function(sql){
+const mysql = require("mysql");
+const config = require("../config/config.json");
+const pool = mysql.createPool(config.mysql);
+const nquery = function(sql){
     return new Promise(
         (resolve,reject )=>{
             pool.getConnection((err,conn)=>{
@@ -13,15 +13,15 @@ const nquery=function(sql){
                    conn.query(sql,(error,result)=>{
                        if(error){
                            reject({
-                               sqlMessage:error.sqlMessage,
-                               sqlState:error.sqlState,
-                               sqlErrno:error.errno,
-                               sqlStr:error.sql
+                               sqlMessage: error.sqlMessage,
+                               sqlState: error.sqlState,
+                               sqlErrno: error.errno,
+                               sqlStr: error.sql
                            })
                         }
                        else{
-                           let sqlData=JSON.stringify(result);
-                           sqlData=JSON.parse(sqlData)
+                           let sqlData = JSON.stringify(result);
+                           sqlData = JSON.parse(sqlData)
                            resolve(sqlData)
                        }
                        conn.release()
@@ -31,7 +31,7 @@ const nquery=function(sql){
         }
     )
 }
-const multquery=function(sql,values){
+const multquery = function(sql,values){
     return new Promise(
         (resolve,reject )=>{
             pool.getConnection((err,conn)=>{
@@ -43,15 +43,15 @@ const multquery=function(sql,values){
                    conn.query(sql,values,(error,result)=>{
                        if(error){
                            reject({
-                               sqlMessage:error.sqlMessage,
-                               sqlState:error.sqlState,
-                               sqlErrno:error.errno,
-                               sqlStr:error.sql
+                                sqlMessage: error.sqlMessage,
+                                sqlState: error.sqlState,
+                                sqlErrno: error.errno,
+                                sqlStr: error.sql
                            })
                         }
                        else{
-                           let sqlData=JSON.stringify(result);
-                           sqlData=JSON.parse(sqlData)
+                           let sqlData = JSON.stringify(result);
+                           sqlData = JSON.parse(sqlData)
                            resolve(sqlData)
                        }
                        conn.release()
@@ -61,5 +61,5 @@ const multquery=function(sql,values){
         }
     )
 }
-exports.multquery=multquery;
-exports.nquery=nquery
+exports.multquery = multquery;
+exports.nquery = nquery

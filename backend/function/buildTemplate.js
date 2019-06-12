@@ -1,4 +1,4 @@
-const template=(title)=>{
+const template = title => {
     return `<!DOCTYPE html>
 <html>
 <head>
@@ -32,28 +32,28 @@ const template=(title)=>{
 </div>
 <script>
 function change(proNum,nowNum,nowStatus,failedMes){
-    if(proNum) document.getElementById("progress").value=proNum;
-    if(nowNum) document.getElementById("nowNum").innerHTML=nowNum+1;
-    if(nowStatus) document.getElementById("nowStatus").innerHTML=nowStatus;
-    var failedHtml=document.getElementsByClassName("failed-ul")[0];
+    if(proNum) document.getElementById("progress").value = proNum;
+    if(nowNum) document.getElementById("nowNum").innerHTML = nowNum + 1;
+    if(nowStatus) document.getElementById("nowStatus").innerHTML = nowStatus;
+    var failedHtml = document.getElementsByClassName("failed-ul")[0];
     if(failedMes){
-        if(failedHtml.getElementsByTagName("li")[0].innerText!=="无"){
-            document.getElementsByClassName("failed-ul")[0].innerHTML=failedHtml.innerHTML+"<li>"+failedMes+"</li>"
+        if(failedHtml.getElementsByTagName("li")[0].innerText !== "无"){
+            document.getElementsByClassName("failed-ul")[0].innerHTML = failedHtml.innerHTML + "<li>" + failedMes + "</li>"
         }else{
-            document.getElementsByClassName("failed-ul")[0].innerHTML="<li>"+failedMes+"</li>"
+            document.getElementsByClassName("failed-ul")[0].innerHTML = "<li>" + failedMes + "</li>"
         }
     } 
 }
 function getSum(sum){
-    document.getElementById("sum").innerHTML=sum;
-    if(sum===0) if(nowNum) document.getElementById("nowNum").innerHTML=0;
+    document.getElementById("sum").innerHTML = sum;
+    if(sum === 0 && nowNum)  document.getElementById("nowNum").innerHTML = 0;
 }
 function buildEnd(mes){
-    document.getElementById("title").innerHTML="生成${title}完毕";
-    document.getElementById("nowStatus").innerHTML=mes;
+    document.getElementById("title").innerHTML = "生成${title}完毕";
+    document.getElementById("nowStatus").innerHTML = mes;
 }
 </script>
 </body>
 </html>`
 }
-module.exports=template
+module.exports = template
