@@ -165,98 +165,98 @@ Vue.use(VueClipboard)
 export default {
     data () {
         return {
-            tagName:1,
-            colId:['self'],
-            colList:null,
-            tempId:null,
-            tempList:null,
-            num:0,
-            titleCut:0,
-            introCut:0,
-            pagition:0,
-            timeType:0,
-            sqlFilter:0,
-            orderBy:0,
-            colOrderBy:0,
-            orderByArr:new Array(4),
-            colOrderByArr:new Array(4),
-            tagCon:null,
-            classStr:0
+            tagName: 1,
+            colId: ['self'],
+            colList: null,
+            tempId: null,
+            tempList: null,
+            num: 0,
+            titleCut: 0,
+            introCut: 0,
+            pagition: 0,
+            timeType: 0,
+            sqlFilter: 0,
+            orderBy: 0,
+            colOrderBy: 0,
+            orderByArr: new Array(4),
+            colOrderByArr: new Array(4),
+            tagCon: null,
+            classStr: 0
         }
     },
 
     created(){
         this.axios({
-            url:'/admin/getColList'
+            url: '/admin/getColList'
         }).then(res=>{
             if(res.status===200){
                 if(res.data.length>0){
                     this.getNewColList(res.data)
                 }else{
-                    this.colList=[]
+                    this.colList = []
                 }
             }
         })
         this.axios({
-            url:'/admin/getTagTempList'
+            url: '/admin/getTagTempList'
         }).then(res=>{
             if(res.status===200){
-                this.tempList=res.data
+                this.tempList = res.data
             }
         })
     },
 
     methods: {
         getNewColList(colList){
-            let i=0,j=0,newColArr=[]
-            const titleAdd=['','--','----','------','--------','----------']
-            const getColList=(colList,j)=>{
+            let i = 0, j = 0, newColArr = []
+            const titleAdd = ['', '--', '----', '------', '--------', '----------']
+            const getColList = (colList, j)=>{
                 colList.forEach(col=>{
-                    newColArr[i]={id:col.id,cid:col.cid,ultimate:col.ultimate,path:col.path2?col.path1+'/'+col.path2:col.path1,title:titleAdd[j]+col.title}
+                    newColArr[i]={id: col.id, cid: col.cid, ultimate: col.ultimate, path: col.path2 ? col.path1+'/'+col.path2 : col.path1, title: titleAdd[j]+col.title}
                     i++
                     if(col.haveChild!==0){
                         j++
-                        getColList(col.haveChild,j)
+                        getColList(col.haveChild, j)
                         j--
                     }
                 })
             }
-            getColList(colList,j)
-            newColArr.unshift({id:0,title:'所有栏目'})
-            newColArr.unshift({id:'self',title:'当前栏目'})
-            this.colList=newColArr
+            getColList(colList, j)
+            newColArr.unshift({id: 0, title: '所有栏目'})
+            newColArr.unshift({id: 'self', title: '当前栏目'})
+            this.colList = newColArr
         },
-        getOrder(eTarget,num){
+        getOrder(eTarget, num){
             let string=''
             this.orderByArr[num]=eTarget.value
             this.orderByArr.forEach((value)=>{
                 if(value){
-                    string=string+value+','
+                    string = string + value + ', '
                 }
             })
-            string=string===''?0:string
-            this.orderBy=string.replace(/,$/,'')
+            string = string === '' ? 0 : string
+            this.orderBy = string.replace(/,$/, '')
         },
-        getColOrder(eTarget,num){
+        getColOrder(eTarget, num){
             let string=''
             this.colOrderByArr[num]=eTarget.value
             this.colOrderByArr.forEach((value)=>{
                 if(value){
-                    string=string+value+','
+                    string = string + value + ','
                 }
             })
-            string=string===''?0:string
-            this.colOrderBy=string.replace(/,$/,'')
+            string = string === '' ? 0 : string
+            this.colOrderBy = string.replace(/,$/, '')
         },
         getTag(){
-            let str='',ttagName,tagArr=[],tcolId,tsqlFilter,torderBy,tclassStr,tColOrderBy
-            if(this.tagName===1){
-                ttagName='artInCol'
+            let str='', ttagName, tagArr = [], tcolId, tsqlFilter, torderBy, tclassStr, tColOrderBy
+            if(this.tagName === 1){
+                ttagName = 'artInCol'
             }
-            else if(this.tagName===2){
-                ttagName='artInCols'
+            else if(this.tagName === 2){
+                ttagName = 'artInCols'
             }
-            if(this.colId[0]==='-1'){
+            if(this.colId[0] === '-1'){
                 alert('你还没有栏目，请先添加栏目!')
                 return
             }
@@ -273,43 +273,43 @@ export default {
                 alert("还没有标签模版，请去添加！")
             }
             else{
-                tcolId=this.colId.length>1?'\''+this.colId.join(',')+'\'':this.colId[0]
-                tsqlFilter=this.sqlFilter!==0&&/\,/.test(this.sqlFilter)?
-                        '\''+this.sqlFilter+'\'':
+                tcolId = this.colId.length>1 ? '\'' + this.colId.join(',') + '\'' : this.colId[0]
+                tsqlFilter = this.sqlFilter !== 0 && /\,/.test(this.sqlFilter) ?
+                        '\'' + this.sqlFilter + '\'' :
                         this.sqlFilter
-                if(this.orderBy!==0){
+                if(this.orderBy !== 0){
                     if(/\,/.test(this.orderBy)){
-                        torderBy='\''+this.orderBy+'\''
+                        torderBy = '\'' + this.orderBy + '\''
                     }else{
-                        torderBy=this.orderBy
+                        torderBy = this.orderBy
                     }
                 }else{
-                    torderBy=0
+                    torderBy = 0
                 }
-                tagArr=[tcolId,this.tempId,this.num,this.titleCut,this.introCut,this.pagition,this.timeType,tsqlFilter,torderBy]
+                tagArr = [tcolId, this.tempId, this.num, this.titleCut, this.introCut, this.pagition, this.timeType, tsqlFilter, torderBy]
                 if(this.tagName===2){
-                    tclassStr=this.classStr!==0?'\''+this.classStr+'\'':this.classStr
+                    tclassStr = this.classStr !== 0 ? '\'' + this.classStr + '\'' : this.classStr
                     tagArr.push(tclassStr)
-                    if(this.colOrderBy!==0){
+                    if(this.colOrderBy !== 0){
                         if(/\,/.test(this.colOrderBy)){
-                            tColOrderBy='\''+this.colOrderBy+'\''
+                            tColOrderBy = '\'' + this.colOrderBy + '\''
                         }else{
-                            tColOrderBy=this.colOrderBy
+                            tColOrderBy = this.colOrderBy
                         }
                     }else{
-                        tColOrderBy=0
+                        tColOrderBy = 0
                     }
                     tagArr.push(tColOrderBy)
                 }
-                for(let i=tagArr.length-1;i>=0;i--){
-                    if(parseInt(tagArr[i])===0){
+                for(let i = tagArr.length - 1; i >= 0; i--){
+                    if(parseInt(tagArr[i]) === 0){
                         tagArr.pop()
                     }else{
                         break
                     }
                 }
-                str='[litag]dynamic.'+ttagName+'('+tagArr.join(',')+')[/litag]'
-                this.tagCon=str
+                str = '[litag]dynamic.' + ttagName + '(' + tagArr.join(',') + ')[/litag]'
+                this.tagCon = str
             }
         },
         doCopy(){

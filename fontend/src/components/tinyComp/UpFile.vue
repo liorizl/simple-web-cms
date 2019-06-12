@@ -26,11 +26,11 @@
             </div>
             <ul class="picUl">
                 <template v-if="fileNames.length>0">
-                    <template v-for="(fileName,index) in fileListShow">
+                    <template v-for="(fileName, index) in fileListShow">
                         <li >
-                            <div class="img"><img :src="filePath+'/'+fileName" ref="pic" @click="getPicPath(filePath+'/'+fileName)"></div>
+                            <div class="img"><img :src="filePath + '/' + fileName" ref="pic" @click="getPicPath(filePath+'/'+fileName)"></div>
                             <div>...{{fileName.substr(-10)}}</div>
-                            <div @click='getFileMes(index,$event)'>查看图片大小</div><div ref='picSize'></div>
+                            <div @click='getFileMes(index, $event)'>查看图片大小</div><div ref='picSize'></div>
                         </li>
                     </template>
                 </template>
@@ -54,65 +54,65 @@
 import myOption from './MyOption.vue'
 import myPagination from './MyPagination.vue'
 export default {
-    components:{
+    components: {
         myOption,
         myPagination
     },
-    props:['colCid'],
+    props: ['colCid'],
     data () {
         return {
-            cid:this.$route.query.cid||this.colCid,
-            filePath:'',
-            fileNames:'',
-            fileErrMes:'',
-            disable:false,
-            colList:'',
-            colListArr:'',
-            pageMes:{status:0},
-            fileListShow:[],
-            num:4,
-            page:1,
-            sum:null,
-            nowCol:this.$route.query.cid||this.colCid,
+            cid: this.$route.query.cid||this.colCid,
+            filePath: '',
+            fileNames: '',
+            fileErrMes: '',
+            disable: false,
+            colList: '',
+            colListArr: '',
+            pageMes: {status: 0},
+            fileListShow: [],
+            num: 4,
+            page: 1,
+            sum: null,
+            nowCol: this.$route.query.cid||this.colCid,
         }
     },
 
     created(){
         this.axios({
-            method:'get',
-            url:'/admin/getUpfiles?cid='+this.cid
+            method: 'get',
+            url: '/admin/getUpfiles?cid=' + this.cid
         }).then(res=>{
             if(res.status===200){
-                const resData=res.data
-                this.filePath=resData.path
-                this.fileNames=resData.files
-                this.sum=resData.files.length
-                this.fileListShow=this.fileNames.slice((this.page-1)*this.num,this.page*this.num)
-                this.pageMes={
-                    num:this.num,
-                    page:this.page,
-                    sum:this.sum,
-                    pageNum:Math.ceil(this.sum/this.num),
-                    status:1
+                const resData = res.data
+                this.filePath = resData.path
+                this.fileNames = resData.files
+                this.sum = resData.files.length
+                this.fileListShow = this.fileNames.slice((this.page-1)*this.num, this.page*this.num)
+                this.pageMes = {
+                    num: this.num,
+                    page: this.page,
+                    sum: this.sum,
+                    pageNum: Math.ceil(this.sum/this.num),
+                    status: 1
                 }
             }
         })
-        this.colListArr=this.$store.getters.getColArr
+        this.colListArr = this.$store.getters.getColArr
     },
 
     methods: {
         upfile(){
-            const formData=new FormData(upfile)
+            const formData = new FormData(upfile)
             if(formData.get('upfile').name){
                 this.axios({
-                    method:'post',
-                    url:'/admin/upfile?cid='+this.cid,
-                    data:formData
+                    method: 'post',
+                    url: '/admin/upfile?cid=' + this.cid,
+                    data: formData
                 }).then(res=>{
-                    let reg=/[^\/]+\..+/
-                    let exec=reg.exec(res.data)
+                    let reg = /[^\/]+\..+/
+                    let exec = reg.exec(res.data)
                     this.fileNames.unshift(exec[0])
-                    this.fileListShow=this.fileNames.slice((this.page-1)*this.num,this.page*this.num)
+                    this.fileListShow = this.fileNames.slice((this.page-1)*this.num, this.page*this.num)
                 })
             }else{
                 alert('请选择图片')
@@ -120,58 +120,58 @@ export default {
             
         },
         pageTurn(e){
-            this.page=e
-            this.fileListShow=this.fileNames.slice((this.page-1)*this.num,this.page*this.num)
-            this.pageMes={
-                num:this.num,
-                page:this.page,
-                sum:this.sum,
-                pageNum:Math.ceil(this.sum/this.num),
-                status:1
+            this.page = e
+            this.fileListShow = this.fileNames.slice((this.page-1)*this.num, this.page*this.num)
+            this.pageMes = {
+                num: this.num,
+                page: this.page,
+                sum: this.sum,
+                pageNum: Math.ceil(this.sum/this.num),
+                status: 1
             }
         },
-        getFileMes(index,e){
-            e.target.innerText=this.$refs.pic[index].naturalWidth+'x'+this.$refs.pic[index].naturalHeight
+        getFileMes(index, e){
+            e.target.innerText = this.$refs.pic[index].naturalWidth + 'x' + this.$refs.pic[index].naturalHeight
         },
         getPicPath(path){
-            this.$emit('get-path',path)
+            this.$emit('get-path', path)
         },
         closeUpFile(){
             this.$emit('get-close')
         },
         checkFile(){
-            let formData=new FormData(upfile)
-            const fileName=formData.get('upfile').name
-            const reg=/\.(jpe?g|png|gif)$/
-            const regTest=reg.test(fileName)
+            let formData = new FormData(upfile)
+            const fileName = formData.get('upfile').name
+            const reg = /\.(jpe?g|png|gif)$/
+            const regTest = reg.test(fileName)
             if(!regTest){
-                this.fileErrMes='图片类型错误，只能传入jpg/jpeg/gif/png格式的图片'
-                this.disable=true
+                this.fileErrMes = '图片类型错误，只能传入jpg/jpeg/gif/png格式的图片'
+                this.disable = true
             }else{
                 this.fileErrMes=''
-                this.disable=false
+                this.disable = false
             }
         },
         getNowCol(e){
-            let num=e.target.selectedIndex
-            this.filePath=this.colListArr[num].path
-            this.cid=this.colListArr[num].cid
+            let num = e.target.selectedIndex
+            this.filePath = this.colListArr[num].path
+            this.cid = this.colListArr[num].cid
             this.axios({
-                method:'get',
-                url:'/admin/getUpfiles?cid='+this.cid
+                method: 'get',
+                url: '/admin/getUpfiles?cid=' + this.cid
             }).then(res=>{
                 if(res.status===200){
-                    const resData=res.data
-                    this.filePath=resData.path
-                    this.fileNames=resData.files
-                    this.sum=resData.files.length
-                    this.fileListShow=this.fileNames.slice((this.page-1)*this.num,this.page*this.num)
-                    this.pageMes={
-                        num:this.num,
-                        page:this.page,
-                        sum:this.sum,
-                        pageNum:Math.ceil(this.sum/this.num),
-                        status:1
+                    const resData = res.data
+                    this.filePath = resData.path
+                    this.fileNames = resData.files
+                    this.sum = resData.files.length
+                    this.fileListShow = this.fileNames.slice((this.page-1)*this.num, this.page*this.num)
+                    this.pageMes = {
+                        num: this.num,
+                        page: this.page,
+                        sum: this.sum,
+                        pageNum: Math.ceil(this.sum/this.num),
+                        status: 1
                     }
                 }
             })
@@ -184,7 +184,7 @@ export default {
 </script>
 <style lang="less"  scoped>
 .right-back{
-    background:rgba(100, 102, 102,0.5);position: absolute;top:0;left:0;width:100%;height:100%;z-index: 11;
+    background:rgba(100, 102, 102, 0.5);position: absolute;top:0;left:0;width:100%;height:100%;z-index: 11;
     display: flex;align-items: center;justify-content: center;
 }
 .file-out{

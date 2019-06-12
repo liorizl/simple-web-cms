@@ -7,23 +7,23 @@
 <script>
 
 export default {
-    props:['value'],
+    props: ['value'],
     data () {
         return {
-            inner:this.value
+            inner: this.value
         }
     },
 
     created(){},
-    computed:{
+    computed: {
         getInner(){
             
         },
     },
     methods: {
         showMes(){
-            this.inner=this.$el.innerHTML
-            this.$emit('input',this.inner)
+            this.inner = this.$el.innerHTML
+            this.$emit('input', this.inner)
         },
     }
 }

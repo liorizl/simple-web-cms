@@ -21,17 +21,17 @@ import util from '../../../static/util.js'
         name: "temp",
         data(){
             return{
-                id:null,
-                liClass:['active','','','']
+                id: null,
+                liClass: ['active', '', '', '']
 
             }
         },
         created(){
             if(this.$route.query.type) this.noActive(parseInt(this.$route.query.type))
         },
-        methods:{
+        methods: {
             noActive(type){
-                this.liClass=this.liClass.map((li,index)=>{
+                this.liClass = this.liClass.map((li, index)=>{
                     if(type-1===index){
                         return 'active'
                     }else{
@@ -41,7 +41,7 @@ import util from '../../../static/util.js'
             },
             goLink(type){
                 this.noActive(type)
-                this.$router.push({name:'tempList',query:{type:type}})
+                this.$router.push({name: 'tempList', query: {type: type}})
             }
         },
         mounted(){

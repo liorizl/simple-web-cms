@@ -90,61 +90,61 @@
 import subOk from '../tinyComp/SubOk.vue'
 import nowPosition from '../tinyComp/NowPosition.vue'
 export default {
-    components:{
+    components: {
         subOk,
         nowPosition
     },
-    inject:['reload'],
+    inject: ['reload'],
     data () {
        return {
-            id:null,
-            type:this.$route.query.type,
-            act:this.$route.params.act,
-            tempType:null,
-            title:null,
-            isUse:true,
-            num:0,
-            titleCut:0,
-            introCut:0,
-            dateTypeText:'y-m-d',
-            dateType:'1',
-            content:null,
-            contentList:null,
-            posiList:'加载中。。。',
-            propData:{showSub:false,status:0,pageName:'模版',router:'tempList',query:{type:this.$route.query.type}}
+            id: null,
+            type: this.$route.query.type,
+            act: this.$route.params.act,
+            tempType: null,
+            title: null,
+            isUse: true,
+            num: 0,
+            titleCut: 0,
+            introCut: 0,
+            dateTypeText: 'y-m-d',
+            dateType: '1',
+            content: null,
+            contentList: null,
+            posiList: '加载中。。。',
+            propData: {showSub: false, status: 0, pageName: '模版', router: 'tempList', query: {type: this.$route.query.type}}
        }
     },
     created(){
         this.getPos()
         if(this.act==='edit'){
-            this.id=this.$route.query.id
+            this.id = this.$route.query.id
             this.propData.act='编辑'
             
             this.axios({
-                method:'get',
-                url:'/admin/getEditTemp?id='+this.id
+                method: 'get',
+                url: '/admin/getEditTemp?id='+this.id
             }).then(res=>{
                 if(res.status===200){
-                    let resData=res.data[0]
-                    this.id=resData.id
-                    this.title=resData.title
-                    this.type=resData.type
-                    this.isUse=resData.isUse==='true'?true:false
-                    this.content=resData.content
-                    if(this.type===3){
-                        this.num=resData.num
-                        this.titleCut=resData.titleCut
-                        this.introCut=resData.introCut
-                        this.contentList=resData.contentList
-                        this.dateType=resData.dateType.toString()
+                    let resData = res.data[0]
+                    this.id = resData.id
+                    this.title = resData.title
+                    this.type = resData.type
+                    this.isUse = resData.isUse === 'true' ? true : false
+                    this.content = resData.content
+                    if(this.type === 3){
+                        this.num = resData.num
+                        this.titleCut = resData.titleCut
+                        this.introCut = resData.introCut
+                        this.contentList = resData.contentList
+                        this.dateType = resData.dateType.toString()
                     }
-                    this.posiList.push({name:'编辑模版'})
-                    this.posiList.push({name:resData.title})
+                    this.posiList.push({name: '编辑模版'})
+                    this.posiList.push({name: resData.title})
                 }
             })
         }else{
             this.propData.act='添加'
-            this.posiList.push({name:'添加模版'})
+            this.posiList.push({name: '添加模版'})
         }
     },
     computed: {
@@ -162,22 +162,22 @@ export default {
     },
     methods: {
         subTemp(){
-            this.propData.showSub=true
-            let formData=new FormData(formTemp);
+            this.propData.showSub = true
+            let formData = new FormData(formTemp);
             if(formData.get('isUse')!=='on'){
-                formData.append('isUse','off')
+                formData.append('isUse', 'off')
             }
-            formData.append('type',this.type)
+            formData.append('type', this.type)
             this.axios({
-                method:'post',
-                url:this.id?'/admin/upTemp?act='+this.act+'&id='+this.id:'/admin/upTemp?act='+this.act,
-                data:formData
+                method: 'post',
+                url: this.id ? '/admin/upTemp?act='+this.act+'&id='+this.id : '/admin/upTemp?act='+this.act,
+                data: formData
             }).then(res=>{
-                this.propData.status=1
-                this.propData.resStatus=1
+                this.propData.status = 1
+                this.propData.resStatus = 1
             }).catch(err=>{
-                this.propData.status=1
-                this.propData.resStatus=2
+                this.propData.status = 1
+                this.propData.resStatus = 2
             })
         },
         getPos(){
@@ -197,7 +197,7 @@ export default {
             default:
                 this.tempType='首页模版'
         }
-        this.posiList=[{url:{temp:'tempList',query:{type:this.$route.query.type}},name:this.tempType}]
+        this.posiList = [{url: {temp: 'tempList', query: {type: this.$route.query.type}}, name: this.tempType}]
         },
         refreshPage(){
             this.reload()

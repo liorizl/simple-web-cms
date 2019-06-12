@@ -16,11 +16,11 @@
                     <span class="id">{{temp.id}}</span>
                     <span class="title">{{temp.title}}</span>
                     <template v-if="type===1">
-                        <span class="name isLink" @click="enableTemp($event,temp.id)"> {{temp.isUse==='true'?'启用':'不启用'}}</span>
+                        <span class="name isLink" @click="enableTemp($event, temp.id)"> {{temp.isUse==='true'?'启用':'不启用'}}</span>
                     </template>
                     <span class="operate">
                         <span @click="editTemp(temp.id)" class="edit"> 编辑</span> | 
-                        <span @click="deleTemp(temp.id,temp.title)" class="dele">删除</span>
+                        <span @click="deleTemp(temp.id, temp.title)" class="dele">删除</span>
                     </span>
                 </li>
             </template>
@@ -36,51 +36,51 @@ import nowPosition from '../tinyComp/NowPosition.vue'
 import subOk from '../tinyComp/SubOk.vue'
     export default {
         name: "tempList",
-        components:{
+        components: {
             nowPosition,
             subOk
         },
-        inject:['reload'],
-        data:function(){
+        inject: ['reload'],
+        data: function(){
             return {
-                type:parseInt(this.$route.query.type)||1,
-                tempList:null,
-                tempType:'',
-                posiList:'加载中...',
-                propData:{showSub:false,status:0,pageName:'模版',query:{type:parseInt(this.$route.query.type)||1}}
+                type: parseInt(this.$route.query.type)||1,
+                tempList: null,
+                tempType: '',
+                posiList: '加载中...',
+                propData: {showSub: false, status: 0, pageName: '模版', query: {type: parseInt(this.$route.query.type)||1}}
             }
         },
-        created:function(){
+        created: function(){
             this.axios({
-                method:'get',
-                url:'/admin/tempList?type='+this.type
+                method: 'get',
+                url: '/admin/tempList?type=' + this.type
             }).then(res=>{
                 if(res.status===200){
-                    this.tempList=res.data
+                    this.tempList = res.data
                 }
             })
             this.getPos()
         },
-        watch:{
+        watch: {
             '$route' (to, from) {
                 this.axios({
-                    method:'get',
-                    url:'/admin/tempList?type='+this.$route.query.type
+                    method: 'get',
+                    url: '/admin/tempList?type=' + this.$route.query.type
                 }).then(res=>{
                     if(res.status===200){
-                        this.tempList=res.data
-                        this.type=parseInt(this.$route.query.type)
+                        this.tempList = res.data
+                        this.type = parseInt(this.$route.query.type)
                         this.getPos()
                     }
                 })
             }
         },
-        methods:{
+        methods: {
             goAddTemp(){
-                this.$router.push({name:'tempAdd',query:{type:this.type},params:{act:'add'}})
+                this.$router.push({name: 'tempAdd', query: {type: this.type}, params: {act: 'add'}})
             },
             editTemp(id){
-                this.$router.push({name:'tempAdd',query:{type:this.type,id:id},params:{act:'edit'}})
+                this.$router.push({name: 'tempAdd', query: {type: this.type, id: id}, params: {act: 'edit'}})
             },
             getPos(){
                 switch (parseInt(this.$route.query.type)){
@@ -99,46 +99,46 @@ import subOk from '../tinyComp/SubOk.vue'
                 default:
                     this.tempType='首页模版'
             }
-            this.posiList=[{url:{temp:'tempList',query:{type:this.$route.query.type}},name:this.tempType},{name:'模版列表'}]
+            this.posiList = [{url: {temp: 'tempList', query: {type: this.$route.query.type}}, name: this.tempType}, {name: '模版列表'}]
             },
-            enableTemp(e,id){
+            enableTemp(e, id){
                 if(e.target.innerText==='启用'){
                     alert('该模版已经启用!')
                 }else{
                     this.axios({
-                        method:'get',
-                        url:'/admin/changeIsUseTemp?id='+id
+                        method: 'get',
+                        url: '/admin/changeIsUseTemp?id=' + id
                     }).then(res=>{
                         if(res.status===200){
                             if(res.data.myStatus===0){
                                 alert('修改不成功')
                             }
-                            this.tempList=res.data.result
+                            this.tempList = res.data.result
                         }
                     })
                 }
             },
-            deleTemp(id,title){
-                this.propData.act="删除"
-                if(confirm("确定删除？\r\nid:"+id+"名称:"+title)){
-                    this.propData.showSub=true
+            deleTemp(id, title){
+                this.propData.act = "删除"
+                if(confirm("确定删除？\r\nid:" + id + "名称:" + title)){
+                    this.propData.showSub = true
                     const table='template' //数据表名
                     this.axios({
-                        method:'get',
-                        url:'/admin/dele?table='+table+'&id='+id
+                        method: 'get',
+                        url: '/admin/dele?table=' + table + '&id=' + id
                     }).then(res=>{
                         if(res.status===200){
                             if(res.data.myStatus===1){
-                                this.propData.status=1
-                                this.propData.resStatus=1
+                                this.propData.status = 1
+                                this.propData.resStatus = 1
                             }else{
-                                this.propData.status=1
-                                this.propData.resStatus=2
+                                this.propData.status = 1
+                                this.propData.resStatus = 2
                             }
                         }
                     }).catch(err=>{
-                        this.propData.status=1
-                        this.propData.resStatus=2
+                        this.propData.status = 1
+                        this.propData.resStatus = 2
                     })
                 }
             },

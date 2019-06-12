@@ -26,57 +26,57 @@ export default {
     name: "sys-con",
     data(){
         return{
-            os:'',
-            webPath:'',
-            vueVersion:'',
-            nodeVersion:'',
-            mysqlVersion:'',
-            staticPath:'',
-            hostName:'',
-            port:null,
-            version:'',
-            configPath:'',
-            staticWebPath:null,
-            staticWebName:null
+            os: '',
+            webPath: '',
+            vueVersion: '',
+            nodeVersion: '',
+            mysqlVersion: '',
+            staticPath: '',
+            hostName: '',
+            port: null,
+            version: '',
+            configPath: '',
+            staticWebPath: null,
+            staticWebName: null
         }
     },
     created(){
-        this.vueVersion=pack.dependencies.vue
+        this.vueVersion = pack.dependencies.vue
         this.axios({
-            url:'/admin/getSysMes'
+            url: '/admin/getSysMes'
         }).then(res=>{
             if(res.status===200){
-                let resData=res.data
-                this.os=resData.os
-                this.webPath=resData.webPath
-                this.nodeVersion=resData.nodeVersion
-                this.hostName=resData.hostName
-                this.port=resData.port
-                this.version=resData.version
-                this.configPath=resData.webPath+'\\config\\config.json'
-                this.staticWebPath=resData.staticWebPath
-                this.staticWebName=resData.staticWebName
+                let resData = res.data
+                this.os = resData.os
+                this.webPath = resData.webPath
+                this.nodeVersion = resData.nodeVersion
+                this.hostName = resData.hostName
+                this.port = resData.port
+                this.version = resData.version
+                this.configPath = resData.webPath + '\\config\\config.json'
+                this.staticWebPath = resData.staticWebPath
+                this.staticWebName = resData.staticWebName
                 this.checkPath()
             }
         })
         this.axios({
-            url:'/admin/mysqlVersion'
+            url: '/admin/mysqlVersion'
         }).then(res=>{
             if(res.status===200){
-                this.mysqlVersion=res.data
+                this.mysqlVersion = res.data
             }
         })
     },
-    methods:{
+    methods: {
         checkPath(){
-            const regexp=/\.{2}\//g
-            let pathArr=this.webPath.split('\\')
-            const pathDepth=this.staticWebPath.match(regexp)
+            const regexp = /\.{2}\//g
+            let pathArr = this.webPath.split('\\')
+            const pathDepth = this.staticWebPath.match(regexp)
             if(pathDepth){
                 pathArr.splice(-pathDepth.length)
             }
-            pathArr=pathArr.join('\\')
-            this.staticPath=pathArr+'\\'+this.staticWebName+'\\'
+            pathArr = pathArr.join('\\')
+            this.staticPath = pathArr + '\\' + this.staticWebName + '\\'
         }
     }
 }

@@ -13,36 +13,36 @@
 <script>
 import util from '../../../static/util.js'
 export default {
-    name: "article-info",
-    components:{
-        articleLeftNav:{
-            name:'article-left-nav',
-            props:['colList'],
+    name:"article-info",
+    components: {
+        articleLeftNav: {
+            name: 'article-left-nav',
+            props: ['colList'],
             data(){
                 return{
-                    activeId:0,
-                    ulClassArr:[],
-                    icon:[]
+                    activeId: 0,
+                    ulClassArr: [],
+                    icon: []
                 }
             },
-            methods:{
+            methods: {
                 showC(i){
-                    let classArr=this.ulClassArr
-                    let iconI=this.icon[i]==='iconDown'?'iconUp':'iconDown'
-                    this.$set(this.icon,i,iconI)
-                    this.ulClassArr=this.ulClassArr.map((c,index)=>{
-                        if(index===i){
-                            return this.ulClassArr[index]===false?true:false
+                    let classArr = this.ulClassArr
+                    let iconI = this.icon[i] === 'iconDown'?'iconUp': 'iconDown'
+                    this.$set(this.icon, i, iconI)
+                    this.ulClassArr = this.ulClassArr.map((c, index)=>{
+                        if(index === i){
+                            return this.ulClassArr[index] === false?true: false
                         }else{
                             return this.ulClassArr[index]
                         }
                     })
                 },
             },
-            watch:{
+            watch: {
                 'colList'(){
                     this.colList.forEach(col=>{
-                        if(col.haveChild===0){
+                        if(col.haveChild === 0){
                             this.ulClassArr.push(0)
                             this.icon.push(0)
                         }else{
@@ -54,7 +54,7 @@ export default {
             },
             created(){
                 this.colList.forEach(col=>{
-                    if(col.haveChild===0){
+                    if(col.haveChild === 0){
                         this.ulClassArr.push(0)
                         this.icon.push(0)
                     }else{
@@ -64,89 +64,89 @@ export default {
                 })
             },
             render(h){
-                let self=this
-                const getActiveClass=(colList,h)=>{
-                    let html=[],firstLiClass,firstLiTitle,firstLiEvent
-                    const getActiveUl=(colList)=>{
-                        let createEArr=colList.map(col=>{
-                            return h('ul',getActiveLi(col))
+                let self = this
+                const getActiveClass = (colList, h)=>{
+                    let html = [], firstLiClass, firstLiTitle, firstLiEvent
+                    const getActiveUl = (colList)=>{
+                        let createEArr = colList.map(col=>{
+                            return h('ul', getActiveLi(col))
                         })
                         return createEArr
                     }
-                    const getActiveLi=(col)=>{
-                        const isUlti1=col.ultimate==='true'?'isUlti1':'notUlti1'
-                        if(col.haveChild===0){
+                    const getActiveLi = (col)=>{
+                        const isUlti1 = col.ultimate === 'true' ? 'isUlti1' : 'notUlti1'
+                        if(col.haveChild === 0){
                             return [h(
                                 'li',
                                 {
-                                    'class':[isUlti1,'iconfont',self.activeId===col.id?'active':''],
-                                    //'class':['colEmp1','iconfont',self.activeId===col.id?'active':''],
-                                    attrs:{id:col.id},
-                                    on:{
-                                        click:()=>{
-                                            self.activeId=col.id
-                                            this.$emit('goNav',{cid:col.cid,title:col.title,id:col.id})
+                                    'class': [isUlti1, 'iconfont', self.activeId === col.id ? 'active' : ''],
+                                    //'class': ['colEmp1', 'iconfont', self.activeId === col.id?'active':''],
+                                    attrs: {id: col.id},
+                                    on: {
+                                        click: ()=>{
+                                            self.activeId = col.id
+                                            this.$emit('goNav', {cid: col.cid, title: col.title, id: col.id})
                                         }
                                     }
                                 },
                                 col.title
                                 )]
                         }else{
-                            return [h('li',{'class':[isUlti1,'iconfont',self.activeId===col.id?'active':''],attrs:{id:col.id}},col.title),getActiveUl(col.haveChild)]
+                            return [h('li', {'class': [isUlti1, 'iconfont', self.activeId === col.id?'active':''], attrs: {id: col.id}}, col.title), getActiveUl(col.haveChild)]
                         }
                     }
-                    const getActive=(colList,i,index=null)=>{
+                    const getActive = (colList, i, index = null)=>{
                         if(colList){
-                            if(i===0){
-                                for(let [k,col] of colList.entries()){
-                                    firstLiClass=col.haveChild===0?'colEmp':'colExist'
-                                    firstLiTitle=col.ultimate==='true'?'isUlti':'notUlti'
+                            if(i === 0){
+                                for(let [k, col] of colList.entries()){
+                                    firstLiClass = col.haveChild === 0?'colEmp': 'colExist'
+                                    firstLiTitle = col.ultimate === 'true'?'isUlti': 'notUlti'
                                     html.push(
                                         h('li',
                                         {
-                                            'class':[firstLiClass,'iconfont','liFirst',self.activeId===col.id?'active':''],
-                                            on:{
-                                                click:()=>{
-                                                    this.activeId=col.id
-                                                    firstLiEvent=col.haveChild===0?'goNav':''
+                                            'class': [firstLiClass, 'iconfont', 'liFirst', self.activeId === col.id?'active': ''],
+                                            on: {
+                                                click: ()=>{
+                                                    this.activeId = col.id
+                                                    firstLiEvent = col.haveChild === 0?'goNav': ''
                                                     if(col.haveChild!==0) this.showC(k)
-                                                    this.$emit(firstLiEvent,{cid:col.cid,title:col.title,id:col.id})
+                                                    this.$emit(firstLiEvent, {cid: col.cid, title: col.title, id: col.id})
                                                 }
                                             },
                                         },
                                         [
-                                            h('span',{'class':[firstLiTitle,{title:true}]},col.title),
-                                            h('span',{'class':['icon',this.icon[k]]})
+                                            h('span', {'class': [firstLiTitle, {title: true}]}, col.title),
+                                            h('span', {'class': ['icon', this.icon[k]]})
                                         ]
                                         )
                                     )
                                     if(col.haveChild!==0){
-                                        getActive(col.haveChild,1,k)
+                                        getActive(col.haveChild, 1, k)
                                     }
                                 }
-                            }else if(i===1){
-                                //html.push(h('transition',{attrs:{name:'fade'}},h('div',getActiveUl(colList))))
-                                html.push(h('div',{style:{display:this.ulClassArr[index]===true?'':'none'}},getActiveUl(colList)))
+                            }else if(i === 1){
+                                //html.push(h('transition', {attrs: {name: 'fade'}}, h('div', getActiveUl(colList))))
+                                html.push(h('div', {style: {display: this.ulClassArr[index] === true ? '' : 'none'}}, getActiveUl(colList)))
                             }
                         }else{
                             return '数据加载中...'
                         }
                     }
-                    getActive(colList,0)
+                    getActive(colList, 0)
                     return html
                 }
-                if(this.colList.length===0){
+                if(this.colList.length === 0){
                     return h('div',
                         {
-                            style:{
-                                'text-align':'center',
-                                'margin-top':'20px',
-                                'cursor':'pointer',
-                                'text-decoration':'underline'
+                            style: {
+                                'text-align': 'center',
+                                'margin-top': '20px',
+                                'cursor': 'pointer',
+                                'text-decoration': 'underline'
                             },
-                            on:{
-                                click:()=>{
-                                    this.$router.push({name:'columnAdd',params:{act:'add'}})
+                            on: {
+                                click: ()=>{
+                                    this.$router.push({name: 'columnAdd', params: {act: 'add'}})
                                 }
                             }
                         },
@@ -156,8 +156,8 @@ export default {
                     return h(
                     'ul',
                     {
-                        'class':{
-                            leftColList:true
+                        'class': {
+                            leftColList: true
                         }
                     },
                     getActiveClass(this.colList,h)
@@ -166,24 +166,24 @@ export default {
             },
         }
     },
-    data:function(){
+    data: function(){
         return{
-            colList:null,
-            html:null,
-            icon:[],
-            ulClassArr:[],
-            activeClass:{id:0},
-            activeClassId:0
+            colList: null,
+            html: null,
+            icon: [],
+            ulClassArr: [],
+            activeClass: {id: 0},
+            activeClassId: 0
         }
     },
-    created:function(){
-        this.colList=this.$store.state.webSetting.colList
+    created: function(){
+        this.colList = this.$store.state.webSetting.colList
     },
-    methods:{
+    methods: {
         goNav(e){
-            this.activeClassId=e.id
+            this.activeClassId = e.id
             if(this.$parent.$refs.appCon) this.$parent.$refs.appCon.scrollIntoView()
-            this.$router.push({name:'articleList',query:{cid:e.cid},params:{title:e.title}})
+            this.$router.push({name: 'articleList', query: {cid: e.cid}, params: {title: e.title}})
         },
     },
     mounted(){
@@ -193,7 +193,7 @@ export default {
 </script>
 
 <style  lang="less">
-@icon-margin-right:40px;
+@icon-margin-right: 40px;
 @li-background-color:#999;
 .flexColInArt{display:flex;justify-content: space-between;align-items: center;}
 .flexLeft{display:flex;justify-content: flex-start;align-items: center;}

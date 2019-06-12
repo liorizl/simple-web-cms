@@ -37,30 +37,30 @@
     import md5 from 'js-md5';
     export default {
       name: "login",
-      data:function(){
+      data: function(){
         return{
-            userId:'',
-            userPsd:'',
-            useIdentCode:null,
-            identCode:'', 
-            recordSession:true,
-            status:'',
-            webName:null,
+            userId: '',
+            userPsd: '',
+            useIdentCode: null,
+            identCode: '', 
+            recordSession: true,
+            status: '',
+            webName: null,
         }
       },
-      created:function(){
-        let cookieUser=this.$cookies.get('user')
+      created: function(){
+        let cookieUser = this.$cookies.get('user')
         if(cookieUser){
             this.status='自动登录中...'
             this.axios({
-                method:'get',
-                url:'/admin/autoLogin',
+                method: 'get',
+                url: '/admin/autoLogin',
             }).then(res=>{
                 if(res.status===200){
                     if(res.data.myStatus===1){
-                        this.$router.push({path:'/admin/',query:{user:res.data.user}})
+                        this.$router.push({path: '/admin/', query: {user: res.data.user}})
                     }else{
-                        this.status=res.data.errMes
+                        this.status = res.data.errMes
                     }
                 }
           }).catch(err=>{
@@ -69,17 +69,17 @@
           })
         }
         this.axios({
-            url:'/admin/getIdent'
+            url: '/admin/getIdent'
         }).then(res=>{
             if(res.status===200){
-                this.useIdentCode=res.data===1?true:false
+                this.useIdentCode = res.data === 1 ? true : false
             }
         })
         this.axios({
-            url:'/admin/getWebName'
+            url: '/admin/getWebName'
         }).then(res=>{
             if(res.status===200){
-                this.webName=res.data.webName
+                this.webName = res.data.webName
             }
         })
       },
@@ -90,26 +90,26 @@
             }
         }
       },
-      methods:{
-        login:function(){
+      methods: {
+        login: function(){
             if(!this.identCode){
                 this.status='请输入认证码！'
             }else{
                 this.axios({
-                    method:'post',
-                    url:'/admin/checkIdentCode',
-                    data:{identCode:this.identCode}
+                    method: 'post',
+                    url: '/admin/checkIdentCode',
+                    data: {identCode: this.identCode}
                 }).then(res=>{
                     if(res.data===1){
                         this.axios({
-                            method:'post',
-                            url:'/admin/login',
-                            data:{userId:this.userId,userPsd:md5(this.userPsd),recordSession:this.recordSession,ip:returnCitySN.cip,cname:returnCitySN.cname}
+                            method: 'post',
+                            url: '/admin/login',
+                            data: {userId: this.userId, userPsd: md5(this.userPsd), recordSession: this.recordSession, ip: returnCitySN.cip, cname: returnCitySN.cname}
                         }).then((res)=>{
                             if(res.data.length===2){
-                                this.$cookies.set('user',res.data[1].user,60*60*12)
-                                this.$cookies.set('userName',this.userId,60*60*12)
-                                this.$router.push({path:"/admin",query:{user:this.userId}})
+                                this.$cookies.set('user', res.data[1].user, 60 * 60 * 12)
+                                this.$cookies.set('userName', this.userId, 60 * 60 * 12)
+                                this.$router.push({path: "/admin", query: {user: this.userId}})
                             }
                             else{
                                 this.status='用户名或密码错误！'
@@ -130,13 +130,13 @@
 
 <style lang="less" scoped>
 .login{width:100%;height:100vh;margin:0;background:#fff url('../assets/images/bg2.jpg') top center;overflow:hidden;}
-.btitle{width:100%;margin-top:100px;height:78px;text-align: center;font:bold 40px/78px 'microsoft yahei';color:rgb(211,234,255);}
-.ftitle{width:100%;margin-top:10px;text-align: center;font:bold 30px/50px 'microsoft yahei';color:rgb(211,234,255);}
+.btitle{width:100%;margin-top:100px;height:78px;text-align: center;font:bold 40px/78px 'microsoft yahei';color:rgb(211, 234, 255);}
+.ftitle{width:100%;margin-top:10px;text-align: center;font:bold 30px/50px 'microsoft yahei';color:rgb(211, 234, 255);}
 .loginCon{
     width:400px;
     margin:30px auto;
     border:1px solid #ccc;
-    background-color:rgba(223,236,246,0.8);
+    background-color:rgba(223, 236, 246, 0.8);
     border-radius: 15px;
     padding-top:10px;
     }

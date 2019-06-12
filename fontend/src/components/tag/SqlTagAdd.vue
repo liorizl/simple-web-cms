@@ -40,79 +40,79 @@
 import nowPosition from '../tinyComp/NowPosition.vue'
 import subOk from '../tinyComp/SubOk.vue'
 export default {
-    name:'addSqlTag',
-    components:{
+    name: 'addSqlTag',
+    components: {
         nowPosition,
         subOk
     },
-    inject:['reload'],
-    data () {
+    inject: ['reload'],
+    data() {
        return {
-           act:this.$route.params.act,
-           id:this.$route.query.id||null,
-           title:null,
-           callName:null,
-           sqlContent:null,
-           sqlListContent:null,
-           posiList:[{url:{temp:'tagList',query:{type:3}},name:'SQL标签'}],
-           propData:{showSub:false,status:0,pageName:'SQL标签',router:'tagList',query:{type:3}},
+           act: this.$route.params.act,
+           id: this.$route.query.id || null,
+           title: null,
+           callName: null,
+           sqlContent: null,
+           sqlListContent: null,
+           posiList: [{url: {temp: 'tagList', query: {type: 3}}, name: 'SQL标签'}],
+           propData: {showSub: false, status: 0, pageName: 'SQL标签', router: 'tagList', query: {type: 3}},
        }
     },
 
-    created(){
+    created() {
         if(this.act==='edit'){
             this.propData.act='编辑'
             this.axios({
-                method:'get',
-                url:'/admin/getSqlTag?id='+this.id
+                method: 'get',
+                url: '/admin/getSqlTag?id=' + this.id
             }).then(res=>{
                 if(res.status===200){
-                    let resData=res.data[0]
-                    this.title=resData.title
-                    this.callName=resData.callname
-                    this.sqlContent=resData.sqlcontent
-                    this.sqlListContent=resData.listcontent
-                    this.posiList.push({name:'编辑标签'})
-                    this.posiList.push({name:resData.title})
+                    let resData = res.data[0]
+                    this.title = resData.title
+                    this.callName = resData.callname
+                    this.sqlContent = resData.sqlcontent
+                    this.sqlListContent = resData.listcontent
+                    this.posiList.push({name: '编辑标签'})
+                    this.posiList.push({name: resData.title})
                 }
             })
         }else{
-            this.posiList.push({name:'添加标签'})
+            this.posiList.push({name: '添加标签'})
             this.propData.act='添加'
         }
     },
     methods: {
         goSubmit(){
-            let url,formData;
-            this.propData.showSub=true
+            let url, formData;
+            this.propData.showSub = true
             if(this.act==='add'){
-                url='/admin/upSqlTag?act=add'
+                url = '/admin/upSqlTag?act=add'
             }
             else if(this.act==='edit'){
-                url='/admin/upSqlTag?act=edit&id='+this.id
+                url = '/admin/upSqlTag?act=edit&id=' + this.id
             }else{
                 console.error('获取的参数不对')
             }
-            formData=new FormData(sqlTag)
+            formData = new FormData(sqlTag)
             this.axios({
-                method:'post',
-                url:url,
-                data:formData
+                method: 'post',
+                url: url,
+                data: formData
             }).then(res=>{
                 if(res.status===200){
-                    this.propData.status=1
-                    this.propData.resStatus=1
+                    this.propData.status = 1
+                    this.propData.resStatus = 1
                 }
             }).catch(err=>{
-                this.propData.status=1
-                this.propData.resStatus=2
+                this.propData.status = 1
+                this.propData.resStatus = 2
             })
         },
         refreshPage(){
             this.reload()
         },
         reEdit(){
-            this.propData.showSub=false
+            this.propData.showSub = false
         },
     }
 }

@@ -52,63 +52,63 @@ import subOk from '../tinyComp/SubOk.vue'
 import md5 from 'js-md5';
 export default {
     name: "editPsd",
-    components:{
+    components: {
         nowPosition,
         subOk
     },
-    inject:['reload'],
+    inject: ['reload'],
     data(){
         return{
-            posiList:[{url:{temp:'editPsd'},name:'修改管理员密码'}],
-            name:'',
-            newName:'',
-            psd1:null,
-            psd2:null,
-            newPsd:'',
-            psdNotSame:false,
-            psdWrong:false,
-            disable:true,
-            propData:{showSub:false,status:0,pageName:'修改管理员密码',router:'editPst'},
+            posiList: [{url: {temp: 'editPsd'}, name: '修改管理员密码'}],
+            name: '',
+            newName: '',
+            psd1: null,
+            psd2: null,
+            newPsd: '',
+            psdNotSame: false,
+            psdWrong: false,
+            disable: true,
+            propData: {showSub: false, status: 0, pageName: '修改管理员密码', router: 'editPst'},
         }
     },
-    methods:{
+    methods: {
         checkPsdSame(){
             if(this.psd1===this.psd2&&this.psd1!==null){
-                this.psdNotSame=false
+                this.psdNotSame = false
             }else{
-                this.psdNotSame=true
+                this.psdNotSame = true
             }
         },
         checkPsdFormat(){
             if(!/[a-zA-Z]+/.test(this.newPsd)||!/\d+/.test(this.newPsd)){
-                this.psdWrong=true
+                this.psdWrong = true
             }else{
-                this.psdWrong=false
+                this.psdWrong = false
             }
         },
         subUser(){
             this.checkPsdSame()
             this.checkPsdFormat()
             if(!this.psdWrong&&!this.psdNotSame&&this.name){
-                this.propData.showSub=true
+                this.propData.showSub = true
                 this.axios({
-                    method:'post',
-                    url:'/admin/editPsd',
-                    data:{name:this.name,psd:md5(this.psd1),newPsd:md5(this.newPsd),newName:this.newName}
+                    method: 'post',
+                    url: '/admin/editPsd',
+                    data: {name: this.name, psd: md5(this.psd1), newPsd: md5(this.newPsd), newName: this.newName}
                 }).then(res=>{
                     if(res.status===200){
                         if(res.data.myStatus===1){
-                            this.propData.status=1
-                            this.propData.resStatus=1
+                            this.propData.status = 1
+                            this.propData.resStatus = 1
                         }else{
-                            this.propData.status=1
-                            this.propData.resStatus=2
-                            this.propData.errMes=res.data.mes
+                            this.propData.status = 1
+                            this.propData.resStatus = 2
+                            this.propData.errMes = res.data.mes
                         }
                     }
                 }).catch(err=>{
-                    this.propData.status=1
-                    this.propData.resStatus=2
+                    this.propData.status = 1
+                    this.propData.resStatus = 2
                 })
             }
         },
@@ -116,23 +116,23 @@ export default {
             this.reload()
         },
         reEdit(){
-            this.propData.showSub=false
+            this.propData.showSub = false
         },
     },
-    computed:{
+    computed: {
         newPsdNoErr(){
             if(this.psdWrong===true){
                 if(/[a-zA-Z]+/.test(this.newPsd)&&/\d+/.test(this.newPsd)){
-                    this.psdWrong=false
+                    this.psdWrong = false
                 }
             }
             if(this.psd1===this.psd2&&this.psd1!==null){
-                this.psdNotSame=false
+                this.psdNotSame = false
             }
             if(this.psdWrong||this.psdNotSame||!this.name){
-                this.disable=true
+                this.disable = true
             }else{
-                this.disable=false
+                this.disable = false
             }
             
         }

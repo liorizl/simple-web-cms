@@ -11,7 +11,7 @@ import "./assets/less/index.less";
 Vue.use(vueCookies)
 //Vue.use(ElementUI)
 Vue.config.productionTip = false
-Vue.prototype.axios=axios
+Vue.prototype.axios = axios
 /* eslint-disable no-new */
 new Vue({
     el: '#app',

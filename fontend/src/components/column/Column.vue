@@ -17,9 +17,9 @@
 import util from '../../../static/util.js'
     export default {
         name: "column",
-        data:function(){
+        data: function(){
           return{
-            act:"add"
+            act: "add"
           }
         },
         mounted(){

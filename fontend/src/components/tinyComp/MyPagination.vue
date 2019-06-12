@@ -46,7 +46,7 @@
 
 <script>
 export default {
-    props:['pageMessage'],
+    props: ['pageMessage'],
     data () {
         return {
             
@@ -56,12 +56,12 @@ export default {
     created(){
         //console.log(this.$route.query)
     },
-    watch:{
+    watch: {
 
     },
     methods: {
         pageTurn(n){
-            this.$emit('pageT',parseInt(n))
+            this.$emit('pageT', parseInt(n))
         },
     }
 }

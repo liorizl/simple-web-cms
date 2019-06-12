@@ -85,11 +85,11 @@ subData:{
             if(act==='refresh'){
                 this.$emit('refresh')
             }else{
-                const routerName=this.subData.router
+                const routerName = this.subData.router
                 if(this.subData.query){
-                    const query=this.subData.query
+                    const query = this.subData.query
                     if(this.$parent.$parent.$parent.$refs.appCon) this.$parent.$parent.$parent.$refs.appCon.scrollIntoView()
-                    this.$router.push({name:routerName,query:query})
+                    this.$router.push({name:routerName, query:query})
 
                 }else{
                     this.$router.push({name:routerName})
@@ -105,7 +105,7 @@ subData:{
 <style  lang="less" scoped>
 @rightColor:green;
 @wrongColor:#F00;
-.right-back{background:rgba(100, 102, 102,0.5);position: fixed;top:0;left:0;width:100%;height:100%;z-index: 11;
+.right-back{background:rgba(100, 102, 102, 0.5);position: fixed;top:0;left:0;width:100%;height:100%;z-index: 11;
         display: flex;align-items: center;justify-content: center;
         }
 .subOk{width:400px;

@@ -1,6 +1,6 @@
 <template>
     <div class="nowPosition">当前位置:
-        <template v-for="(pos,index) in posList">
+        <template v-for="(pos, index) in posList">
             <template v-if="index<posList.length-1">
                 <template v-if="pos.url">
                     <a href="javascript:void(0)" @click="goLink(pos)">{{pos.name}}</a>>
@@ -23,7 +23,7 @@
 
 <script>
 export default {
-    props:['posList'],
+    props: ['posList'],
     data () {
         return {
         }
@@ -35,7 +35,7 @@ export default {
 
     methods: {
         goLink(pos){
-            this.$router.push({name:pos.url.temp,query:pos.url.query})
+            this.$router.push({name:pos.url.temp, query:pos.url.query})
         }
     }
 }

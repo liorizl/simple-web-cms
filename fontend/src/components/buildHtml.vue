@@ -18,12 +18,12 @@
                     <div class="buildTitle">生成文章</div>
                     <select  multiple v-model="selectArt" size="25">
                         <template v-for="col in colListArr">
-                            <option v-bind:value="{cid:col.cid,id:col.id}" v-bind:disabled="col.ultimate==='false'?true:false">{{col.title}}</option>
+                            <option v-bind:value="{cid:col.cid, id:col.id}" v-bind:disabled="col.ultimate==='false'?true:false">{{col.title}}</option>
                         </template>
                     </select>
                     <input class="btn" type="button" value="生成文章" @click="buildArt">
-                    <div class="artParam" title="(能传更多栏目,但要多查一次数据库,稍慢！)"><input type="radio" name="artParam" id="idParam" v-model.number="buildArtParam" value="1" >通过ID传参</div>
-                    <div class="artParam" title="(不能传太多栏目,少查询一次数据库)"><input type="radio" name="artParam" id="cidParam" v-model.number="buildArtParam" value="2" >通过CID传参</div>
+                    <div class="artParam" title="(能传更多栏目, 但要多查一次数据库, 稍慢！)"><input type="radio" name="artParam" id="idParam" v-model.number="buildArtParam" value="1" >通过ID传参</div>
+                    <div class="artParam" title="(不能传太多栏目, 少查询一次数据库)"><input type="radio" name="artParam" id="cidParam" v-model.number="buildArtParam" value="2" >通过CID传参</div>
                 </div>
                 <div class="buildCon">
                     <div class="buildTitle">生成栏目</div>
@@ -46,40 +46,40 @@ import util from '../../static/util.js'
 export default {
    data () {
        return {
-           state:null,
-           time:null,
-           config:null,
-           buildJsMes:null,
-           colListArr:[],
-           selectArt:[],
-           selectCol:[],
-           buildArtParam:1
+           state: null,
+           time: null,
+           config: null,
+           buildJsMes: null,
+           colListArr: [],
+           selectArt: [],
+           selectCol: [],
+           buildArtParam: 1
        }
     },
     created(){
         this.axios({
-            url:'/admin/getSysMes'
+            url: '/admin/getSysMes'
         }).then(res=>{
             if(res.status===200){
-                this.config=res.data
+                this.config = res.data
             }
         })
-        this.colListArr=this.$store.getters.getColArr
+        this.colListArr = this.$store.getters.getColArr
     },
     methods: {
         buildIndex(){
             this.axios({
-                method:'get',
-                url:'/admin/buildIndex',
-                data:{index:true}
+                method: 'get',
+                url: '/admin/buildIndex',
+                data: {index: true}
             }).then(res=>{
                 if(res.status===200){
                     if(res.data.status===1){
                         this.state='生成首页成功'
-                        this.time='耗时'+(res.data.time/1000)+'秒'
+                        this.time='耗时' + (res.data.time/1000) + '秒'
                     }else{
                         this.state='生成首页失败' 
-                        this.time='耗时'+(res.data.time/1000)+'秒'
+                        this.time='耗时' + (res.data.time/1000) + '秒'
                     }
                 }
             })
@@ -92,13 +92,13 @@ export default {
                 alert('请选择需要生成文章的栏目！')
             }
             else{
-                let url,artParam
-                artParam=this.buildArtParam===1?
-                    'id='+this.selectArt.map(obj=>obj.id):
-                    'cid='+this.selectArt.map(obj=>obj.cid)
-                url=all==='all'?
-                    'http://'+this.config.hostName+':'+this.config.port+'/admin/buildArt':
-                    'http://'+this.config.hostName+':'+this.config.port+'/admin/buildArt?'+artParam;
+                let url, artParam
+                artParam = this.buildArtParam===1?
+                    'id=' + this.selectArt.map(obj=>obj.id):
+                    'cid=' + this.selectArt.map(obj=>obj.cid)
+                url = all==='all'?
+                    'http://' + this.config.hostName + ':' + this.config.port + '/admin/buildArt':
+                    'http://' + this.config.hostName + ':' + this.config.port + '/admin/buildArt?' + artParam;
                 window.open(url)
             }
         },
@@ -110,20 +110,20 @@ export default {
                 alert('请选择需要生成文章的栏目！')
             }
             else{
-                let url=all==='all'?
-                    'http://'+this.config.hostName+':'+this.config.port+'/admin/buildCol':
-                    'http://'+this.config.hostName+':'+this.config.port+'/admin/buildCol?id='+this.selectCol;
+                let url = all==='all'?
+                    'http://' + this.config.hostName + ':' + this.config.port + '/admin/buildCol':
+                    'http://' + this.config.hostName + ':' + this.config.port + '/admin/buildCol?id=' + this.selectCol;
                 window.open(url)
             }
         },
         buildJs(all){
             this.axios({
-                url:'/admin/buildJs'
+                url: '/admin/buildJs'
             }).then(res=>{
                 if(res.status===200){
-                    this.buildJsMes='<span style="color:red">生成JS文件完毕</span><br>名称：'+res.data.name+'   目录： '+res.data.path+'<br>'+
-                    '用途:用于操作文章的点击数（每刷新一次+1）和点赞功能<br>'+
-                    '引用地址:http://'+this.config.hostName+':'+this.config.port+'/static/js/'+res.data.name+'(注意没有/statics)'+
+                    this.buildJsMes='<span style="color:red">生成JS文件完毕</span><br>名称：' + res.data.name + '   目录： ' + res.data.path + '<br>'+
+                    '用途:用于操作文章的点击数（每刷新一次 + 1）和点赞功能<br>'+
+                    '引用地址:http://' + this.config.hostName + ':' + this.config.port + '/static/js/' + res.data.name + '(注意没有/statics)'+
                     '<br>也可以将到复制到你的网站静态文件夹下面再引入<br>'+
                     '如果网站静态文件目录里面已经有此目录+文件将会优先访问网站目录下的'
                 }

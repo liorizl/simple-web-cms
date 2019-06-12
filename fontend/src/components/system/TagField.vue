@@ -38,12 +38,12 @@
 <script>
 import nowPosition from '../tinyComp/NowPosition.vue'
 export default {
-    components:{
+    components: {
         nowPosition
     },
     data () {
         return {
-            posiList:[{name:'模版字段'}],
+            posiList: [{name: '模版字段'}],
         }
     },
 

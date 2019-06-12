@@ -38,26 +38,26 @@ import util from '../../static/util.js'
 Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
-        webSetting:{
-            webName:null,
-            buildCol:null,
-            buildFaCol:null,
-            buildArt:null,
-            buildFaArt:null,
-            backendPort:null,
-            hostName:null,
-            indexModel:null,
-            pageModel:null,
-            indexPath:null,
-            pagePath:null,
-            webUrl:null,
-            listNum:null,
-            extendName:null,
-            colList:[]
+        webSetting: {
+            webName: null,
+            buildCol: null,
+            buildFaCol: null,
+            buildArt: null,
+            buildFaArt: null,
+            backendPort: null,
+            hostName: null,
+            indexModel: null,
+            pageModel: null,
+            indexPath: null,
+            pagePath: null,
+            webUrl: null,
+            listNum: null,
+            extendName: null,
+            colList: []
         }
     },
     mutations: {
-        changeWebSetting(state,obj){
+        changeWebSetting(state, obj){
             for(let o in obj){
                 if(state.webSetting[o]!==undefined){
                     state.webSetting[o]=obj[o]
@@ -65,22 +65,22 @@ const store = new Vuex.Store({
             }
         }
     },
-    getters:{
-        getColArr:state=>{
-            let i=0,j=0,newColArr=[]
-            const titleAdd=['','--','----','------','--------','----------']
-            const getColList=(colList,j)=>{
+    getters: {
+        getColArr: state=>{
+            let i = 0, j = 0, newColArr = []
+            const titleAdd = ['', '--', '----', '------', '--------', '----------']
+            const getColList = (colList, j)=>{
                 colList.forEach(col=>{
-                    newColArr[i]={id:col.id,cid:col.cid,ultimate:col.ultimate,path:col.path2?col.path1+'/'+col.path2:col.path1,title:titleAdd[j]+col.title}
+                    newColArr[i]={id: col.id, cid: col.cid, ultimate: col.ultimate, path: col.path2 ? col.path1 + '/' + col.path2 : col.path1, title: titleAdd[j] + col.title}
                     i++
                     if(col.haveChild!==0){
                         j++
-                        getColList(col.haveChild,j)
+                        getColList(col.haveChild, j)
                         j--
                     }
                 })
             }
-            getColList(state.webSetting.colList,j)
+            getColList(state.webSetting.colList, j)
             return newColArr
         }
     }
@@ -89,82 +89,82 @@ const store = new Vuex.Store({
     name: 'admin',
     provide(){
         return {
-            reload:this.reload
+            reload: this.reload
         }
     },
     store,
     data (){
       return {
-        user:'',
-        routerAlive:true,
-        nameaa:null
+        user: '',
+        routerAlive: true,
+        nameaa: null
       }
     },
     created(){
-        const cookieUser=this.$cookies.get('user')
-        const cookieUserName=this.$cookies.get('userName')
+        const cookieUser = this.$cookies.get('user')
+        const cookieUserName = this.$cookies.get('userName')
         if(!cookieUser||!cookieUserName){
-            this.$router.push({path:'/login'})
+            this.$router.push({path: '/login'})
         }else{
-            this.user=cookieUserName
+            this.user = cookieUserName
             if(cookieUser){
                 this.axios({
-                    method:'get',
-                    url:'/admin/checkSession',
-                    params:{cookieUser:cookieUser}
+                    method: 'get',
+                    url: '/admin/checkSession',
+                    params: {cookieUser: cookieUser}
                 }).then(res=>{
                     if(res.status===200){
                         if(res.data.myStatus===0){
                             alert('请登录！')
-                            this.$router.push({path:'/login'})
+                            this.$router.push({path: '/login'})
                         }
                     }
                 })
             }else{
-                this.$router.push({path:'/login'})
+                this.$router.push({path: '/login'})
             }
         }
         if(window.sessionStorage.getItem('webset')){
-            this.$store.replaceState(Object.assign({}, this.$store.state,JSON.parse(sessionStorage.getItem("webset"))))
+            this.$store.replaceState(Object.assign({}, this.$store.state, JSON.parse(sessionStorage.getItem("webset"))))
         }else{
             this.axios({
-                url:'/admin/getSetting'
+                url: '/admin/getSetting'
             }).then(res=>{
                 if(res.status===200){
-                    this.$store.commit('changeWebSetting',res.data)
+                    this.$store.commit('changeWebSetting', res.data)
                 }
             })
             this.axios({
-                url:'/admin/getSysMes'
+                url: '/admin/getSysMes'
             }).then(res=>{
                 if(res.status===200){
-                    this.$store.commit('changeWebSetting',{backendPort:res.data.port,hostName:res.data.hostName})
+                    this.$store.commit('changeWebSetting', {backendPort: res.data.port, hostName: res.data.hostName})
                 }
             })
             this.axios({
-                url:'/admin/getColList'
+                url: '/admin/getColList'
             }).then(res=>{
                 if(res.status===200){
-                    this.$store.commit('changeWebSetting',{colList:res.data})
+                    this.$store.commit('changeWebSetting', {colList: res.data})
                 }
             }).catch(err=>{
                 console.log(err)
             })
         }
-        window.addEventListener('beforeunload',()=>{
-            window.sessionStorage.setItem('webset',JSON.stringify(this.$store.state))
+        window.addEventListener('beforeunload', ()=>{
+            window.sessionStorage.setItem('webset', JSON.stringify(this.$store.state))
         })
     },
-    methods:{
-        loginOut:function(){
+    methods: {
+        loginOut: function(){
             this.axios({
-                url:'/admin/deleSession'
+                url: '/admin/deleSession'
             }).then(res=>{
                 if(res.status===200){
                     if(res.data.myStatus===1){
                         this.$cookies.remove('user')
                         this.$cookies.remove('userName')
-                        this.$router.push({path:'/login'})
+                        this.$router.push({path: '/login'})
                     }else{
                         alert('登出失败！')
                     }
@@ -172,18 +172,18 @@ const store = new Vuex.Store({
             })
         },
         reload(){
-            this.routerAlive=false
+            this.routerAlive = false
             this.$nextTick(()=>{
-                this.routerAlive=true
+                this.routerAlive = true
             })
         },
         buildTag(){
-            window.open('#/admin/BuildTag','_blank','width=800,height=630')
+            window.open('#/admin/BuildTag', '_blank', 'width=800, height=630')
         },
         openIndex(){
-            const webset=this.$store.state.webSetting
-            const url=parseInt(webset.indexModel)===1?
-                    util.repalceStr(webset.webUrl)+util.repalceStr2(webset.indexPath)+webset.extendName:
+            const webset = this.$store.state.webSetting
+            const url = parseInt(webset.indexModel) === 1 ?
+                    util.repalceStr(webset.webUrl)+util.repalceStr2(webset.indexPath)+webset.extendName :
                     util.repalceStr(webset.webUrl)+'/showIndex'
             window.open(url)
         }

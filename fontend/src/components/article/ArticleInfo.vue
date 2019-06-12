@@ -10,24 +10,24 @@
 export default {
     data () {
         return {
-            col:null,
-            colNav:null,
-            colUse:null,
-            art:null,
-            artUse:null
+            col: null,
+            colNav: null,
+            colUse: null,
+            art: null,
+            artUse: null
         }
     },
     created(){
         this.axios({
-            url:'/admin/getArtMes'
+            url: '/admin/getArtMes'
         }).then(res=>{
-            if(res.status===200){
-                const resData=res.data
-                this.col=resData.col
-                this.colNav=resData.colNav
-                this.colUse=resData.colUse
-                this.art=resData.art
-                this.artUse=resData.artUse
+            if(res.status === 200){
+                const resData = res.data
+                this.col = resData.col
+                this.colNav = resData.colNav
+                this.colUse = resData.colUse
+                this.art = resData.art
+                this.artUse = resData.artUse
             }
         })
     },

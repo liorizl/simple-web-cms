@@ -120,13 +120,13 @@
 <script>
 import nowPosition from '../tinyComp/NowPosition.vue'
 export default {
-    name:'addTempTag',
-    components:{
+    name: 'addTempTag',
+    components: {
         nowPosition
     },
     data () {
        return {
-            temp:`<div>[!--title--]</div>
+            temp: `<div>[!--title--]</div>
 [loop]
     <div class="{$class}">
         <div class="{$class}">
@@ -139,13 +139,13 @@ export default {
         [/loopn]
     </div>
 [/loop]`,
-            listContent:`<li><a href="[!--arturl--]" target="_blank">[!--title--]</a></li>`,
-            posiList:[{url:{temp:'showDynaTag'},name:'动态标签简介'}],
+            listContent: `<li><a href="[!--arturl--]" target="_blank">[!--title--]</a></li>`,
+            posiList: [{url: {temp: 'showDynaTag'}, name: '动态标签简介'}],
        }
     },
 
     created(){
-        this.$parent.$data.liClass=['','active','','']
+        this.$parent.$data.liClass = ['', 'active', '', '']
     },
 
     methods: {}
