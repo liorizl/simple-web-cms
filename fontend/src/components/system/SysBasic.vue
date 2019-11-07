@@ -83,122 +83,121 @@
 </template>
 
 <script>
-    import util from '../../../static/util.js'
-    import subOk from '../tinyComp/SubOk.vue'
-    import nowPosition from '../tinyComp/NowPosition.vue'
-    export default {
-        name: "sys-basic",
-        components: {
-            subOk,
-            nowPosition
-        },
-        inject: ['reload'],
-        data: function(){
-            return {
-                webName: '',
-                webUrl: '',
-                keyword: '',
-                description: '',
-                indexPath: '/',
-                pagePath: '/',  
-                indexModel: 1,
-                pageModel: 1,
-                buildCol: 1,
-                buildArt: 1,
-                buildFaCol: 1,
-                buildFaArt: 1,
-                extendName: 'index.html',
-                listNum: 10,
-                author: '',
-                propData: {showSub: false, status: 0, act: '修改', pageName: '设置', router: 'sysBasic'},
-                posiList: [{name: '网站基本设置'}],
+import util from '../../../static/util.js'
+import subOk from '../tinyComp/SubOk.vue'
+import nowPosition from '../tinyComp/NowPosition.vue'
+export default {
+    name: "sys-basic",
+    components: {
+        subOk,
+        nowPosition
+    },
+    inject: ['reload'],
+    data: function () {
+        return {
+            webName: '',
+            webUrl: '',
+            keyword: '',
+            description: '',
+            indexPath: '/',
+            pagePath: '/',
+            indexModel: 1,
+            pageModel: 1,
+            buildCol: 1,
+            buildArt: 1,
+            buildFaCol: 1,
+            buildFaArt: 1,
+            extendName: 'index.html',
+            listNum: 10,
+            author: '',
+            propData: { showSub: false, status: 0, act: '修改', pageName: '设置', router: 'sysBasic' },
+            posiList: [{ name: '网站基本设置' }],
+        }
+    },
+    created() {
+        this.axios({
+            method: 'get',
+            url: '/admin/getSetting'
+        }).then(res => {
+            if (res.status === 200) {
+                let result = res.data
+                this.webName = result.webName
+                this.webUrl = result.webUrl
+                this.keyword = result.keyword
+                this.description = result.description
+                this.indexPath = result.indexPath
+                this.pagePath = result.pagePath
+                this.indexModel = result.indexModel
+                this.pageModel = result.pageModel
+                this.buildCol = result.buildCol
+                this.buildFaCol = result.buildFaCol
+                this.buildArt = result.buildArt
+                this.buildFaArt = result.buildFaArt
+                this.listNum = result.listNum
+                this.extendName = result.extendName
+                this.author = result.author
             }
-        },
-        created(){
+        })
+    },
+    computed: {
+        userIcon: function () {
+            if (this.haveIcon == 0) {
+                return true
+            }
+            else {
+                return false
+            }
+        }
+    },
+    methods: {
+        goSub() {
+            this.propData.showSub = true
+            let formData = new FormData(webSetting)
             this.axios({
-                method: 'get',
-                url: '/admin/getSetting'
-            }).then(res=>{
-                if(res.status===200){
-                    let result = res.data
-                    this.webName = result.webName
-                    this.webUrl = result.webUrl
-                    this.keyword = result.keyword
-                    this.description = result.description
-                    this.indexPath = result.indexPath
-                    this.pagePath = result.pagePath
-                    this.indexModel = result.indexModel
-                    this.pageModel = result.pageModel
-                    this.buildCol = result.buildCol
-                    this.buildFaCol = result.buildFaCol
-                    this.buildArt = result.buildArt
-                    this.buildFaArt = result.buildFaArt
-                    this.listNum = result.listNum
-                    this.extendName = result.extendName
-                    this.author = result.author
+                method: 'post',
+                url: '/admin/upSetting',
+                data: formData
+            }).then(res => {
+                if (res.status === 200) {
+                    this.propData.status = 1
+                    if (res.data.myStatus === 1) {
+                        this.propData.resStatus = 1
+                        let changeObj = {
+                            webName: this.webName,
+                            buildCol: this.buildCol,
+                            buildFaCol: this.buildFaCol,
+                            buildArt: this.buildArt,
+                            buildFaArt: this.buildFaArt,
+                            indexModel: this.indexModel,
+                            pageModel: this.pageModel,
+                            indexPath: this.indexPath,
+                            pagePath: this.pagePath,
+                            listNum: this.listNum,
+                            extendName: this.extendName,
+                            webUrl: this.webUrl
+                        }
+                        this.$store.commit('changeWebSetting', changeObj)
+                    } else {
+                        this.propData.resStatus = 2
+                    }
                 }
+            }).catch(err => {
+                this.propData.status = 1
+                this.propData.resStatus = 2
             })
         },
-        computed: {
-            userIcon: function(){
-                if(this.haveIcon==0){
-                    return true
-                }
-                else{
-                    return false
-                }
-            }
+        refreshPage() {
+            this.reload()
         },
-        methods: {
-            goSub(){
-                this.propData.showSub = true
-                let formData = new FormData(webSetting)
-                this.axios({
-                    method: 'post',
-                    url: '/admin/upSetting',
-                    data: formData
-                }).then(res=>{
-                    if(res.status===200){
-                        this.propData.status = 1
-                        if(res.data.myStatus===1){
-                            this.propData.resStatus = 1
-                            let changeObj = {
-                                webName: this.webName,
-                                buildCol: this.buildCol,
-                                buildFaCol: this.buildFaCol,
-                                buildArt: this.buildArt,
-                                buildFaArt: this.buildFaArt,
-                                indexModel: this.indexModel,
-                                pageModel: this.pageModel,
-                                indexPath: this.indexPath,
-                                pagePath: this.pagePath,
-                                listNum: this.listNum,
-                                extendName: this.extendName,
-                                webUrl: this.webUrl
-                            }
-                            this.$store.commit('changeWebSetting', changeObj)
-                        }else{
-                            this.propData.resStatus = 2
-                        }
-                    }
-                }).catch(err=>{
-                    this.propData.status = 1
-                    this.propData.resStatus = 2
-                })
-            },
-            refreshPage(){
-                this.reload()
-            },
-            reEdit(){
-                this.propData.showSub = false
-            },
+        reEdit() {
+            this.propData.showSub = false
         },
-        mounted(){
-            util.addEvent()
-        }
+    },
+    mounted() {
+        util.addEvent()
     }
+}
 </script>
 
 <style lang="less" scoped>
-
 </style>

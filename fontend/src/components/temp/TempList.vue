@@ -34,121 +34,120 @@
 <script>
 import nowPosition from '../tinyComp/NowPosition.vue'
 import subOk from '../tinyComp/SubOk.vue'
-    export default {
-        name: "tempList",
-        components: {
-            nowPosition,
-            subOk
-        },
-        inject: ['reload'],
-        data: function(){
-            return {
-                type: parseInt(this.$route.query.type)||1,
-                tempList: null,
-                tempType: '',
-                posiList: '加载中...',
-                propData: {showSub: false, status: 0, pageName: '模版', query: {type: parseInt(this.$route.query.type)||1}}
+export default {
+    name: "tempList",
+    components: {
+        nowPosition,
+        subOk
+    },
+    inject: ['reload'],
+    data: function () {
+        return {
+            type: parseInt(this.$route.query.type) || 1,
+            tempList: null,
+            tempType: '',
+            posiList: '加载中...',
+            propData: { showSub: false, status: 0, pageName: '模版', query: { type: parseInt(this.$route.query.type) || 1 } }
+        }
+    },
+    created: function () {
+        this.axios({
+            method: 'get',
+            url: '/admin/tempList?type=' + this.type
+        }).then(res => {
+            if (res.status === 200) {
+                this.tempList = res.data
             }
-        },
-        created: function(){
+        })
+        this.getPos()
+    },
+    watch: {
+        '$route'(to, from) {
             this.axios({
                 method: 'get',
-                url: '/admin/tempList?type=' + this.type
-            }).then(res=>{
-                if(res.status===200){
+                url: '/admin/tempList?type=' + this.$route.query.type
+            }).then(res => {
+                if (res.status === 200) {
                     this.tempList = res.data
+                    this.type = parseInt(this.$route.query.type)
+                    this.getPos()
                 }
             })
-            this.getPos()
+        }
+    },
+    methods: {
+        goAddTemp() {
+            this.$router.push({ name: 'tempAdd', query: { type: this.type }, params: { act: 'add' } })
         },
-        watch: {
-            '$route' (to, from) {
+        editTemp(id) {
+            this.$router.push({ name: 'tempAdd', query: { type: this.type, id: id }, params: { act: 'edit' } })
+        },
+        getPos() {
+            switch (parseInt(this.$route.query.type)) {
+                case 1:
+                    this.tempType = '首页模版'
+                    break
+                case 2:
+                    this.tempType = '封面页模版'
+                    break
+                case 3:
+                    this.tempType = '列表页模版'
+                    break
+                case 4:
+                    this.tempType = '内容页模版'
+                    break
+                default:
+                    this.tempType = '首页模版'
+            }
+            this.posiList = [{ url: { temp: 'tempList', query: { type: this.$route.query.type } }, name: this.tempType }, { name: '模版列表' }]
+        },
+        enableTemp(e, id) {
+            if (e.target.innerText === '启用') {
+                alert('该模版已经启用!')
+            } else {
                 this.axios({
                     method: 'get',
-                    url: '/admin/tempList?type=' + this.$route.query.type
-                }).then(res=>{
-                    if(res.status===200){
-                        this.tempList = res.data
-                        this.type = parseInt(this.$route.query.type)
-                        this.getPos()
+                    url: '/admin/changeIsUseTemp?id=' + id
+                }).then(res => {
+                    if (res.status === 200) {
+                        if (res.data.myStatus === 0) {
+                            alert('修改不成功')
+                        }
+                        this.tempList = res.data.result
                     }
                 })
             }
         },
-        methods: {
-            goAddTemp(){
-                this.$router.push({name: 'tempAdd', query: {type: this.type}, params: {act: 'add'}})
-            },
-            editTemp(id){
-                this.$router.push({name: 'tempAdd', query: {type: this.type, id: id}, params: {act: 'edit'}})
-            },
-            getPos(){
-                switch (parseInt(this.$route.query.type)){
-                case 1:
-                    this.tempType='首页模版'
-                    break
-                case 2:
-                    this.tempType='封面页模版'
-                    break
-                case 3:
-                    this.tempType='列表页模版'
-                    break
-                case 4:
-                    this.tempType='内容页模版'
-                    break
-                default:
-                    this.tempType='首页模版'
+        deleTemp(id, title) {
+            this.propData.act = "删除"
+            if (confirm("确定删除？\r\nid:" + id + "名称:" + title)) {
+                this.propData.showSub = true
+                const table = 'template' //数据表名
+                this.axios({
+                    method: 'get',
+                    url: '/admin/dele?table=' + table + '&id=' + id
+                }).then(res => {
+                    if (res.status === 200) {
+                        if (res.data.myStatus === 1) {
+                            this.propData.status = 1
+                            this.propData.resStatus = 1
+                        } else {
+                            this.propData.status = 1
+                            this.propData.resStatus = 2
+                        }
+                    }
+                }).catch(err => {
+                    this.propData.status = 1
+                    this.propData.resStatus = 2
+                })
             }
-            this.posiList = [{url: {temp: 'tempList', query: {type: this.$route.query.type}}, name: this.tempType}, {name: '模版列表'}]
-            },
-            enableTemp(e, id){
-                if(e.target.innerText==='启用'){
-                    alert('该模版已经启用!')
-                }else{
-                    this.axios({
-                        method: 'get',
-                        url: '/admin/changeIsUseTemp?id=' + id
-                    }).then(res=>{
-                        if(res.status===200){
-                            if(res.data.myStatus===0){
-                                alert('修改不成功')
-                            }
-                            this.tempList = res.data.result
-                        }
-                    })
-                }
-            },
-            deleTemp(id, title){
-                this.propData.act = "删除"
-                if(confirm("确定删除？\r\nid:" + id + "名称:" + title)){
-                    this.propData.showSub = true
-                    const table='template' //数据表名
-                    this.axios({
-                        method: 'get',
-                        url: '/admin/dele?table=' + table + '&id=' + id
-                    }).then(res=>{
-                        if(res.status===200){
-                            if(res.data.myStatus===1){
-                                this.propData.status = 1
-                                this.propData.resStatus = 1
-                            }else{
-                                this.propData.status = 1
-                                this.propData.resStatus = 2
-                            }
-                        }
-                    }).catch(err=>{
-                        this.propData.status = 1
-                        this.propData.resStatus = 2
-                    })
-                }
-            },
-            refreshPage(){
-                this.reload()
-            },
-        }
+        },
+        refreshPage() {
+            this.reload()
+        },
     }
+}
 </script>
 
 <style scoped>
-
 </style>

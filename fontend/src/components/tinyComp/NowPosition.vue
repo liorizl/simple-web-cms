@@ -24,18 +24,18 @@
 <script>
 export default {
     props: ['posList'],
-    data () {
+    data() {
         return {
         }
     },
 
-    created(){
+    created() {
         //console.log(this.posList)
     },
 
     methods: {
-        goLink(pos){
-            this.$router.push({name:pos.url.temp, query:pos.url.query})
+        goLink(pos) {
+            this.$router.push({ name: pos.url.temp, query: pos.url.query })
         }
     }
 }

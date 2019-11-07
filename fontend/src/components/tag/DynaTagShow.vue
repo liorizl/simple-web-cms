@@ -124,8 +124,8 @@ export default {
     components: {
         nowPosition
     },
-    data () {
-       return {
+    data() {
+        return {
             temp: `<div>[!--title--]</div>
 [loop]
     <div class="{$class}">
@@ -140,11 +140,11 @@ export default {
     </div>
 [/loop]`,
             listContent: `<li><a href="[!--arturl--]" target="_blank">[!--title--]</a></li>`,
-            posiList: [{url: {temp: 'showDynaTag'}, name: '动态标签简介'}],
-       }
+            posiList: [{ url: { temp: 'showDynaTag' }, name: '动态标签简介' }],
+        }
     },
 
-    created(){
+    created() {
         this.$parent.$data.liClass = ['', 'active', '', '']
     },
 
@@ -152,15 +152,59 @@ export default {
 }
 </script>
 <style  scoped>
-.tag-intro{width:830px;margin-top:20px;border:1px solid #4FB4DE}
-.tag-title{position:relative;height:40px;background-color:#4FB4DE;color:#fff;}
-.tag-format{margin:5px auto;width:800px;}
-.tag-title-left{width:15%;height:40px;font:bold 16px/40px 'simsun';text-indent:1em;}
-.tag-title-right{position:absolute;width:100%;top:0;font-weight: bold;text-align: center;height:40px;font:bold 20px/40px 'microsoft yahei'}
-.table-param{width:800px;margin:20px auto;border-color:rgb(151, 205, 228);border-collapse: collapse;font-size:14px;}
-.table-param tr.top{background-color:rgb(151, 205, 228) }
-.table-param tr td{padding:5px 0 5px 5px;}
-.tdDiv{width:96%;margin:0 auto;display: flex;align-items: center;}
-.tdDiv-left{width:60%;}
-.tdDiv-right{padding-left:10px;}
+.tag-intro {
+    width: 830px;
+    margin-top: 20px;
+    border: 1px solid #4fb4de;
+}
+.tag-title {
+    position: relative;
+    height: 40px;
+    background-color: #4fb4de;
+    color: #fff;
+}
+.tag-format {
+    margin: 5px auto;
+    width: 800px;
+}
+.tag-title-left {
+    width: 15%;
+    height: 40px;
+    font: bold 16px/40px "simsun";
+    text-indent: 1em;
+}
+.tag-title-right {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    font-weight: bold;
+    text-align: center;
+    height: 40px;
+    font: bold 20px/40px "microsoft yahei";
+}
+.table-param {
+    width: 800px;
+    margin: 20px auto;
+    border-color: rgb(151, 205, 228);
+    border-collapse: collapse;
+    font-size: 14px;
+}
+.table-param tr.top {
+    background-color: rgb(151, 205, 228);
+}
+.table-param tr td {
+    padding: 5px 0 5px 5px;
+}
+.tdDiv {
+    width: 96%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+.tdDiv-left {
+    width: 60%;
+}
+.tdDiv-right {
+    padding-left: 10px;
+}
 </style>

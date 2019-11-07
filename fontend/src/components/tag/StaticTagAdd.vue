@@ -38,69 +38,69 @@ export default {
         subOk
     },
     inject: ['reload'],
-    data : function() {
+    data: function () {
         return {
             id: null,
             type: this.$route.query.type,
             title: null,
             callName: null,
             content: null,
-            posiList: [{url: {temp: 'tagList', query: {type: 1}}, name: '静态标签'}],
-            propData: {showSub: false, status: 0, pageName: '栏目', query: {type: 1}, router: 'tagList'},
-       }
+            posiList: [{ url: { temp: 'tagList', query: { type: 1 } }, name: '静态标签' }],
+            propData: { showSub: false, status: 0, pageName: '栏目', query: { type: 1 }, router: 'tagList' },
+        }
     },
 
-    created: function(){
-        if(this.$route.params.act==='edit'){
-            this.propData.act='编辑'
+    created: function () {
+        if (this.$route.params.act === 'edit') {
+            this.propData.act = '编辑'
             this.id = this.$route.query.id
             this.axios({
                 method: 'get',
                 url: '/admin/tagMes?id=' + this.id
-            }).then(res=>{
-                if(res.status===200){
+            }).then(res => {
+                if (res.status === 200) {
                     const resData = res.data[0]
                     this.id = resData.id
                     this.title = resData.title
                     this.callName = resData.callName
                     this.content = resData.content
-                    this.posiList.push({name: '编辑标签'})
-                    this.posiList.push({name: resData.title})
+                    this.posiList.push({ name: '编辑标签' })
+                    this.posiList.push({ name: resData.title })
                 }
             })
-        }else{
-            this.propData.act='添加'
-            this.posiList.push({name: '添加标签'})
+        } else {
+            this.propData.act = '添加'
+            this.posiList.push({ name: '添加标签' })
         }
     },
     methods: {
-        upTag(){
+        upTag() {
             this.propData.showSub = true
             let act, formData = new FormData(formTag)
-            if(this.$route.params.act === 'add'){
-                act='add'
+            if (this.$route.params.act === 'add') {
+                act = 'add'
             }
-            else if(this.$route.params.act==='edit'){
-                act='edit'
+            else if (this.$route.params.act === 'edit') {
+                act = 'edit'
             }
             this.axios({
                 method: 'post',
                 url: '/admin/upTag?type=1&act=' + act + '&id=' + this.id,
                 data: formData
-            }).then(res=>{
-                if(res.status===200){
+            }).then(res => {
+                if (res.status === 200) {
                     this.propData.status = 1
                     this.propData.resStatus = 1
                 }
-            }).catch(err=>{
+            }).catch(err => {
                 this.propData.status = 1
                 this.propData.resStatus = 2
             })
         },
-        refreshPage(){
+        refreshPage() {
             this.reload()
         },
-        reEdit(){
+        reEdit() {
             this.propData.showSub = false
         },
     }

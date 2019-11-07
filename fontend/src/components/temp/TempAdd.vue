@@ -95,8 +95,8 @@ export default {
         nowPosition
     },
     inject: ['reload'],
-    data () {
-       return {
+    data() {
+        return {
             id: null,
             type: this.$route.query.type,
             act: this.$route.params.act,
@@ -111,100 +111,99 @@ export default {
             content: null,
             contentList: null,
             posiList: '加载中。。。',
-            propData: {showSub: false, status: 0, pageName: '模版', router: 'tempList', query: {type: this.$route.query.type}}
-       }
+            propData: { showSub: false, status: 0, pageName: '模版', router: 'tempList', query: { type: this.$route.query.type } }
+        }
     },
-    created(){
+    created() {
         this.getPos()
-        if(this.act==='edit'){
+        if (this.act === 'edit') {
             this.id = this.$route.query.id
-            this.propData.act='编辑'
-            
+            this.propData.act = '编辑'
+
             this.axios({
                 method: 'get',
-                url: '/admin/getEditTemp?id='+this.id
-            }).then(res=>{
-                if(res.status===200){
+                url: '/admin/getEditTemp?id=' + this.id
+            }).then(res => {
+                if (res.status === 200) {
                     let resData = res.data[0]
                     this.id = resData.id
                     this.title = resData.title
                     this.type = resData.type
                     this.isUse = resData.isUse === 'true' ? true : false
                     this.content = resData.content
-                    if(this.type === 3){
+                    if (this.type === 3) {
                         this.num = resData.num
                         this.titleCut = resData.titleCut
                         this.introCut = resData.introCut
                         this.contentList = resData.contentList
                         this.dateType = resData.dateType.toString()
                     }
-                    this.posiList.push({name: '编辑模版'})
-                    this.posiList.push({name: resData.title})
+                    this.posiList.push({ name: '编辑模版' })
+                    this.posiList.push({ name: resData.title })
                 }
             })
-        }else{
-            this.propData.act='添加'
-            this.posiList.push({name: '添加模版'})
+        } else {
+            this.propData.act = '添加'
+            this.posiList.push({ name: '添加模版' })
         }
     },
     computed: {
-        getDateType(){
-            if(this.dateType==='1'){
-                this.dateTypeText='y-m-d'
+        getDateType() {
+            if (this.dateType === '1') {
+                this.dateTypeText = 'y-m-d'
             }
-            else if(this.dateType==='2'){
-                this.dateTypeText='y-m-d h:m'
+            else if (this.dateType === '2') {
+                this.dateTypeText = 'y-m-d h:m'
             }
-            else if(this.dateType==='3'){
-                this.dateTypeText='y-m-d h:m:s'
+            else if (this.dateType === '3') {
+                this.dateTypeText = 'y-m-d h:m:s'
             }
         },
     },
     methods: {
-        subTemp(){
+        subTemp() {
             this.propData.showSub = true
             let formData = new FormData(formTemp);
-            if(formData.get('isUse')!=='on'){
+            if (formData.get('isUse') !== 'on') {
                 formData.append('isUse', 'off')
             }
             formData.append('type', this.type)
             this.axios({
                 method: 'post',
-                url: this.id ? '/admin/upTemp?act='+this.act+'&id='+this.id : '/admin/upTemp?act='+this.act,
+                url: this.id ? '/admin/upTemp?act=' + this.act + '&id=' + this.id : '/admin/upTemp?act=' + this.act,
                 data: formData
-            }).then(res=>{
+            }).then(res => {
                 this.propData.status = 1
                 this.propData.resStatus = 1
-            }).catch(err=>{
+            }).catch(err => {
                 this.propData.status = 1
                 this.propData.resStatus = 2
             })
         },
-        getPos(){
-            switch (parseInt(this.$route.query.type)){
-            case 1:
-                this.tempType='首页模版'
-                break
-            case 2:
-                this.tempType='封面页模版'
-                break
-            case 3:
-                this.tempType='列表页模版'
-                break
-            case 4:
-                this.tempType='内容页模版'
-                break
-            default:
-                this.tempType='首页模版'
-        }
-        this.posiList = [{url: {temp: 'tempList', query: {type: this.$route.query.type}}, name: this.tempType}]
+        getPos() {
+            switch (parseInt(this.$route.query.type)) {
+                case 1:
+                    this.tempType = '首页模版'
+                    break
+                case 2:
+                    this.tempType = '封面页模版'
+                    break
+                case 3:
+                    this.tempType = '列表页模版'
+                    break
+                case 4:
+                    this.tempType = '内容页模版'
+                    break
+                default:
+                    this.tempType = '首页模版'
+            }
+            this.posiList = [{ url: { temp: 'tempList', query: { type: this.$route.query.type } }, name: this.tempType }]
         },
-        refreshPage(){
+        refreshPage() {
             this.reload()
         }
     }
 }
 </script>
 <style  scoped>
-
 </style>

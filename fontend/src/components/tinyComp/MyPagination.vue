@@ -47,38 +47,62 @@
 <script>
 export default {
     props: ['pageMessage'],
-    data () {
+    data() {
         return {
-            
+
         }
     },
 
-    created(){
+    created() {
         //console.log(this.$route.query)
     },
     watch: {
 
     },
     methods: {
-        pageTurn(n){
+        pageTurn(n) {
             this.$emit('pageT', parseInt(n))
         },
     }
 }
 </script>
 <style lang="less"  scoped>
-
-.page{
-    margin-top:10px;margin-bottom:10px;
+.page {
+    margin-top: 10px;
+    margin-bottom: 10px;
     text-indent: 0;
-    display:flex;
-    >span{margin-left:10px;display:inline;}
-    >span.nolink{margin-left:5px; color:#888};
-    >span.link{margin-left:5px;cursor:pointer;color:#333;}
-    >span.pageN ul{
-        display:flex;margin-right:5px;
-        li{width:20px;height:20px;margin-left:5px;display:flex;align-items: center;justify-content: center;cursor: pointer;padding:0;}
-        li.now{background-color:#33A0C9;color:#FFF;cursor:default}
+    display: flex;
+    > span {
+        margin-left: 10px;
+        display: inline;
+    }
+    > span.nolink {
+        margin-left: 5px;
+        color: #888;
+    }
+    > span.link {
+        margin-left: 5px;
+        cursor: pointer;
+        color: #333;
+    }
+    > span.pageN ul {
+        display: flex;
+        margin-right: 5px;
+        li {
+            width: 20px;
+            height: 20px;
+            margin-left: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+        }
+        li.now {
+            background-color: #33a0c9;
+            color: #fff;
+            cursor: default;
+        }
     }
 }
 </style>

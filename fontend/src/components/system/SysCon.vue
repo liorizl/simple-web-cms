@@ -24,8 +24,8 @@
 import pack from "../../../package.json"
 export default {
     name: "sys-con",
-    data(){
-        return{
+    data() {
+        return {
             os: '',
             webPath: '',
             vueVersion: '',
@@ -40,12 +40,12 @@ export default {
             staticWebName: null
         }
     },
-    created(){
+    created() {
         this.vueVersion = pack.dependencies.vue
         this.axios({
             url: '/admin/getSysMes'
-        }).then(res=>{
-            if(res.status===200){
+        }).then(res => {
+            if (res.status === 200) {
                 let resData = res.data
                 this.os = resData.os
                 this.webPath = resData.webPath
@@ -61,18 +61,18 @@ export default {
         })
         this.axios({
             url: '/admin/mysqlVersion'
-        }).then(res=>{
-            if(res.status===200){
+        }).then(res => {
+            if (res.status === 200) {
                 this.mysqlVersion = res.data
             }
         })
     },
     methods: {
-        checkPath(){
+        checkPath() {
             const regexp = /\.{2}\//g
             let pathArr = this.webPath.split('\\')
             const pathDepth = this.staticWebPath.match(regexp)
-            if(pathDepth){
+            if (pathDepth) {
                 pathArr.splice(-pathDepth.length)
             }
             pathArr = pathArr.join('\\')
@@ -83,15 +83,27 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.sysCon{
-    width:80%;margin:30px auto;
-    h1{text-align: center;}
-    .sys{
-        border:1px solid #ededed;
-        li{
-            display: flex;align-items: center;height:30px;border-bottom:1px solid #ededed;text-indent:1em;
-            .sysTitle{width:200px;border-right:1px solid #ededed;}
-            .sysValue{width:100%;}
+.sysCon {
+    width: 80%;
+    margin: 30px auto;
+    h1 {
+        text-align: center;
+    }
+    .sys {
+        border: 1px solid #ededed;
+        li {
+            display: flex;
+            align-items: center;
+            height: 30px;
+            border-bottom: 1px solid #ededed;
+            text-indent: 1em;
+            .sysTitle {
+                width: 200px;
+                border-right: 1px solid #ededed;
+            }
+            .sysValue {
+                width: 100%;
+            }
         }
     }
 }

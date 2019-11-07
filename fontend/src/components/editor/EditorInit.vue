@@ -8,20 +8,20 @@
 
 export default {
     props: ['value'],
-    data () {
+    data() {
         return {
             inner: this.value
         }
     },
 
-    created(){},
+    created() { },
     computed: {
-        getInner(){
-            
+        getInner() {
+
         },
     },
     methods: {
-        showMes(){
+        showMes() {
             this.inner = this.$el.innerHTML
             this.$emit('input', this.inner)
         },
@@ -29,5 +29,9 @@ export default {
 }
 </script>
 <style  scoped>
-.editor{width:800px;height:500px;border:1px solid #F00;}
+.editor {
+    width: 800px;
+    height: 500px;
+    border: 1px solid #f00;
+}
 </style>

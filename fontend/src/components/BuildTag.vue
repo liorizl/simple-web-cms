@@ -163,7 +163,7 @@ import Vue from 'vue'
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)
 export default {
-    data () {
+    data() {
         return {
             tagName: 1,
             colId: ['self'],
@@ -185,36 +185,42 @@ export default {
         }
     },
 
-    created(){
+    created() {
         this.axios({
             url: '/admin/getColList'
-        }).then(res=>{
-            if(res.status===200){
-                if(res.data.length>0){
+        }).then(res => {
+            if (res.status === 200) {
+                if (res.data.length > 0) {
                     this.getNewColList(res.data)
-                }else{
+                } else {
                     this.colList = []
                 }
             }
         })
         this.axios({
             url: '/admin/getTagTempList'
-        }).then(res=>{
-            if(res.status===200){
+        }).then(res => {
+            if (res.status === 200) {
                 this.tempList = res.data
             }
         })
     },
 
     methods: {
-        getNewColList(colList){
+        getNewColList(colList) {
             let i = 0, j = 0, newColArr = []
             const titleAdd = ['', '--', '----', '------', '--------', '----------']
-            const getColList = (colList, j)=>{
-                colList.forEach(col=>{
-                    newColArr[i]={id: col.id, cid: col.cid, ultimate: col.ultimate, path: col.path2 ? col.path1+'/'+col.path2 : col.path1, title: titleAdd[j]+col.title}
+            const getColList = (colList, j) => {
+                colList.forEach(col => {
+                    newColArr[i] = {
+                        id: col.id,
+                        cid: col.cid,
+                        ultimate: col.ultimate,
+                        path: col.path2 ? col.path1 + '/' + col.path2 : col.path1,
+                        title: titleAdd[j] + col.title
+                    }
                     i++
-                    if(col.haveChild!==0){
+                    if (col.haveChild !== 0) {
                         j++
                         getColList(col.haveChild, j)
                         j--
@@ -222,89 +228,89 @@ export default {
                 })
             }
             getColList(colList, j)
-            newColArr.unshift({id: 0, title: '所有栏目'})
-            newColArr.unshift({id: 'self', title: '当前栏目'})
+            newColArr.unshift({ id: 0, title: '所有栏目' })
+            newColArr.unshift({ id: 'self', title: '当前栏目' })
             this.colList = newColArr
         },
-        getOrder(eTarget, num){
-            let string=''
-            this.orderByArr[num]=eTarget.value
-            this.orderByArr.forEach((value)=>{
-                if(value){
+        getOrder(eTarget, num) {
+            let string = ''
+            this.orderByArr[num] = eTarget.value
+            this.orderByArr.forEach((value) => {
+                if (value) {
                     string = string + value + ', '
                 }
             })
             string = string === '' ? 0 : string
             this.orderBy = string.replace(/,$/, '')
         },
-        getColOrder(eTarget, num){
-            let string=''
-            this.colOrderByArr[num]=eTarget.value
-            this.colOrderByArr.forEach((value)=>{
-                if(value){
+        getColOrder(eTarget, num) {
+            let string = ''
+            this.colOrderByArr[num] = eTarget.value
+            this.colOrderByArr.forEach((value) => {
+                if (value) {
                     string = string + value + ','
                 }
             })
             string = string === '' ? 0 : string
             this.colOrderBy = string.replace(/,$/, '')
         },
-        getTag(){
-            let str='', ttagName, tagArr = [], tcolId, tsqlFilter, torderBy, tclassStr, tColOrderBy
-            if(this.tagName === 1){
+        getTag() {
+            let str = '', ttagName, tagArr = [], tcolId, tsqlFilter, torderBy, tclassStr, tColOrderBy
+            if (this.tagName === 1) {
                 ttagName = 'artInCol'
             }
-            else if(this.tagName === 2){
+            else if (this.tagName === 2) {
                 ttagName = 'artInCols'
             }
-            if(this.colId[0] === '-1'){
+            if (this.colId[0] === '-1') {
                 alert('你还没有栏目，请先添加栏目!')
                 return
             }
-            if(this.colId.length>1&&this.colId.indexOf('self')>=0){
+            if (this.colId.length > 1 && this.colId.indexOf('self') >= 0) {
                 alert('选择了当前栏目后不要多选其他栏目！')
             }
-            else if(this.colId.length>1&&this.colId.indexOf(0)>=0){
+            else if (this.colId.length > 1 && this.colId.indexOf(0) >= 0) {
                 alert('选择了所有栏目后不要多选其他栏目！')
             }
-            else if(!this.tempId){
+            else if (!this.tempId) {
                 alert("请选择标签模版！")
             }
-            else if(this.tempId===0){
+            else if (this.tempId === 0) {
                 alert("还没有标签模版，请去添加！")
             }
-            else{
-                tcolId = this.colId.length>1 ? '\'' + this.colId.join(',') + '\'' : this.colId[0]
+            else {
+                tcolId = this.colId.length > 1 ? '\'' + this.colId.join(',') + '\'' : this.colId[0]
                 tsqlFilter = this.sqlFilter !== 0 && /\,/.test(this.sqlFilter) ?
-                        '\'' + this.sqlFilter + '\'' :
-                        this.sqlFilter
-                if(this.orderBy !== 0){
-                    if(/\,/.test(this.orderBy)){
+                    '\'' + this.sqlFilter + '\'' :
+                    this.sqlFilter
+                if (this.orderBy !== 0) {
+                    if (/\,/.test(this.orderBy)) {
                         torderBy = '\'' + this.orderBy + '\''
-                    }else{
+                    } else {
                         torderBy = this.orderBy
                     }
-                }else{
+                } else {
                     torderBy = 0
                 }
                 tagArr = [tcolId, this.tempId, this.num, this.titleCut, this.introCut, this.pagition, this.timeType, tsqlFilter, torderBy]
-                if(this.tagName===2){
+                if (this.tagName === 2) {
                     tclassStr = this.classStr !== 0 ? '\'' + this.classStr + '\'' : this.classStr
                     tagArr.push(tclassStr)
-                    if(this.colOrderBy !== 0){
-                        if(/\,/.test(this.colOrderBy)){
+                    if (this.colOrderBy !== 0) {
+                        if (/\,/.test(this.colOrderBy)) {
                             tColOrderBy = '\'' + this.colOrderBy + '\''
-                        }else{
+                        } else {
                             tColOrderBy = this.colOrderBy
                         }
-                    }else{
+                    } else {
                         tColOrderBy = 0
                     }
                     tagArr.push(tColOrderBy)
                 }
-                for(let i = tagArr.length - 1; i >= 0; i--){
-                    if(parseInt(tagArr[i]) === 0){
+                for (let i = tagArr.length - 1; i >= 0; i--) {
+                    if (parseInt(tagArr[i]) === 0) {
                         tagArr.pop()
-                    }else{
+                    } else {
                         break
                     }
                 }
@@ -312,30 +318,58 @@ export default {
                 this.tagCon = str
             }
         },
-        doCopy(){
+        doCopy() {
             this.$copyText(this.tagCon)
         }
     }
 }
 </script>
 <style lang="less" scoped>
-@borderColor:#888;
-.title{text-align:center;}
-.li{width:94%;margin:15px auto;}
-.tagCon{
-    width:94%;margin:20px auto;border:1px solid #888; display:flex;flex-wrap:wrap;overflow: hidden;
-        li{
-            width:50%;display:flex;align-items:center;border-bottom:1px solid @borderColor;box-sizing: border-box;
-            padding:10px 0;overflow: hidden;
-            .liTitle,.liCon{text-indent:1em;}
-            .liTitle{width:110px;}
-            .liCon.select{
-                display: flex;align-items: center;
-                input,select{margin-left:10px;}
-                }
+@borderColor: #888;
+.title {
+    text-align: center;
+}
+.li {
+    width: 94%;
+    margin: 15px auto;
+}
+.tagCon {
+    width: 94%;
+    margin: 20px auto;
+    border: 1px solid #888;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: hidden;
+    li {
+        width: 50%;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid @borderColor;
+        box-sizing: border-box;
+        padding: 10px 0;
+        overflow: hidden;
+        .liTitle,
+        .liCon {
+            text-indent: 1em;
         }
-        li.borderRight{border-right:1px solid @borderColor;}
-        
-        li.allLine{width:100%;}
+        .liTitle {
+            width: 110px;
+        }
+        .liCon.select {
+            display: flex;
+            align-items: center;
+            input,
+            select {
+                margin-left: 10px;
+            }
+        }
+    }
+    li.borderRight {
+        border-right: 1px solid @borderColor;
+    }
+
+    li.allLine {
+        width: 100%;
+    }
 }
 </style>

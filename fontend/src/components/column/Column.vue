@@ -15,19 +15,18 @@
 
 <script>
 import util from '../../../static/util.js'
-    export default {
-        name: "column",
-        data: function(){
-          return{
+export default {
+    name: "column",
+    data: function () {
+        return {
             act: "add"
-          }
-        },
-        mounted(){
-            util.addEvent()
         }
+    },
+    mounted() {
+        util.addEvent()
     }
+}
 </script>
 
 <style scoped>
-
 </style>

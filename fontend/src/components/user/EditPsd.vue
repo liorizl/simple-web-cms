@@ -57,9 +57,9 @@ export default {
         subOk
     },
     inject: ['reload'],
-    data(){
-        return{
-            posiList: [{url: {temp: 'editPsd'}, name: '修改管理员密码'}],
+    data() {
+        return {
+            posiList: [{ url: { temp: 'editPsd' }, name: '修改管理员密码' }],
             name: '',
             newName: '',
             psd1: null,
@@ -68,81 +68,86 @@ export default {
             psdNotSame: false,
             psdWrong: false,
             disable: true,
-            propData: {showSub: false, status: 0, pageName: '修改管理员密码', router: 'editPst'},
+            propData: { showSub: false, status: 0, pageName: '修改管理员密码', router: 'editPst' },
         }
     },
     methods: {
-        checkPsdSame(){
-            if(this.psd1===this.psd2&&this.psd1!==null){
+        checkPsdSame() {
+            if (this.psd1 === this.psd2 && this.psd1 !== null) {
                 this.psdNotSame = false
-            }else{
+            } else {
                 this.psdNotSame = true
             }
         },
-        checkPsdFormat(){
-            if(!/[a-zA-Z]+/.test(this.newPsd)||!/\d+/.test(this.newPsd)){
+        checkPsdFormat() {
+            if (!/[a-zA-Z]+/.test(this.newPsd) || !/\d+/.test(this.newPsd)) {
                 this.psdWrong = true
-            }else{
+            } else {
                 this.psdWrong = false
             }
         },
-        subUser(){
+        subUser() {
             this.checkPsdSame()
             this.checkPsdFormat()
-            if(!this.psdWrong&&!this.psdNotSame&&this.name){
+            if (!this.psdWrong && !this.psdNotSame && this.name) {
                 this.propData.showSub = true
                 this.axios({
                     method: 'post',
                     url: '/admin/editPsd',
-                    data: {name: this.name, psd: md5(this.psd1), newPsd: md5(this.newPsd), newName: this.newName}
-                }).then(res=>{
-                    if(res.status===200){
-                        if(res.data.myStatus===1){
+                    data: { name: this.name, psd: md5(this.psd1), newPsd: md5(this.newPsd), newName: this.newName }
+                }).then(res => {
+                    if (res.status === 200) {
+                        if (res.data.myStatus === 1) {
                             this.propData.status = 1
                             this.propData.resStatus = 1
-                        }else{
+                        } else {
                             this.propData.status = 1
                             this.propData.resStatus = 2
                             this.propData.errMes = res.data.mes
                         }
                     }
-                }).catch(err=>{
+                }).catch(err => {
                     this.propData.status = 1
                     this.propData.resStatus = 2
                 })
             }
         },
-        refreshPage(){
+        refreshPage() {
             this.reload()
         },
-        reEdit(){
+        reEdit() {
             this.propData.showSub = false
         },
     },
     computed: {
-        newPsdNoErr(){
-            if(this.psdWrong===true){
-                if(/[a-zA-Z]+/.test(this.newPsd)&&/\d+/.test(this.newPsd)){
+        newPsdNoErr() {
+            if (this.psdWrong === true) {
+                if (/[a-zA-Z]+/.test(this.newPsd) && /\d+/.test(this.newPsd)) {
                     this.psdWrong = false
                 }
             }
-            if(this.psd1===this.psd2&&this.psd1!==null){
+            if (this.psd1 === this.psd2 && this.psd1 !== null) {
                 this.psdNotSame = false
             }
-            if(this.psdWrong||this.psdNotSame||!this.name){
+            if (this.psdWrong || this.psdNotSame || !this.name) {
                 this.disable = true
-            }else{
+            } else {
                 this.disable = false
             }
-            
+
         }
     }
 }
 </script>
 
 <style scoped>
-.psdErr{color:#F00;display: inline;margin-left:10px;}
-.psdErr::before{
-    content:"\e616";color:#F00;
+.psdErr {
+    color: #f00;
+    display: inline;
+    margin-left: 10px;
+}
+.psdErr::before {
+    content: "\e616";
+    color: #f00;
 }
 </style>

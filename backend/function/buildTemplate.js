@@ -12,7 +12,7 @@ const template = title => {
 #nowStatus{margin:10px auto;}
 #mes{margin:20px auto;}
 .red{color:#F00;}
-.failed{text-align: left;}
+.failed{text-align:left;}
 .failed-title{border-bottom:1px solid #999;height:40px;line-height:40px;font-size:18px;}
 </style>
 <body>
@@ -31,15 +31,15 @@ const template = title => {
     </div>
 </div>
 <script>
-function change(proNum,nowNum,nowStatus,failedMes){
-    if(proNum) document.getElementById("progress").value = proNum;
-    if(nowNum) document.getElementById("nowNum").innerHTML = nowNum + 1;
-    if(nowStatus) document.getElementById("nowStatus").innerHTML = nowStatus;
+function change(proNum,nowNum,nowStatus,failedMes) {
+    if (proNum) document.getElementById("progress").value = proNum;
+    if (nowNum) document.getElementById("nowNum").innerHTML = nowNum + 1;
+    if (nowStatus) document.getElementById("nowStatus").innerHTML = nowStatus;
     var failedHtml = document.getElementsByClassName("failed-ul")[0];
-    if(failedMes){
+    if (failedMes){
         if(failedHtml.getElementsByTagName("li")[0].innerText !== "无"){
             document.getElementsByClassName("failed-ul")[0].innerHTML = failedHtml.innerHTML + "<li>" + failedMes + "</li>"
-        }else{
+        }else {
             document.getElementsByClassName("failed-ul")[0].innerHTML = "<li>" + failedMes + "</li>"
         }
     } 

@@ -4,13 +4,13 @@
 <script>
 export default {
     props: ['colInfo'],
-    data(){
+    data() {
         return {
             opt: 'opt'
         }
     },
-    methods:{
-        change(){
+    methods: {
+        change() {
             //console.log(colInfo.path1)
         }
     }

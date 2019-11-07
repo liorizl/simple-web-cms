@@ -17,39 +17,38 @@
 
 <script>
 import util from '../../../static/util.js'
-    export default {
-        name: "temp",
-        data(){
-            return{
-                id: null,
-                liClass: ['active', '', '', '']
+export default {
+    name: "temp",
+    data() {
+        return {
+            id: null,
+            liClass: ['active', '', '', '']
 
-            }
-        },
-        created(){
-            if(this.$route.query.type) this.noActive(parseInt(this.$route.query.type))
-        },
-        methods: {
-            noActive(type){
-                this.liClass = this.liClass.map((li, index)=>{
-                    if(type-1===index){
-                        return 'active'
-                    }else{
-                        return ''
-                    }
-                })
-            },
-            goLink(type){
-                this.noActive(type)
-                this.$router.push({name: 'tempList', query: {type: type}})
-            }
-        },
-        mounted(){
-            util.addEvent()
         }
+    },
+    created() {
+        if (this.$route.query.type) this.noActive(parseInt(this.$route.query.type))
+    },
+    methods: {
+        noActive(type) {
+            this.liClass = this.liClass.map((li, index) => {
+                if (type - 1 === index) {
+                    return 'active'
+                } else {
+                    return ''
+                }
+            })
+        },
+        goLink(type) {
+            this.noActive(type)
+            this.$router.push({ name: 'tempList', query: { type: type } })
+        }
+    },
+    mounted() {
+        util.addEvent()
     }
+}
 </script>
 
 <style scoped>
-
 </style>

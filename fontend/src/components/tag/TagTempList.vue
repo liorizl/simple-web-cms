@@ -38,55 +38,55 @@ export default {
         subOk
     },
     inject: ['reload'],
-    data () {
-       return {
-           tempList: null,
-           posiList: [{url: {temp: 'tagTempList', query: {type: 4}}, name: '标签模版列表'}],
-           propData: {showSub: false, status: 0, pageName: '标签', query: {type: 4}}
-       }
+    data() {
+        return {
+            tempList: null,
+            posiList: [{ url: { temp: 'tagTempList', query: { type: 4 } }, name: '标签模版列表' }],
+            propData: { showSub: false, status: 0, pageName: '标签', query: { type: 4 } }
+        }
     },
 
-    created(){
+    created() {
         this.axios({
             method: 'get',
             url: '/admin/getTagTempList'
-        }).then(res=>{
-            if(res.status===200){
+        }).then(res => {
+            if (res.status === 200) {
                 this.tempList = res.data
             }
         })
     },
     methods: {
-        addTagTemp(){
-            this.$router.push({name: 'tagTempAdd', query: {type: 4}, params: {act: 'add'}})
+        addTagTemp() {
+            this.$router.push({ name: 'tagTempAdd', query: { type: 4 }, params: { act: 'add' } })
         },
-        goEditTagTemp(id){
-            this.$router.push({name: 'tagTempAdd', query: {type: 4, id: id}, params: {act: 'edit'}})
+        goEditTagTemp(id) {
+            this.$router.push({ name: 'tagTempAdd', query: { type: 4, id: id }, params: { act: 'edit' } })
         },
-        deleTag(id, title, table){
+        deleTag(id, title, table) {
             this.propData.act = "删除"
-            if(confirm("确定删除？\r\nid:" + id + "标题:" + title)){
+            if (confirm("确定删除？\r\nid:" + id + "标题:" + title)) {
                 this.propData.showSub = true
                 this.axios({
                     method: 'get',
                     url: '/admin/dele?table=' + table + '&id=' + id
-                }).then(res=>{
-                    if(res.status===200){
-                        if(res.data.myStatus===1){
+                }).then(res => {
+                    if (res.status === 200) {
+                        if (res.data.myStatus === 1) {
                             this.propData.status = 1
                             this.propData.resStatus = 1
-                        }else{
+                        } else {
                             this.propData.status = 1
                             this.propData.resStatus = 2
                         }
                     }
-                }).catch(err=>{
+                }).catch(err => {
                     this.propData.status = 1
                     this.propData.resStatus = 2
                 })
             }
         },
-        refreshPage(){
+        refreshPage() {
             this.reload()
         }
     }

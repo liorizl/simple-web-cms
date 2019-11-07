@@ -6,7 +6,7 @@
         "user": "root",
         "password": "liori",
         "prot": "3306",
-        "database": "mdh_liori"
+        "database": "ndh_liori"
     },
     "useIdentCode": true,
     "identCode": "zyc",

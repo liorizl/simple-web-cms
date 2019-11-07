@@ -15,14 +15,13 @@
 
 <script>
 import util from '../../../static/util.js'
-    export default {
-        name: "user",
-        mounted(){
-            util.addEvent()
-        }
+export default {
+    name: "user",
+    mounted() {
+        util.addEvent()
     }
+}
 </script>
 
 <style scoped>
-
 </style>

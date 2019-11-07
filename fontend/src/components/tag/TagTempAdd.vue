@@ -48,8 +48,8 @@ export default {
         subOk
     },
     inject: ['reload'],
-    data () {
-       return {
+    data() {
+        return {
             act: this.$route.params.act,
             id: null,
             title: null,
@@ -61,43 +61,43 @@ export default {
             dateTypeSelect: 'y-m-d h: m',
             pageTemp: null,
             listTemp: null,
-            posiList: [{url: {temp: 'tagTempList', query: {}}, name: '标签模版列表'}],
-            propData: {showSub: false, status: 0, pageName: '标签模版', router: 'tagTempList', query: {type: 4}},
-       }
+            posiList: [{ url: { temp: 'tagTempList', query: {} }, name: '标签模版列表' }],
+            propData: { showSub: false, status: 0, pageName: '标签模版', router: 'tagTempList', query: { type: 4 } },
+        }
     },
 
-    created(){
-        if(this.$route.params.act==='edit'){
+    created() {
+        if (this.$route.params.act === 'edit') {
             const id = this.$route.query.id
             this.propData.act = '编辑'
             this.id = id
             this.axios({
                 method: 'get',
                 url: '/admin/getTagTemp?id=' + id
-            }).then(res=>{
-                if(res.status===200){
+            }).then(res => {
+                if (res.status === 200) {
                     let resData = res.data[0]
                     this.title = resData.title
                     this.dateType = resData.datetype
                     this.pageTemp = resData.tempcontent
                     this.listTemp = resData.listcontent
-                    this.posiList.push({name: '编辑标签'})
-                    this.posiList.push({name: resData.title})
+                    this.posiList.push({ name: '编辑标签' })
+                    this.posiList.push({ name: resData.title })
                 }
             })
-        }else{
-            this.posiList.push({name: '添加标签'})
-            this.propData.act='添加'
+        } else {
+            this.posiList.push({ name: '添加标签' })
+            this.propData.act = '添加'
         }
     },
     methods: {
-        goSubmit(){
+        goSubmit() {
             let formData = new FormData(tagTemp), url
             this.propData.showSub = true
-            if(this.act==='edit'){
-                url='/admin/upTagTemp?act=edit&id=' + this.id
-            }else{
-               url='/admin/upTagTemp?act=add'
+            if (this.act === 'edit') {
+                url = '/admin/upTagTemp?act=edit&id=' + this.id
+            } else {
+                url = '/admin/upTagTemp?act=add'
             }
 
             formData.append("timeType", this.dateType)
@@ -105,33 +105,33 @@ export default {
                 method: 'post',
                 url: url,
                 data: formData
-            }).then(res=>{
-                if(res.status === 200){
+            }).then(res => {
+                if (res.status === 200) {
                     this.propData.status = 1
                     this.propData.resStatus = 1
                 }
-            }).catch(err=>{
+            }).catch(err => {
                 this.propData.status = 1
                 this.propData.resStatus = 2
             })
         },
-        refreshPage(){
+        refreshPage() {
             this.reload()
         },
-        reEdit(){
+        reEdit() {
             this.propData.showSub = false
         },
     },
     computed: {
-        getDateType(){
+        getDateType() {
             this.dateTypeText = this.dateTypeSelect
-            if(this.dateTypeText==='y-m-d'){
+            if (this.dateTypeText === 'y-m-d') {
                 this.dateType = 1
             }
-            else if(this.dateTypeText==='y-m-d h:m:s'){
+            else if (this.dateTypeText === 'y-m-d h:m:s') {
                 this.dateType = 2
             }
-            else if(this.dateTypeText==='y-m-d h:m'){
+            else if (this.dateTypeText === 'y-m-d h:m') {
                 this.dateType = 3
             }
         }

@@ -24,33 +24,33 @@ app.use(cors({
     allowMethods: ['GET', 'POST'],
     allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
 }));
-app.use(async (ctx,next)=>{
+app.use(async (ctx, next) => {
     const path = ctx.path;
-    if(/^\/admin\//i.test(path)){
-        if(/^\/admin\/login|^\/admin\/getident|^\/admin\/checkIdentcode|^\/admin\/getWebName/i.test(path)){
+    if (/^\/admin\//i.test(path)) {
+        if (/^\/admin\/login|^\/admin\/getident|^\/admin\/checkIdentcode|^\/admin\/getWebName/i.test(path)) {
             await next()
-        }else{
-            if(!ctx.cookies.get('user')||!ctx.session.liori||ctx.cookies.get('user') !== ctx.session.liori){
+        } else {
+            if (!ctx.cookies.get('user') || !ctx.session.liori || ctx.cookies.get('user') !== ctx.session.liori) {
                 ctx.body = '你还没有登录，请登录后再操作！';
             }
-            else{
+            else {
                 await next();
             }
         }
-    }else{
+    } else {
         await next();
     }
 })
-;(async ()=>{
-    const colObj = {}
-    const sqlAll = 'select * from columns where isUse = "true"';
-    let resultAll = await mysql.nquery(sqlAll);
-    resultAll = util.objKeysToLower(resultAll);
-    resultAll.forEach(res=>{
-        colObj[res.id] = res;
-    })
-    redisClient.set(config.redis.colName, JSON.stringify(colObj), ()=>{console.log('redis数据' + config.redis.colName + '获取成功!')});
-})()
+    ; (async () => {
+        const colObj = {}
+        const sqlAll = 'select * from columns where isUse = "true"';
+        let resultAll = await mysql.nquery(sqlAll);
+        resultAll = util.objKeysToLower(resultAll);
+        resultAll.forEach(res => {
+            colObj[res.id] = res;
+        })
+        redisClient.set(config.redis.colName, JSON.stringify(colObj), () => { console.log('redis数据' + config.redis.colName + '获取成功!') });
+    })()
 const noNeedLogin = require('./router/noNeedLogin.js');
 const routerBasic = require('./router/routerBasic.js');
 const routerCol = require('./router/routerCol.js');
@@ -60,10 +60,10 @@ const routerOther = require('./router/routerOther.js');
 const routerTag = require('./router/routerTag.js');
 const routerTemp = require('./router/routerTemp.js');
 const routerAll = noNeedLogin.concat(routerBasic).concat(routerCol).concat(routerArt).concat(routerLogin).concat(routerOther).concat(routerTag).concat(routerTemp);
-routerAll.forEach((route)=>{
+routerAll.forEach((route) => {
     router.register([route.url], [route.method], route.middleware)
 })
 app.use(router.routes());
 app.use(koaStatic(util.getPath(process.cwd())));
 app.use(koaStatic(process.cwd() + '/statics/'));
-app.listen(config.port, ()=>{console.log("server has started at " + config.port)});
+app.listen(config.port, () => { console.log("server has started at " + config.port) });

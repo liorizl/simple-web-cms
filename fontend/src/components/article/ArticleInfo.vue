@@ -8,7 +8,7 @@
 
 <script>
 export default {
-    data () {
+    data() {
         return {
             col: null,
             colNav: null,
@@ -17,11 +17,11 @@ export default {
             artUse: null
         }
     },
-    created(){
+    created() {
         this.axios({
             url: '/admin/getArtMes'
-        }).then(res=>{
-            if(res.status === 200){
+        }).then(res => {
+            if (res.status === 200) {
                 const resData = res.data
                 this.col = resData.col
                 this.colNav = resData.colNav
@@ -36,5 +36,4 @@ export default {
 }
 </script>
 <style  scoped>
-
 </style>

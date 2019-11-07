@@ -57,23 +57,29 @@ const store = new Vuex.Store({
         }
     },
     mutations: {
-        changeWebSetting(state, obj){
-            for(let o in obj){
-                if(state.webSetting[o]!==undefined){
-                    state.webSetting[o]=obj[o]
+        changeWebSetting(state, obj) {
+            for (let o in obj) {
+                if (state.webSetting[o] !== undefined) {
+                    state.webSetting[o] = obj[o]
                 }
             }
         }
     },
     getters: {
-        getColArr: state=>{
+        getColArr: state => {
             let i = 0, j = 0, newColArr = []
             const titleAdd = ['', '--', '----', '------', '--------', '----------']
-            const getColList = (colList, j)=>{
-                colList.forEach(col=>{
-                    newColArr[i]={id: col.id, cid: col.cid, ultimate: col.ultimate, path: col.path2 ? col.path1 + '/' + col.path2 : col.path1, title: titleAdd[j] + col.title}
+            const getColList = (colList, j) => {
+                colList.forEach(col => {
+                    newColArr[i] = {
+                        id: col.id,
+                        cid: col.cid,
+                        ultimate: col.ultimate,
+                        path: col.path2 ? col.path1 + '/' + col.path2 : col.path1,
+                        title: titleAdd[j] + col.title
+                    }
                     i++
-                    if(col.haveChild!==0){
+                    if (col.haveChild !== 0) {
                         j++
                         getColList(col.haveChild, j)
                         j--
@@ -85,113 +91,112 @@ const store = new Vuex.Store({
         }
     }
 })
-  export default {
+export default {
     name: 'admin',
-    provide(){
+    provide() {
         return {
             reload: this.reload
         }
     },
     store,
-    data (){
-      return {
-        user: '',
-        routerAlive: true,
-        nameaa: null
-      }
+    data() {
+        return {
+            user: '',
+            routerAlive: true,
+            nameaa: null
+        }
     },
-    created(){
+    created() {
         const cookieUser = this.$cookies.get('user')
         const cookieUserName = this.$cookies.get('userName')
-        if(!cookieUser||!cookieUserName){
-            this.$router.push({path: '/login'})
-        }else{
+        if (!cookieUser || !cookieUserName) {
+            this.$router.push({ path: '/login' })
+        } else {
             this.user = cookieUserName
-            if(cookieUser){
+            if (cookieUser) {
                 this.axios({
                     method: 'get',
                     url: '/admin/checkSession',
-                    params: {cookieUser: cookieUser}
-                }).then(res=>{
-                    if(res.status===200){
-                        if(res.data.myStatus===0){
+                    params: { cookieUser: cookieUser }
+                }).then(res => {
+                    if (res.status === 200) {
+                        if (res.data.myStatus === 0) {
                             alert('请登录！')
-                            this.$router.push({path: '/login'})
+                            this.$router.push({ path: '/login' })
                         }
                     }
                 })
-            }else{
-                this.$router.push({path: '/login'})
+            } else {
+                this.$router.push({ path: '/login' })
             }
         }
-        if(window.sessionStorage.getItem('webset')){
+        if (window.sessionStorage.getItem('webset')) {
             this.$store.replaceState(Object.assign({}, this.$store.state, JSON.parse(sessionStorage.getItem("webset"))))
-        }else{
+        } else {
             this.axios({
                 url: '/admin/getSetting'
-            }).then(res=>{
-                if(res.status===200){
+            }).then(res => {
+                if (res.status === 200) {
                     this.$store.commit('changeWebSetting', res.data)
                 }
             })
             this.axios({
                 url: '/admin/getSysMes'
-            }).then(res=>{
-                if(res.status===200){
-                    this.$store.commit('changeWebSetting', {backendPort: res.data.port, hostName: res.data.hostName})
+            }).then(res => {
+                if (res.status === 200) {
+                    this.$store.commit('changeWebSetting', { backendPort: res.data.port, hostName: res.data.hostName })
                 }
             })
             this.axios({
                 url: '/admin/getColList'
-            }).then(res=>{
-                if(res.status===200){
-                    this.$store.commit('changeWebSetting', {colList: res.data})
+            }).then(res => {
+                if (res.status === 200) {
+                    this.$store.commit('changeWebSetting', { colList: res.data })
                 }
-            }).catch(err=>{
+            }).catch(err => {
                 console.log(err)
             })
         }
-        window.addEventListener('beforeunload', ()=>{
+        window.addEventListener('beforeunload', () => {
             window.sessionStorage.setItem('webset', JSON.stringify(this.$store.state))
         })
     },
     methods: {
-        loginOut: function(){
+        loginOut() {
             this.axios({
                 url: '/admin/deleSession'
-            }).then(res=>{
-                if(res.status===200){
-                    if(res.data.myStatus===1){
+            }).then(res => {
+                if (res.status === 200) {
+                    if (res.data.myStatus === 1) {
                         this.$cookies.remove('user')
                         this.$cookies.remove('userName')
-                        this.$router.push({path: '/login'})
-                    }else{
+                        this.$router.push({ path: '/login' })
+                    } else {
                         alert('登出失败！')
                     }
                 }
             })
         },
-        reload(){
+        reload() {
             this.routerAlive = false
-            this.$nextTick(()=>{
+            this.$nextTick(() => {
                 this.routerAlive = true
             })
         },
-        buildTag(){
+        buildTag() {
             window.open('#/admin/BuildTag', '_blank', 'width=800, height=630')
         },
-        openIndex(){
+        openIndex() {
             const webset = this.$store.state.webSetting
             const url = parseInt(webset.indexModel) === 1 ?
-                    util.repalceStr(webset.webUrl)+util.repalceStr2(webset.indexPath)+webset.extendName :
-                    util.repalceStr(webset.webUrl)+'/showIndex'
+                util.repalceStr(webset.webUrl) + util.repalceStr2(webset.indexPath) + webset.extendName :
+                util.repalceStr(webset.webUrl) + '/showIndex'
             window.open(url)
         }
     }
-  }
+}
 </script>
 
 <style lang="less" scoped>
-
 </style>
 

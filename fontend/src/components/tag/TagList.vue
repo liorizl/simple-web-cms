@@ -70,16 +70,16 @@ export default {
         subOk
     },
     inject: ['reload'],
-    data: function(){
-        return{
-            type: parseInt(this.$route.query.type)||1,
+    data: function () {
+        return {
+            type: parseInt(this.$route.query.type) || 1,
             id: null,
             tagList: null,
             posiList: '加载中...',
-            propData: {showSub: false, status: 0, pageName: '标签'}
+            propData: { showSub: false, status: 0, pageName: '标签' }
         }
     },
-    created: function(){
+    created: function () {
         this.init()
     },
     watch: {
@@ -88,72 +88,72 @@ export default {
         }
     },
     methods: {
-        init(){
-            this.type = parseInt(this.$route.query.type)||1;
+        init() {
+            this.type = parseInt(this.$route.query.type) || 1;
             let tagName
-            switch(this.type){
+            switch (this.type) {
                 case 1:
-                    tagName='静态标签'
+                    tagName = '静态标签'
                     break
                 case 2:
-                    tagName='动态标签'
+                    tagName = '动态标签'
                     break
                 case 3:
-                    tagName='sql标签'
+                    tagName = 'sql标签'
                     break
                 default:
-                    tagName='静态标签'
+                    tagName = '静态标签'
             }
-            this.posiList = [{url: {temp: 'tagList', query: {type: this.type}}, name: tagName}, {name: '标签列表'}]
+            this.posiList = [{ url: { temp: 'tagList', query: { type: this.type } }, name: tagName }, { name: '标签列表' }]
             this.axios({
                 method: 'get',
                 url: '/admin/tagList?type=' + this.type
-            }).then(res=>{
-                if(res.status===200){
+            }).then(res => {
+                if (res.status === 200) {
                     this.tagList = res.data
                     //console.log(this.tagList)
                 }
             })
         },
-        goAddStaticTag(type){
-            this.$router.push({name: 'staticTagAdd', query: {type: type}, params: {act: 'add'}})
+        goAddStaticTag(type) {
+            this.$router.push({ name: 'staticTagAdd', query: { type: type }, params: { act: 'add' } })
         },
-        goAddSqlTag(type){
-            this.$router.push({name: 'sqlTagAdd', query: {type: type}, params: {act: 'add'}})
+        goAddSqlTag(type) {
+            this.$router.push({ name: 'sqlTagAdd', query: { type: type }, params: { act: 'add' } })
         },
-        goEdit(type, id){
-            this.$router.push({name: 'staticTagAdd', query: {type: type, id: id}, params: {act: 'edit'}})
+        goEdit(type, id) {
+            this.$router.push({ name: 'staticTagAdd', query: { type: type, id: id }, params: { act: 'edit' } })
         },
-        goEditSqlTag(id, type){
-            this.$router.push({name: 'sqlTagAdd', query: {id: id, type: type}, params: {act: 'edit'}})
+        goEditSqlTag(id, type) {
+            this.$router.push({ name: 'sqlTagAdd', query: { id: id, type: type }, params: { act: 'edit' } })
         },
-        showDynaTag(id){
-            this.$router.push({name: 'dynaTagShow', query: {id: id}})
+        showDynaTag(id) {
+            this.$router.push({ name: 'dynaTagShow', query: { id: id } })
         },
-        deleTag(id, title, table){
+        deleTag(id, title, table) {
             this.propData.act = "删除"
-            if(confirm("确定删除？\r\nid:" + id + "标题:" + title)){
+            if (confirm("确定删除？\r\nid:" + id + "标题:" + title)) {
                 this.propData.showSub = true
                 this.axios({
                     method: 'get',
                     url: '/admin/dele?table=' + table + '&id=' + id
-                }).then(res=>{
-                    if(res.status === 200){
-                        if(res.data.myStatus === 1){
+                }).then(res => {
+                    if (res.status === 200) {
+                        if (res.data.myStatus === 1) {
                             this.propData.status = 1
                             this.propData.resStatus = 1
-                        }else{
+                        } else {
                             this.propData.status = 1
                             this.propData.resStatus = 2
                         }
                     }
-                }).catch(err=>{
+                }).catch(err => {
                     this.propData.status = 1
                     this.propData.resStatus = 2
                 })
             }
         },
-        refreshPage(){
+        refreshPage() {
             this.reload()
         }
     }
@@ -161,5 +161,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

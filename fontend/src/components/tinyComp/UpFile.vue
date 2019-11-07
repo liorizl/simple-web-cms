@@ -59,40 +59,40 @@ export default {
         myPagination
     },
     props: ['colCid'],
-    data () {
+    data() {
         return {
-            cid: this.$route.query.cid||this.colCid,
+            cid: this.$route.query.cid || this.colCid,
             filePath: '',
             fileNames: '',
             fileErrMes: '',
             disable: false,
             colList: '',
             colListArr: '',
-            pageMes: {status: 0},
+            pageMes: { status: 0 },
             fileListShow: [],
             num: 4,
             page: 1,
             sum: null,
-            nowCol: this.$route.query.cid||this.colCid,
+            nowCol: this.$route.query.cid || this.colCid,
         }
     },
 
-    created(){
+    created() {
         this.axios({
             method: 'get',
             url: '/admin/getUpfiles?cid=' + this.cid
-        }).then(res=>{
-            if(res.status===200){
+        }).then(res => {
+            if (res.status === 200) {
                 const resData = res.data
                 this.filePath = resData.path
                 this.fileNames = resData.files
                 this.sum = resData.files.length
-                this.fileListShow = this.fileNames.slice((this.page-1)*this.num, this.page*this.num)
+                this.fileListShow = this.fileNames.slice((this.page - 1) * this.num, this.page * this.num)
                 this.pageMes = {
                     num: this.num,
                     page: this.page,
                     sum: this.sum,
-                    pageNum: Math.ceil(this.sum/this.num),
+                    pageNum: Math.ceil(this.sum / this.num),
                     status: 1
                 }
             }
@@ -101,112 +101,139 @@ export default {
     },
 
     methods: {
-        upfile(){
+        upfile() {
             const formData = new FormData(upfile)
-            if(formData.get('upfile').name){
+            if (formData.get('upfile').name) {
                 this.axios({
                     method: 'post',
                     url: '/admin/upfile?cid=' + this.cid,
                     data: formData
-                }).then(res=>{
+                }).then(res => {
                     let reg = /[^\/]+\..+/
                     let exec = reg.exec(res.data)
                     this.fileNames.unshift(exec[0])
-                    this.fileListShow = this.fileNames.slice((this.page-1)*this.num, this.page*this.num)
+                    this.fileListShow = this.fileNames.slice((this.page - 1) * this.num, this.page * this.num)
                 })
-            }else{
+            } else {
                 alert('请选择图片')
             }
-            
+
         },
-        pageTurn(e){
+        pageTurn(e) {
             this.page = e
-            this.fileListShow = this.fileNames.slice((this.page-1)*this.num, this.page*this.num)
+            this.fileListShow = this.fileNames.slice((this.page - 1) * this.num, this.page * this.num)
             this.pageMes = {
                 num: this.num,
                 page: this.page,
                 sum: this.sum,
-                pageNum: Math.ceil(this.sum/this.num),
+                pageNum: Math.ceil(this.sum / this.num),
                 status: 1
             }
         },
-        getFileMes(index, e){
+        getFileMes(index, e) {
             e.target.innerText = this.$refs.pic[index].naturalWidth + 'x' + this.$refs.pic[index].naturalHeight
         },
-        getPicPath(path){
+        getPicPath(path) {
             this.$emit('get-path', path)
         },
-        closeUpFile(){
+        closeUpFile() {
             this.$emit('get-close')
         },
-        checkFile(){
+        checkFile() {
             let formData = new FormData(upfile)
             const fileName = formData.get('upfile').name
             const reg = /\.(jpe?g|png|gif)$/
             const regTest = reg.test(fileName)
-            if(!regTest){
+            if (!regTest) {
                 this.fileErrMes = '图片类型错误，只能传入jpg/jpeg/gif/png格式的图片'
                 this.disable = true
-            }else{
-                this.fileErrMes=''
+            } else {
+                this.fileErrMes = ''
                 this.disable = false
             }
         },
-        getNowCol(e){
+        getNowCol(e) {
             let num = e.target.selectedIndex
             this.filePath = this.colListArr[num].path
             this.cid = this.colListArr[num].cid
             this.axios({
                 method: 'get',
                 url: '/admin/getUpfiles?cid=' + this.cid
-            }).then(res=>{
-                if(res.status===200){
+            }).then(res => {
+                if (res.status === 200) {
                     const resData = res.data
                     this.filePath = resData.path
                     this.fileNames = resData.files
                     this.sum = resData.files.length
-                    this.fileListShow = this.fileNames.slice((this.page-1)*this.num, this.page*this.num)
+                    this.fileListShow = this.fileNames.slice((this.page - 1) * this.num, this.page * this.num)
                     this.pageMes = {
                         num: this.num,
                         page: this.page,
                         sum: this.sum,
-                        pageNum: Math.ceil(this.sum/this.num),
+                        pageNum: Math.ceil(this.sum / this.num),
                         status: 1
                     }
                 }
             })
         }
     },
-    mounted(){
-        
+    mounted() {
+
     }
 }
 </script>
 <style lang="less"  scoped>
-.right-back{
-    background:rgba(100, 102, 102, 0.5);position: absolute;top:0;left:0;width:100%;height:100%;z-index: 11;
-    display: flex;align-items: center;justify-content: center;
-}
-.file-out{
-    width:60%;min-width: 800px;
-    border:4px solid #33A0C9;
-    position: absolute;top:50px;left:100px;background-color:#FFF;
-    .ccon{width:92%;margin:25px auto;}
-}
-.picUl{
-    width:100%;
+.right-back {
+    background: rgba(100, 102, 102, 0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 11;
     display: flex;
-    flex-wrap: wrap;   
+    align-items: center;
+    justify-content: center;
 }
-.picUl li{
-    width:21%;height:200px;margin-left:3%;margin-top:15px;
-    overflow:hidden;
-    text-align: center;border:1px solid #ededed;
-    .img{height:160px;width:100%;}
+.file-out {
+    width: 60%;
+    min-width: 800px;
+    border: 4px solid #33a0c9;
+    position: absolute;
+    top: 50px;
+    left: 100px;
+    background-color: #fff;
+    .ccon {
+        width: 92%;
+        margin: 25px auto;
+    }
 }
-.picUl li img{
-    width:100%;
+.picUl {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
 }
-.errMes{color:#F00;}
-.noPic{width:400px;margin:10px 0 10px 20px}
+.picUl li {
+    width: 21%;
+    height: 200px;
+    margin-left: 3%;
+    margin-top: 15px;
+    overflow: hidden;
+    text-align: center;
+    border: 1px solid #ededed;
+    .img {
+        height: 160px;
+        width: 100%;
+    }
+}
+.picUl li img {
+    width: 100%;
+}
+.errMes {
+    color: #f00;
+}
+.noPic {
+    width: 400px;
+    margin: 10px 0 10px 20px;
+}
 </style>

@@ -15,6 +15,6 @@ Vue.prototype.axios = axios
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
-    router:router,
+    router: router,
     components: { App }
 })

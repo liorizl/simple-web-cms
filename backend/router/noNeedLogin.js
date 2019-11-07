@@ -2,7 +2,7 @@ const noNeedLogin = require('../server/noNeedLogin.js');
 const index = require('../show/indexPage.js').index;
 const showColumn = require('../show/showColumn.js').showColumn;
 const showArticle = require('../show/showArticle.js').showArticle;
-module.exports=[
+module.exports = [
     {
         method: 'get',
         url: '/showHit',

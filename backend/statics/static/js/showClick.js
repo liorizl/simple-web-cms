@@ -1,5 +1,4 @@
-module.exports = (hostName, port) => {
-    return `;(function(){
+;(function(){
         let hitId = [], hitIdNew = [], starId= []
         $(".articleHits").each((ele) => {
             hitId[ele] = $(".articleHits").eq(ele).data()
@@ -35,7 +34,7 @@ module.exports = (hostName, port) => {
                         method: 'get',
                         // dataType: "jsonp",
                         // jsonpCallback: "returnHit",
-                        url: 'http://${hostName}:${port}/showHit?id=' + id.id + '&add=' + id.add,
+                        url: 'http://localhost:3010/showHit?id=' + id.id + '&add=' + id.add,
                         success: function(res){
                             ids.forEach(tid => {
                                 if (typeof tid === 'number') {
@@ -54,7 +53,7 @@ module.exports = (hostName, port) => {
             });
             $.ajax({
                 method: 'get',
-                url: 'http://${hostName}:${port}/addStars?id=' + id,
+                url: 'http://localhost:3010/addStars?id=' + id,
                 // dataType: "jsonp",
                 // jsonpCallback: "returnStar",
                 success: function(res){
@@ -72,5 +71,4 @@ module.exports = (hostName, port) => {
                 }
             })
         })    
-    })()`
-}
+    })()

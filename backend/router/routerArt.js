@@ -78,11 +78,11 @@ module.exports = [
     {
         method: 'post',
         url: '/admin/copyArt',
-        middleware: article.copyArt 
+        middleware: article.copyArt
     },
     {
         method: 'get',
         url: '/admin/buildFaArt',
-        middleware: article.buildFaArt 
+        middleware: article.buildFaArt
     }
 ]

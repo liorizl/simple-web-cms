@@ -41,24 +41,46 @@ export default {
     components: {
         nowPosition
     },
-    data () {
+    data() {
         return {
-            posiList: [{name: '模版字段'}],
+            posiList: [{ name: '模版字段' }],
         }
     },
 
-    created(){},
+    created() { },
 
     methods: {}
 }
 </script>
 <style lang="less" scoped>
-.tagField{
-    width:100%;max-width: 900px;min-width:800px;border:1px solid #999;margin-top:20px;
-    .title{width:100%;height:30px;text-align: center;color: #33A0C9;font:bold 18px/30px 'simsun'}
-    .content{width:94%;margin:20px auto;display:flex;flex-wrap:wrap;
-        span{margin-left:30px;height:40px;}
+.tagField {
+    width: 100%;
+    max-width: 900px;
+    min-width: 800px;
+    border: 1px solid #999;
+    margin-top: 20px;
+    .title {
+        width: 100%;
+        height: 30px;
+        text-align: center;
+        color: #33a0c9;
+        font: bold 18px/30px "simsun";
+    }
+    .content {
+        width: 94%;
+        margin: 20px auto;
+        display: flex;
+        flex-wrap: wrap;
+        span {
+            margin-left: 30px;
+            height: 40px;
+        }
     }
 }
-.title{text-align: center;max-width: 900px;min-width:800px;margin-top:20px;}
+.title {
+    text-align: center;
+    max-width: 900px;
+    min-width: 800px;
+    margin-top: 20px;
+}
 </style>

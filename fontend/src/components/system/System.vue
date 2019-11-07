@@ -15,11 +15,10 @@
 </template>
 
 <script>
-    export default {
-        name: "system",
-    }
+export default {
+    name: "system",
+}
 </script>
 
 <style scoped>
-
 </style>

@@ -44,7 +44,7 @@
 <script>
 import util from '../../static/util.js'
 export default {
-   data () {
+   data() {
        return {
            state: null,
            time: null,
@@ -56,7 +56,7 @@ export default {
            buildArtParam: 1
        }
     },
-    created(){
+    created() {
         this.axios({
             url: '/admin/getSysMes'
         }).then(res=>{
@@ -67,31 +67,31 @@ export default {
         this.colListArr = this.$store.getters.getColArr
     },
     methods: {
-        buildIndex(){
+        buildIndex() {
             this.axios({
                 method: 'get',
                 url: '/admin/buildIndex',
                 data: {index: true}
-            }).then(res=>{
-                if(res.status===200){
-                    if(res.data.status===1){
+            }).then(res => {
+                if (res.status===200) {
+                    if (res.data.status===1) {
                         this.state='生成首页成功'
                         this.time='耗时' + (res.data.time/1000) + '秒'
-                    }else{
+                    } else {
                         this.state='生成首页失败' 
                         this.time='耗时' + (res.data.time/1000) + '秒'
                     }
                 }
             })
         },
-        buildArt(all){
-            if(!this.config.hostName){
+        buildArt(all) {
+            if (!this.config.hostName) {
                 alert('请稍等，还在获取信息！')
             }
-            else if(this.selectArt.length===0&&all!='all'){
+            else if (this.selectArt.length===0&&all!='all') {
                 alert('请选择需要生成文章的栏目！')
             }
-            else{
+            else {
                 let url, artParam
                 artParam = this.buildArtParam===1?
                     'id=' + this.selectArt.map(obj=>obj.id):
@@ -102,25 +102,25 @@ export default {
                 window.open(url)
             }
         },
-        buildCol(all){
-            if(!this.config.hostName){
+        buildCol(all) {
+            if (!this.config.hostName) {
                 alert('请稍等，还在获取信息！')
             }
-            else if(this.selectCol.length===0&&all!=='all'){
+            else if (this.selectCol.length===0&&all!=='all') {
                 alert('请选择需要生成文章的栏目！')
             }
-            else{
+            else {
                 let url = all==='all'?
                     'http://' + this.config.hostName + ':' + this.config.port + '/admin/buildCol':
                     'http://' + this.config.hostName + ':' + this.config.port + '/admin/buildCol?id=' + this.selectCol;
                 window.open(url)
             }
         },
-        buildJs(all){
+        buildJs(all) {
             this.axios({
                 url: '/admin/buildJs'
             }).then(res=>{
-                if(res.status===200){
+                if (res.status===200) {
                     this.buildJsMes='<span style="color:red">生成JS文件完毕</span><br>名称：' + res.data.name + '   目录： ' + res.data.path + '<br>'+
                     '用途:用于操作文章的点击数（每刷新一次 + 1）和点赞功能<br>'+
                     '引用地址:http://' + this.config.hostName + ':' + this.config.port + '/static/js/' + res.data.name + '(注意没有/statics)'+
@@ -136,15 +136,54 @@ export default {
 }
 </script>
 <style  lang="less" scoped>
-.indexCon{width:800px;text-align: center;line-height:40px;margin-top:20px;border:1px solid #999;color:#F00;}
-.jsCon{width:800px;text-align: center;line-height:40px;margin-top:20px;border:1px solid #999;}
-.bulid{width:800px;margin-top:30px;display:flex;justify-content: space-around;}
-.buildCon{
-    border:1px solid #33A0C9;padding-bottom:10px;
-    .buildTitle{width:100%;background-color:#33A0C9;color:#FFF;text-align: center;line-height:30px; }
-    select{width:250px;margin:10px;border:1px solid #33A0C9;}
-    .btn{display:block;margin:5px auto 20px auto;}
-    .artParam{line-height:24px;font-size:14px;text-indent:1em;}
+.indexCon {
+  width: 800px;
+  text-align: center;
+  line-height: 40px;
+  margin-top: 20px;
+  border: 1px solid #999;
+  color: #f00;
 }
-.notice{width:90%;margin:30px auto}
+.jsCon {
+  width: 800px;
+  text-align: center;
+  line-height: 40px;
+  margin-top: 20px;
+  border: 1px solid #999;
+}
+.bulid {
+  width: 800px;
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-around;
+}
+.buildCon {
+  border: 1px solid #33a0c9;
+  padding-bottom: 10px;
+  .buildTitle {
+    width: 100%;
+    background-color: #33a0c9;
+    color: #fff;
+    text-align: center;
+    line-height: 30px;
+  }
+  select {
+    width: 250px;
+    margin: 10px;
+    border: 1px solid #33a0c9;
+  }
+  .btn {
+    display: block;
+    margin: 5px auto 20px auto;
+  }
+  .artParam {
+    line-height: 24px;
+    font-size: 14px;
+    text-indent: 1em;
+  }
+}
+.notice {
+  width: 90%;
+  margin: 30px auto;
+}
 </style>

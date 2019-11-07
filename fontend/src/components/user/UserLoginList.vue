@@ -27,61 +27,63 @@
 </template>
 
 <script>
-import nowPosition from '../tinyComp/NowPosition.vue'
-import myPagination from '../tinyComp/MyPagination.vue'
+import nowPosition from "../tinyComp/NowPosition.vue";
+import myPagination from "../tinyComp/MyPagination.vue";
 export default {
     name: "userLoginList",
     components: {
         nowPosition,
         myPagination
     },
-    data(){
-        return{
-            posiList: [{url: {temp: 'userLoginList'},name: '登录列表'}],
-            userList: '加载中...',
+    data() {
+        return {
+            posiList: [{ url: { temp: "userLoginList" }, name: "登录列表" }],
+            userList: "加载中...",
             num: 10,
             sum: null,
-            pageMes: {status: 0}
-        }
+            pageMes: { status: 0 }
+        };
     },
-    created(){
-        this.num = this.$store.state.webSetting.listNum
-        this.getLoginList()
+    created() {
+        this.num = this.$store.state.webSetting.listNum;
+        this.getLoginList();
     },
     watch: {
-        '$route' (to, from) {
-            this.num = this.$store.state.webSetting.listNum
-            this.getLoginList()
+        $route(to, from) {
+            this.num = this.$store.state.webSetting.listNum;
+            this.getLoginList();
         }
     },
     methods: {
-        pageTurn(e){
-            this.$router.push({name: 'userLoginList',query: {page: e}})
+        pageTurn(e) {
+            this.$router.push({ name: "userLoginList", query: { page: e } });
         },
-        getLoginList(){
-            const url = !this.$route.query.page?
-                    '/admin/getUserList?num='+this.num:
-                    '/admin/getUserList?num='+this.num+'&page='+this.$route.query.page
+        getLoginList() {
+            const url = !this.$route.query.page
+                ? "/admin/getUserList?num=" + this.num
+                : "/admin/getUserList?num=" +
+                this.num +
+                "&page=" +
+                this.$route.query.page;
             this.axios({
                 url: url
-            }).then(res=>{
-                if(res.status===200){
-                    this.userList = res.data.result
-                    this.sum = res.data.sum
+            }).then(res => {
+                if (res.status === 200) {
+                    this.userList = res.data.result;
+                    this.sum = res.data.sum;
                     this.pageMes = {
                         num: this.num,
-                        page: parseInt(this.$route.query.page)||1,
+                        page: parseInt(this.$route.query.page) || 1,
                         sum: res.data.sum,
-                        pageNum: Math.ceil(res.data.sum/this.num),
+                        pageNum: Math.ceil(res.data.sum / this.num),
                         status: 1
-                    }
+                    };
                 }
-            })
+            });
         }
     }
-}
+};
 </script>
 
 <style scoped>
-
 </style>

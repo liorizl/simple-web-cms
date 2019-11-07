@@ -19,31 +19,31 @@
 import util from '../../../static/util.js'
 export default {
     name: "tag",
-    data(){
-        return{
+    data() {
+        return {
             id: null,
             liClass: ['active', '', '', '']
         }
     },
-    created(){
-        if(this.$route.query.type) this.noActive(this.$route.query.type)
+    created() {
+        if (this.$route.query.type) this.noActive(this.$route.query.type)
     },
     methods: {
-        noActive(i){
-            this.liClass = this.liClass.map((li, index)=>{
-                if(i-1===index){
+        noActive(i) {
+            this.liClass = this.liClass.map((li, index) => {
+                if (i - 1 === index) {
                     return 'active'
-                }else{
+                } else {
                     return ''
                 }
             })
         },
-        goLink(temp, type){
+        goLink(temp, type) {
             this.noActive(type)
-            this.$router.push({name: temp, query: {type: type}})
+            this.$router.push({ name: temp, query: { type: type } })
         }
     },
-    mounted(){
+    mounted() {
         util.addEvent()
     }
 };

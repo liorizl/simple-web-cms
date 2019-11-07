@@ -1,5 +1,26 @@
-.pageType1{margin:0 auto;height:30px;width:600px;}
-.pageType1 ul{display:flex;justify-content: center;align-items: center;}
-.pageType1 ul li{padding:0 10px;color:#666;margin:0 5px;}
-.pageType1 ul li.now{background-color:#555;color:#FFF;}
-.pageType1 ul li a{color:#000;}
+.pageType1 {
+    margin: 0 auto;
+    height: 30px;
+    width: 600px;
+}
+
+.pageType1 ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pageType1 ul li {
+    padding: 0 10px;
+    color: #666;
+    margin: 0 5px;
+}
+
+.pageType1 ul li.now {
+    background-color: #555;
+    color: #FFF;
+}
+
+.pageType1 ul li a {
+    color: #000;
+}

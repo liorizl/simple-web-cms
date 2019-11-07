@@ -20,11 +20,11 @@ import 'tinymce/plugins/textcolor'
 export default {
     //name: "about",
     components: {
-            Editor
-        },
+        Editor
+    },
     props: ['path', 'tinyHtml', 'cready'],
-    data: function(){
-        return{
+    data: function () {
+        return {
             editorInit: {
                 language_url: '/static/tinymce/langs/zh_CN.js',
                 language: 'zh_CN',
@@ -38,41 +38,41 @@ export default {
                 plugins: 'code link lists image table colorpicker textcolor wordcount contextmenu',
                 toolbar: 'code bold italic underline strikethrough formatselect | fontsizeselect | forecolor backcolor | image alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent blockquote | undo redo | link unlink  removeformat',
                 branding: false,
-                images_upload_handler: (blobInfo, success, fail)=>{
-                        let formData=new FormData()
-                        formData.append('upfile', blobInfo.blob())
-                        let data={path: this.path, formData: formData}
-                        this.axios({
-                            method: 'post',
-                            url: '/admin/upArtFile?path=' + this.path,
-                            data: formData
-                        }).then(res=>{
-                            success(res.data)
-                        }).catch(err=>{
-                            fail(err)
-                        })
-                        
-                    }
-                },
+                images_upload_handler: (blobInfo, success, fail) => {
+                    let formData = new FormData()
+                    formData.append('upfile', blobInfo.blob())
+                    let data = { path: this.path, formData: formData }
+                    this.axios({
+                        method: 'post',
+                        url: '/admin/upArtFile?path=' + this.path,
+                        data: formData
+                    }).then(res => {
+                        success(res.data)
+                    }).catch(err => {
+                        fail(err)
+                    })
+
+                }
+            },
             tinymceHtml: ''
         }
     },
-    created(){
+    created() {
         //this.$set(this.editorInit, 'document_base_url', this.$store.state.webSetting.webUrl)
     },
     computed: {
-        watchCon(){
-            if(this.cready){
+        watchCon() {
+            if (this.cready) {
                 this.tinymceHtml = this.tinyHtml
             }
-        }    
+        }
     },
-    mounted(){
+    mounted() {
         tinymce.init({})
-        
+
     },
     methods: {
-        emitCon(){
+        emitCon() {
             this.$emit('edit-input', this.tinymceHtml)
         }
     }
@@ -80,5 +80,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
