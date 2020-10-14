@@ -71,7 +71,12 @@ export default {
     */
     props: {
         subData: {
-            type: Object,
+            status: Number,
+            pageName: String,
+            resStatus: Number,
+            act: String,
+            router: String,
+            query: Object
         }
     },
     data() {

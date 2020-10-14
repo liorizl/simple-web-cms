@@ -22,14 +22,20 @@
                 </div>
                 <div class="input">
                     <span class="input-title">页面模版内容</span>
-                    <span class="input-con padding">
+                    <span class="input-con padding" style="display:flex;align-items:flex-start">
                         <textarea name="pageTemp" id="" cols="100" rows="15" v-model="pageTemp"></textarea>
+                        <span style="margin-left: 10px">
+                            循环列表标签：<br>[listtemp]list[/listtemp]
+                        </span>
                     </span>
                 </div>
                 <div class="input">
                     <span class="input-title">列表内容</span>
-                    <span class="input-con padding">
+                    <span class="input-con padding" style="display:flex;align-items:flex-start">
                         <textarea name="listTemp" id="" cols="100" rows="15" v-model="listTemp"></textarea>
+                        <span style="margin-left: 10px">
+                            常用字段：<br>[!--title--] [!--arturl--] [!--picurl--]
+                        </span>
                     </span>
                 </div>
                 <div class="input padding"><input class="btn marginLeft " type="button" value="提交" @click="goSubmit"></div>
@@ -57,8 +63,8 @@ export default {
             introCut: 0,
             num: 5,
             dateTypeText: null,
-            dateType: null,
-            dateTypeSelect: 'y-m-d h: m',
+            dateType: 3,
+            dateTypeSelect: 'y-m-d h:m',
             pageTemp: null,
             listTemp: null,
             posiList: [{ url: { temp: 'tagTempList', query: {} }, name: '标签模版列表' }],
@@ -99,7 +105,6 @@ export default {
             } else {
                 url = '/admin/upTagTemp?act=add'
             }
-
             formData.append("timeType", this.dateType)
             this.axios({
                 method: 'post',
@@ -134,6 +139,7 @@ export default {
             else if (this.dateTypeText === 'y-m-d h:m') {
                 this.dateType = 3
             }
+            console.log(this.dateType)
         }
     }
 }

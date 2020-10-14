@@ -7,7 +7,7 @@
                 <div class="tag-title-right">栏目下文章</div>
             </div>
             <div class="tag-format">
-                格式：<input type="text" name="" id="" 
+                格式：<input type="text" name="" 
                 value="[litag]dynamic.artInCol(栏目ID,模版ID,显示条数,标题截取,简介截取,是否分页,时间显示,附加SQL条件,排序)[/litag]" 
                 size="100">
             </div>
@@ -16,13 +16,17 @@
                     <tr class="top"><td >参数</td><td>参数说明</td></tr>
                     <tr ><td width="20%">1、栏目ID</td><td>self代表当前栏目，0代表所有<span class="red">文章</span>，多个栏目用中单引号并以英文的逗号 , 分割，如'1,2'。<br>
                         注：多个栏目栏目名只会显示第一个，要分别显示栏目名请用dynamic.artInCols()标签<br>
-                        当为0的时候会跳过检索栏目直接去查找所有文章(artInCols标签会去检索所有栏目)
+                        当为0的时候会跳过检索栏目直接去查找所有文章(artInCols标签会去检索所有栏目)<br>
+                        如果该栏目有子栏目，搜索其子栏目的文章
                     </td></tr>
                     <tr ><td >2、模版ID</td><td>模版ID</td></tr>
                     <tr ><td >3、显示条数</td><td>0表示显示全部，缺省则显示10条</td></tr>
                     <tr ><td >4、标题截取</td><td>0表示不截取</td></tr>
                     <tr ><td >5、简介截取</td><td>0表示不截取</td></tr>
-                    <tr ><td >6、显示分页器</td><td>0表示不显示,1,2,3表示分页器样式，默认为0(暂时只有等于1的样式),首页不支持分页标签，请用js控制</td></tr>
+                    <tr ><td >
+                        6、显示分页器</td><td>0表示不显示,1,2,3表示分页器样式，默认为0(暂时只有等于1的样式),首页不支持分页标签，请用js控制<br>
+                        启用分页需要在标签模版中加入 [!--pagelist--],分页样式表在/statics/static/css/style.css
+                    </td></tr>
                     <tr ><td >7、时间显示</td><td>0表示不显示时间,1,2,3表示时间格式</td></tr>
                     <tr ><td >8、附加SQL条件</td><td>没有则填0，多个用英文逗号,隔开，并加上单引号,如:'headLine=1,picUrl!=""',<br>字段属性为数字不加引号,其他都要添加双引号</td></tr>
                     <tr ><td >9、文章排序</td><td>多个用英文的逗号,分割并加上单引号 。 如:'hits,id desc'</td></tr>
@@ -41,7 +45,7 @@
                 <div class="tag-title-right">循环栏目下文章</div>
             </div>
             <div class="tag-format">
-                格式：<input type="text" name="" id="" 
+                格式：<input type="text" name="" 
                 value="[litag]dynamic.artInCols(栏目ID,模版ID,显示条数,标题截取,简介截取,是否分页,时间显示,附加SQL条件,排序,样式类名)[/litag]" 
                 size="100">
             </div>
@@ -79,11 +83,15 @@
                                 <div class="tdDiv-right">
                                     <p>页面模版属性，其中[loop][/loop]这对标签必须要有，</p>
                                     <p> [loopn][/loopn]没有此标签只会循环一次，二级子栏目将会被忽略，</p>
-                                    <p> [listtemp]list[/listtemp]用来循环输入列表模版的内容，可省略，</p>
+                                    <p> [listtemp]list[/listtemp]用来循环输入列表模版的内容，可省略，如果显示条数为-1将循环显示栏目，反之显示内容</p>
+                                    <p>此标签可以用来循环显示栏目，比如导航。</p>
                                     <p>&lt;ul&gt&lt;/ul&gt换成其他标签如果不显示文章的情况下生成的html源码会有多余的空格。</p>
                                     <p>{$class}标签会解析为类名。</p>
                                     <p>列表模版用&lt;li&gt或&lt;a&gt标签输出的html会换行，其他标签则不会。</p>
                                     <p>如果该栏目下没有子栏目会直接将以[loopn][/loopn]中的格式显示文章，[loop][/loop]内的其他内容将忽略。</p>
+                                    <p>如果loopn中还有子栏目，loopn中的循环内容为loop中的，<br>没有的话loopn中的内容为原来loopn中的，如示例中的{{temp2}}
+                                        <br>如果loopn中的内容结构跟loop中不一样，可以不用loopn,把loopn以及之间的内容换成一个新标签
+                                    </p>
                                 </div>
                             </div>
                         </td>
@@ -97,7 +105,7 @@
                 <div class="tag-title-right">当前位置</div>
             </div>
             <div class="tag-format">
-                格式：<input type="text" name="" id="" 
+                格式：<input type="text" name="" 
                 value="[litag]dynamic.position(标签模版id)[/litag]" 
                 size="100">
             </div>
@@ -109,7 +117,7 @@
                     <td>省略标签模版ID将会采用默认的样式</td>
                     </tr>
                     <tr><td colspan="2">
-                        注：
+                        注：默认样式为{{nowPosiTemp}}
                     </td></tr>
                 </table>
             </div>
@@ -128,19 +136,21 @@ export default {
         return {
             temp: `<div>[!--title--]</div>
 [loop]
+<div class="{$class}">
     <div class="{$class}">
-        <div class="{$class}">
-            [!--title--]
-        </div> 
-        [loopn]
-        <ul>
-            [listtemp]list[/listtemp]
-        </ul>
-        [/loopn]
-    </div>
+        [!--title--]
+    </div> 
+    [loopn]
+    <ul>
+        [listtemp]list[/listtemp]
+    </ul>
+    [/loopn]
+</div>
 [/loop]`,
+            temp2:`<ul>[listtemp]list[/listtemp]</ul>`,
             listContent: `<li><a href="[!--arturl--]" target="_blank">[!--title--]</a></li>`,
-            posiList: [{ url: { temp: 'showDynaTag' }, name: '动态标签简介' }],
+            posiList: [{ url: { temp: 'dynaTagShow' }, name: '动态标签简介' }],
+            nowPosiTemp: `<div class="nowPosi"><a href=[!--colurl--]>[!--title--]</a> >> [!--title--]</div>`,
         }
     },
 

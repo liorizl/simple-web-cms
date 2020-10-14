@@ -11,22 +11,23 @@
                     <div class="input">
                         <span class="input-title"><label for="colName">栏目名称：</label></span>
                         <span class="input-con">
-                            <input type="text" :class="errInput[0]" id="colName" v-model="colName" name="colName">
+                            <input type="text" :class="errInput[0]" id="colName" v-model="colName" name="colName" @input="getColNamePin">
                         </span>
                     </div>{{checkMustFill}}
                     <div class="input">
                         <span class="input-title"><label for="colNamePin">栏目别名：</label></span>
                         <span class="input-con">
-                            <input type="text" id="colName" v-model="colNamePin" name="colNamePin" @input="getNewPath">{{getColNamePin}}
+                            <input type="text" id="colNamePin" v-model="colNamePin" name="colNamePin" @input="getNewPath" @change="checkAlias">
                             <input type="radio" id="radio1" v-model="indexPinYin" value="1" /><label for="radio1">单拼</label>
                             <input type="radio" id="radio2" v-model="indexPinYin" value="2" /><label for="radio2">全拼</label>
+                            <span style="color:red">{{aliasErrMes}}</span>
                         </span>
                     </div>
                     <div class="input">
                         <span class="input-title"><label for="selectOpt">所属栏目：</label></span>
                         <span class="input-con padding">
                             <select  v-bind:size="(colListArr.length+1) < 15 ? (colListArr.length+1) : 15" v-model:number="position" id="selectOpt" name="position" @change="selChange($event)">
-                                <option value=0 >根目录</option>
+                                <option :value="0" >根目录</option>
                                 <template v-for="col in colListArr">
                                     <option :value="col.cid">{{col.title}}</option>
                                 </template>
@@ -90,7 +91,7 @@
                     <div class="input">
                         <span class="input-title"><label for="colName">显示到导航：</label></span>
                         <span class="input-con">
-                            <input type="checkbox" id="colName" v-model="isNav" name="isNav" />
+                            <input type="checkbox" id="isNav" v-model="isNav" name="isNav" />
                             {{this.isNav===true?'是':'否'}}
                         </span>
                     </div>
@@ -111,8 +112,11 @@
                         <span class="input-title"><label for="coverTemp">封面模版：</label></span>
                         <span class="input-con">
                             <select id="coverTemp" v-model="coverTemp" name="coverTemp" :class="errInput[1]">
-                                <template v-for="coverTemp in coverTempList">
-                                    <option v-bind:value="coverTemp.title">{{coverTemp.title}}</option>
+                                <template v-if="coverTempList && coverTempList.length > 0">
+                                    <option v-for="coverTemp in coverTempList" v-bind:value="coverTemp.title">{{coverTemp.title}}</option>
+                                </template>
+                                <template v-else-if="coverTempList && coverTempList.length === 0">
+                                    <option  value="还没有封面模版" disabled>还没有封面模版</option>
                                 </template>
                             </select>
                         </span>
@@ -121,8 +125,11 @@
                         <span class="input-title"><label for="listTemp">列表模版：</label></span>
                         <span class="input-con">
                         <select id="listTemp" v-model="listTemp" name="listTemp" :class="errInput[1]">
-                                <template v-for="listTemp in listTempList">
-                                    <option v-bind:value="listTemp.title">{{listTemp.title}}</option>
+                                <template v-if="listTempList && listTempList.length > 0">
+                                    <option v-for="listTemp in listTempList" v-bind:value="listTemp.title">{{listTemp.title}}</option>
+                                </template>
+                                <template v-else-if=" listTempList && listTempList.length === 0">
+                                    <option  value="还没有列表模版" disabled>还没有列表模版</option>
                                 </template>
                             </select>
                         </span>
@@ -220,7 +227,7 @@
                 <div class="input padding"><input class="btn marginLeft " type="button" value="提交" @click="subCol"></div>
             </form>
        </div>
-       <up-file v-on:get-path="savePicPath" v-if="show" v-bind:colCid="cid" v-on:get-close="openUpfile"></up-file>
+        <up-file v-on:get-path="savePicPath" v-show="show" :colCid="cid" :upFileShow="show" v-on:get-close="openUpfile"></up-file>
        <sub-ok v-bind:subData="propData" v-on:refresh="refreshPage" v-on:returnEdit="reEdit"></sub-ok>
    </div>
 </template>
@@ -288,7 +295,10 @@ export default {
             propData: { showSub: false, status: 0, pageName: '栏目', router: 'columnList' },
             posiList: [{ url: { temp: 'columnList' }, name: '栏目列表' }],
             errInput: ['', ''],
-            alertMes: ['', '', '']
+            alertMes: ['', '', ''],
+            aliasErrMes: null,
+            checkingAlias: 0,    // 1为别名正在检测
+            aliasTimer: null
         }
     },
     created: function () {
@@ -413,7 +423,6 @@ export default {
             }
             getColList(colList, j)
             this.colListArr = newColArr
-            //console.log(this.colListArr)
             if (this.$route.params.act === 'edit') {
                 this.getPos()
             }
@@ -425,10 +434,39 @@ export default {
                 this.path2 = this.colNamePin
             }
         },
+        checkAlias() {
+            if (this.aliasTimer) {
+                clearTimeout(this.aliasTimer)
+            }
+            const goCheck = () =>{
+                this.axios({
+                    method: 'post',
+                    url: '/admin/checkColAlias',
+                    data: {
+                        alias: this.colNamePin
+                    }
+                }).then(res => {
+                    if (res.status === 200) {
+                        if (res.data.myStatus === 1) {
+                            this.aliasErrMes = '该栏目别名已经存在，请更换'
+                        }
+                        this.aliasTimer = null
+                    }
+                }).catch(err => {
+                    this.aliasTimer = null
+                    console.log(err)
+                })
+            }
+            this.aliasTimer = setTimeout(goCheck, 500) 
+        },
         subCol() {
             if (!this.colName) {
                 this.alertMes[0] = "栏目名为空！"
                 this.$set(this.errInput, 0, 'errInput')
+            }
+            if (this.aliasErrMes) {
+                alert(this.aliasErrMes)
+                return
             }
             if (!((this.tempMode === 1 && typeof this.coverTemp === 'string' && this.coverTemp !== '') || (this.tempMode === 2 && typeof this.listTemp === 'string' && this.listTemp !== ''))) {
                 this.alertMes[1] = "栏目必须要有模版！"
@@ -603,14 +641,6 @@ export default {
                         alert('栏目路径为空')
                     }
                     else {
-                        // const data = {
-                        //     position: parseInt(this.position),
-                        //     alias: this.colNamePin,
-                        //     colName: this.colName,
-                        //     ultimate: this.ultimate?'on':'off',
-                        //     path1:this.path1,
-                        //     path2:this.path2,
-                        // }
                         const formData = new FormData(formCol)
                         if (formData.get('ultimate') !== 'on') {
                             formData.append('ultimate', 'off')
@@ -691,9 +721,7 @@ export default {
             }
             this.posiList = this.posiList.concat(posCol.reverse())
             this.posiList.push({ name: '编辑栏目' })
-        }
-    },
-    computed: {
+        },
         getColNamePin() {
             if (this.act !== '编辑栏目') {
                 let pinyinArr = pinyin(this.colName, { style: pinyin.STYLE_NORMAL })
@@ -706,7 +734,10 @@ export default {
                         pinyinStr += value[0]
                     }
                 })
-                this.colNamePin = pinyinStr
+                if (this.colNamePin !== pinyinStr) {
+                    this.colNamePin = pinyinStr
+                    this.checkAlias()
+                }
                 if (this.position === 0) {
                     this.path1 = pinyinStr
                 } else {
@@ -714,6 +745,8 @@ export default {
                 }
             }
         },
+    },
+    computed: {
         checkOrderBy() {
             let regExp = /^[a-z]+.*\,$/
             let result = regExp.test(this.contentOrder)

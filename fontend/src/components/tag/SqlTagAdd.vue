@@ -13,7 +13,7 @@
                     <span class="input-title"><label for="callName">标签调用名</label></span>
                     <span class="input-con">
                         <input type="text" id="callName" v-model="callName" name="callName">
-                        调用格式[litag]sql.nav(param0,param1,param2)[/litag]
+                        <span>调用格式[litag]sql.{{callName}}(param0,param1,param2)[/litag]</span>
                     </span>
                 </div>
                 <div class="input">

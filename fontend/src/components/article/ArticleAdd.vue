@@ -33,7 +33,14 @@
                         <span class="input-title"><label for="picUrl">导读图片</label></span>
                         <span class="input-con">
                             <input type="text" id="picUrl" v-model="picUrl" name="picUrl" size="50">
-                            <input type="button" value="上传" @click="openUpfile">
+                            <input type="button" value="上传" @click="openUpfile(1)">
+                        </span>
+                    </div>
+                    <div class="input">
+                        <span class="input-title"><label for="picUrl2">导读图片2</label></span>
+                        <span class="input-con">
+                            <input type="text" id="picUrl2" v-model="picUrl2" name="picUrl2" size="50">
+                            <input type="button" value="上传" @click="openUpfile(2)">
                         </span>
                     </div>
                     <div class="input">
@@ -192,7 +199,7 @@
             </form>
             {{checkMustFill}}
         </div>
-        <upFile v-on:get-path="savePicPath" v-show="show" v-on:get-close="openUpfile"></upFile>
+        <up-file v-on:get-path="savePicPath" v-show="show" :upFileShow="show" v-on:get-close="openUpfile"></up-file>
         <sub-ok v-bind:subData="propData" v-on:refresh="refreshPage" v-on:returnEdit="reEdit"></sub-ok>
     </div>
 </template>
@@ -231,6 +238,7 @@ export default {
             outUrl: '',
             keywords: '',
             picUrl: '',
+            picUrl2: '',
             intro: '',
             source: '',
             useSourceUrl: false,
@@ -256,7 +264,8 @@ export default {
             posiList: [{ name: '文章管理' }],
             errInput: ['', '', '', '', ''],
             alertMes: ['', '', '', ''],
-            checkTitleIng: false
+            checkTitleIng: false,
+            upFileNum: 0
         }
     },
     created: function () {
@@ -302,6 +311,7 @@ export default {
                                 this.outUrl = result.outUrl
                                 this.keywords = result.keywords
                                 this.picUrl = result.picUrl
+                                this.picUrl2 = result.picUrl2
                                 this.intro = result.intro
                                 this.source = result.source
                                 this.sourceUrl = result.sourceUrl
@@ -579,11 +589,16 @@ export default {
                 })
             }
         },
-        openUpfile() {
+        openUpfile(num) {
+            this.upFileNum = num
             this.show = !this.show;
         },
         savePicPath(path) {
-            this.picUrl = '/' + path
+            if (this.upFileNum === 1) {
+                this.picUrl = '/' + path
+            } else {
+                this.picUrl2 = '/' + path
+            }
             this.show = false
         },
         // goLink(cid){

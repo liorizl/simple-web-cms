@@ -4,6 +4,9 @@ import login from "../components/login.vue";
 import admin from "../components/admin.vue";
 import system from "../components/system/system.vue";
 import sysCon from "../components/system/SysCon.vue";
+import banner from "../components/system/banner/banner.vue";
+import bannerList from "../components/system/banner/BannerList.vue";
+import bannerAdd from "../components/system/banner/BannerAdd.vue";
 import sysBasic from "../components/system/SysBasic.vue";
 import tagField from "../components/system/TagField.vue";
 import article from "../components/article/Article.vue";
@@ -44,7 +47,12 @@ const routes = [
                     { path: '/admin/system/', component: sysCon, redirect: { name: 'sysCon' } },
                     { path: '/admin/system/SysCon', component: sysCon, name: 'sysCon' },
                     { path: '/admin/system/SysBasic', component: sysBasic, name: 'sysBasic' },
-                    { path: '/admin/system/TagField', component: tagField, name: 'tagField' }
+                    { path: '/admin/system/TagField', component: tagField, name: 'tagField' },
+                    { path: '/admin/system/banner', component: banner, redirect: { name: 'bannerList' },
+                    children: [
+                        { path: '/admin/system/banner/BannerList', component: bannerList, name: 'bannerList' },
+                        { path: '/admin/system/banner/BannerAdd', component: bannerAdd, name: 'bannerAdd' }
+                    ] }
                 ]
             },
             {

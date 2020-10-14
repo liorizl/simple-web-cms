@@ -1,5 +1,5 @@
 <template>
-    <option :value="colInfo.cid"  v-bind:title="colInfo.path1"><slot></slot></option>
+    <option :value="colInfo.cid" ><slot></slot></option>
 </template>
 <script>
 export default {

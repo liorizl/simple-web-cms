@@ -105,6 +105,7 @@ export default {
             if (e.target.innerText === '启用') {
                 alert('该模版已经启用!')
             } else {
+                console.log(id)
                 this.axios({
                     method: 'get',
                     url: '/admin/changeIsUseTemp?id=' + id

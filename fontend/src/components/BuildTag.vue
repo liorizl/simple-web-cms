@@ -84,7 +84,7 @@
                 </span>
             </li>
             <li class="allLine">
-                <span class="liTitle">附加sql条件</span>
+                <span class="liTitle1">文章表附加sql条件</span>
                 <span class="liCon">
                     <input type="text" name="sqlFilter" id="sqlFilter" v-model="sqlFilter">
                 </span>
@@ -147,6 +147,12 @@
                     </select>
                 </span>
             </li>
+            <li class="allLine">
+                <span class="liTitle1">栏目表附加sql条件</span>
+                <span class="liCon">
+                    <input type="text" name="colSqlFilter" id="colSqlFilter" v-model="colSqlFilter">
+                </span>
+            </li>
         </ul>
         <div class="li"><input type="button" value="输出标签" @click="getTag"></div>
         <div class="li" v-if="tagName===1">[litag]dynamic.artInCol(栏目ID,标签模版ID,显示条数,标题截取,简介截取,分页,时间,SQL条件,排序)[/litag]</div>
@@ -181,7 +187,8 @@ export default {
             orderByArr: new Array(4),
             colOrderByArr: new Array(4),
             tagCon: null,
-            classStr: 0
+            classStr: 0,
+            colSqlFilter: 0,
         }
     },
 
@@ -237,11 +244,11 @@ export default {
             this.orderByArr[num] = eTarget.value
             this.orderByArr.forEach((value) => {
                 if (value) {
-                    string = string + value + ', '
+                    string = string + value + ','
                 }
             })
-            string = string === '' ? 0 : string
-            this.orderBy = string.replace(/,$/, '')
+            string = !string ? 0 : string.replace(/ $/, '')
+            this.orderBy = string ? string.replace(/,$/, '') : 0
         },
         getColOrder(eTarget, num) {
             let string = ''
@@ -251,11 +258,11 @@ export default {
                     string = string + value + ','
                 }
             })
-            string = string === '' ? 0 : string
-            this.colOrderBy = string.replace(/,$/, '')
+            string = !string ? 0 : string.replace(/ $/, '')
+            this.colOrderBy = string ? string.replace(/,$/, '') : 0
         },
         getTag() {
-            let str = '', ttagName, tagArr = [], tcolId, tsqlFilter, torderBy, tclassStr, tColOrderBy
+            let str = '', ttagName, tagArr = [], tcolId, tsqlFilter, torderBy, tclassStr, tColOrderBy, tcolSqlFilter
             if (this.tagName === 1) {
                 ttagName = 'artInCol'
             }
@@ -307,6 +314,10 @@ export default {
                     }
                     tagArr.push(tColOrderBy)
                 }
+                tcolSqlFilter = this.colSqlFilter !== 0 && /\,/.test(this.colSqlFilter) ?
+                                '\'' + this.colSqlFilter + '\'' :
+                                this.colSqlFilter
+                tagArr.push(tcolSqlFilter)
                 for (let i = tagArr.length - 1; i >= 0; i--) {
                     if (parseInt(tagArr[i]) === 0) {
                         tagArr.pop()
@@ -354,6 +365,9 @@ export default {
         }
         .liTitle {
             width: 110px;
+        }
+        .liTitle1 {
+            width: 150px; text-indent: 1em;
         }
         .liCon.select {
             display: flex;

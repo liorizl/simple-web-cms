@@ -44,7 +44,6 @@
             <div class="input padding">
                 <span><input type="button" value="关闭" @click="closeUpFile"></span>
             </div>
-            
         </div>
     </div>
 </div>
@@ -58,7 +57,7 @@ export default {
         myOption,
         myPagination
     },
-    props: ['colCid'],
+    props: ['upFileShow', 'terminal', 'colCid'],
     data() {
         return {
             cid: this.$route.query.cid || this.colCid,
@@ -74,39 +73,81 @@ export default {
             page: 1,
             sum: null,
             nowCol: this.$route.query.cid || this.colCid,
+            nowTer: this.terminal
         }
     },
-
+    watch: {
+        colCid(newValue) {
+            this.cid = newValue
+            this.nowCol = newValue
+        },
+        terminal(newValue) {
+            this.terminal = newValue
+            this.nowTer = newValue
+        },
+        upFileShow(newValue) {
+            if (newValue === true) this.getAllMes()
+        }
+    },
     created() {
-        this.axios({
-            method: 'get',
-            url: '/admin/getUpfiles?cid=' + this.cid
-        }).then(res => {
-            if (res.status === 200) {
-                const resData = res.data
-                this.filePath = resData.path
-                this.fileNames = resData.files
-                this.sum = resData.files.length
-                this.fileListShow = this.fileNames.slice((this.page - 1) * this.num, this.page * this.num)
-                this.pageMes = {
-                    num: this.num,
-                    page: this.page,
-                    sum: this.sum,
-                    pageNum: Math.ceil(this.sum / this.num),
-                    status: 1
-                }
-            }
-        })
-        this.colListArr = this.$store.getters.getColArr
     },
 
     methods: {
+        getAllMes() {
+            let url
+            if (this.terminal) {
+                url = '/admin/getUpfiles?cid=banner&terminal=' + this.nowTer
+            } else {
+                url = '/admin/getUpfiles?cid=' + this.cid
+            }
+            this.axios({
+                method: 'get',
+                url
+            }).then(res => {
+                if (res.status === 200) {
+                    const resData = res.data
+                    this.filePath = resData.path
+                    this.fileNames = resData.files
+                    this.sum = resData.files.length
+                    this.fileListShow = this.fileNames.slice((this.page - 1) * this.num, this.page * this.num)
+                    this.pageMes = {
+                        num: this.num,
+                        page: this.page,
+                        sum: this.sum,
+                        pageNum: Math.ceil(this.sum / this.num),
+                        status: 1
+                    }
+                }
+            })
+            this.colListArr = this.$store.getters.getColArr
+            
+            if (this.terminal) {
+                this.colListArr = [
+                    {
+                        title: 'banner电脑端',
+                        cid: 'pc',
+                        path: 'upfiles/banner/pc'
+                    },
+                    {
+                        title: 'banner手机端',
+                        cid: 'wap',
+                        path: 'upfiles/banner/wap'
+                    }
+                ].concat(this.colListArr)
+            }
+        },
         upfile() {
             const formData = new FormData(upfile)
             if (formData.get('upfile').name) {
+                let url
+                if (this.terminal) {
+                    url = '/admin/upfile?cid=banner&terminal=' + this.nowTer
+                } else  {
+                    url = '/admin/upfile?cid=' + this.cid
+                }
                 this.axios({
                     method: 'post',
-                    url: '/admin/upfile?cid=' + this.cid,
+                    url: url,
                     data: formData
                 }).then(res => {
                     let reg = /[^\/]+\..+/
@@ -134,7 +175,7 @@ export default {
             e.target.innerText = this.$refs.pic[index].naturalWidth + 'x' + this.$refs.pic[index].naturalHeight
         },
         getPicPath(path) {
-            this.$emit('get-path', path)
+            this.$emit('get-path', path, this.nowTer || null)
         },
         closeUpFile() {
             this.$emit('get-close')
@@ -154,13 +195,22 @@ export default {
         },
         getNowCol(e) {
             let num = e.target.selectedIndex
-            this.filePath = this.colListArr[num].path
-            this.cid = this.colListArr[num].cid
+            let url
+            if (this.colListArr[num].cid === 'wap' || this.colListArr[num].cid === 'pc') {
+                this.nowTer = this.colListArr[num].cid
+                url = '/admin/getUpfiles?cid=banner&terminal=' + this.nowTer
+            } else {
+                url = '/admin/getUpfiles?cid=' + this.cid
+                this.cid = this.colListArr[num].cid
+            }
+            
+            console.log(url)
             this.axios({
                 method: 'get',
-                url: '/admin/getUpfiles?cid=' + this.cid
+                url: url
             }).then(res => {
                 if (res.status === 200) {
+                     this.filePath = this.colListArr[num].path
                     const resData = res.data
                     this.filePath = resData.path
                     this.fileNames = resData.files

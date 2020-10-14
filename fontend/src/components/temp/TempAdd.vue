@@ -60,12 +60,16 @@
                         <span class="input-title"><label for="content">模版内容</label></span>
                         <span class="input-con padding">
                             <textarea name="content" id="content" v-model="content" cols="120" rows="18"></textarea>
+                            <br>
+                            <span style="margin-left:20px;">可以使用：[listtemp]list[/listtemp]</span>
                         </span>
                     </div>
                     <div class="input">
                         <span class="input-title"><label for="contentList">循环内容列表</label></span>
                         <span class="input-con padding">
                             <textarea name="contentList" id="contentList" v-model="contentList" cols="120" rows="12"></textarea>
+                            <br>
+                            <span style="margin-left:20px;">[!--picurl--] [!--title--] [!--intro--]</span>
                         </span>
                     </div>
                 </template>
