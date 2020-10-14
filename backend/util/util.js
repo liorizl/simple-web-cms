@@ -19,7 +19,7 @@ const util = {
     },
     repalceStr2: (str, resoure) => {  //后面加上/
         if (resoure === 'art') {
-            return str === '/' ? '' : this.repalceStr(str)
+            return str === '/' ? '' : util.repalceStr(str)
         } else {
             return /.*\/$/.test(str) ? str : str + '/'
         }
@@ -50,15 +50,23 @@ const util = {
         }
     },
     regexpContent: content => {
-        let result = content.replace(/\"/g, '\\"');
-        result = result.replace(/\'/g, "\\'");
+        let result = content.replace(/(\<)|(\>)|(\")/g, (match, p1, p2, p3)=> {
+            if (p1) {
+                return '\<'
+            } else if (p2) {
+                return '\>'
+            } else if(p3) {
+                return '\\"'
+            }
+            
+        });
         return result
     },
     replaceIntro: content => {
-        let result = content.substr(0, 120);
-        result = result.replace(/\"/g, '');
-        result = result.replace(/\'/g, "");
-        result = result.replace(/\</g, '&lt;').replace(/\>/g, '&gt;');
+        const reg = /\<\/?(?!br ?\/?\>+).*?\>/gs;
+        // result = result.replace(/\</g, '&lt;').replace(/\>/g, '&gt;');
+        let result = content.replace(reg, '');
+        result = result.substr(0, 120);
         return result
     },
     getPercent: (num, sum) => {
@@ -149,7 +157,7 @@ const util = {
     },
     changeRedisCols: async (id, act) => {
         await new Promise((resolve, reject) => {
-            redisClient.get('cols', (err, v) => {
+            redisClient.get(config.redis.colName, (err, v) => {
                 if (err) reject(err)
                 else resolve(JSON.parse(v))
             })
@@ -162,104 +170,142 @@ const util = {
             else if (act === 'dele') {
                 delete colArr[id]
             }
-            redisClient.set('cols', JSON.stringify(colArr))
+            redisClient.set(config.redis.colName, JSON.stringify(colArr), (err,res) => {
+                if(!err){
+                    console.log('redis修改成功')
+                }
+            })
         })
     },
-    changeIndent: (myStr, oldInd, newInd) => {
+    changeIndent: (myStr, oldInd, newInd) => {   //好像应该再检查下为负的情况
         let arr = [];
-        const indent = newInd - oldInd;
+        const indent = Math.abs(newInd - oldInd);
         if (indent === 0) return myStr
         arr = myStr.split(/\r\n/);
         arr = arr.map((str, index) => {
             if (indent > 0) {
                 return index === arr.length - 1 || arr.length === 1 ? new Array(indent + 1).join(' ') + str : new Array(indent + 1).join(' ') + str + '\r\n'
             } else {
-                return index === arr.length - 1 || arr.length === 1 ? str.substr(-indent) : new Array(indent + 1).join(' ') + str + '\r\n'
+                
+                return index === arr.length - 1 || arr.length === 1 ? str.substr(indent) : new Array(indent + 1).join(' ') + str + '\r\n'
             }
         })
         return arr.join('')
     },
     increaseIndent: (myStr, indentNum, i = null) => {    //给模版每一行增加缩进(str,缩进数，层数)
+        if (indentNum <= -1) return myStr
         let arr = [];
         arr = myStr.split(/\r\n/);
         arr = arr.map((str, index) => {
             if (i) {
-                return index === arr.length - 1 || arr.length === 1 ? new Array((indentNum * i) + 1).join(' ') + str : new Array((indentNum * i) + 1).join(' ') + str + '\r\n'
+                return index === arr.length - 1 || arr.length === 1 ? 
+                                 new Array((indentNum * i) + 1).join(' ') + str : 
+                                 new Array((indentNum * i) + 1).join(' ') + str + '\r\n'
             } else {
-                return index === arr.length - 1 || arr.length === 1 ? new Array(indentNum + 1).join(' ') + str : new Array(indentNum + 1).join(' ') + str + '\r\n';
+                return index === arr.length - 1 || arr.length === 1 ?
+                                 new Array(indentNum + 1).join(' ') + str : 
+                                 new Array(indentNum + 1).join(' ') + str + '\r\n';
             }
         })
         return arr.join('')
     },
     increaseIndentLi: (myStr, tempIndent) => {    //给li或a换行
+        if (tempIndent <= -1) return myStr
         let arr;
         arr = myStr.match(/\<(li).*?\>.*?\<\/\1\>/g);
         arr = arr ? arr : myStr.match(/\<(a) *.*?\>.*?\<\/\1\>/g);
         // console.log(myStr.match(/\<(a) *.*?\>.*?\<\/\1\>/g))
         if (!arr) return false
-        arr = arr.map((str, index) => {
+        // arr = arr.map((str, index) => {
+        //     if (arr.length === 1) {
+        //         return str
+        //     } else {
+        //         if (index === 0) {
+        //             //return str.indexOf('\<') === 0?new Array(tempIndent + 1).join(' ') + str + '\r\n':str + '\r\n';
+        //             return str + '\r\n';
+        //         }
+        //         else if (index === arr.length - 1) {
+        //             return new Array(tempIndent + 1).join(' ') + str.replace(/ *$/, '');
+        //         }
+        //         else {
+        //             return new Array(tempIndent + 1).join(' ') + str + '\r\n';
+        //         }
+        //     }
+        // })
+        // return arr.join('')
+        arr.forEach((str, index) => {
             if (arr.length === 1) {
-                return str
+                return 
             } else {
-                if (index === 0) {
-                    //return str.indexOf('\<') === 0?new Array(tempIndent + 1).join(' ') + str + '\r\n':str + '\r\n';
-                    return str + '\r\n';
-                }
-                else if (index === arr.length - 1) {
-                    return new Array(tempIndent + 1).join(' ') + str.replace(/ *$/, '');
-                }
-                else {
-                    return new Array(tempIndent + 1).join(' ') + str + '\r\n';
+                if (index !== 0) {
+                    let newStr = new Array(tempIndent + 1).join(' ') + str;
+                    myStr = myStr.replace(str, newStr)
                 }
             }
         })
-        return arr.join('')
+        return myStr
     },
-    makePaging: (num, now, len, type, url, build = null) => {
+    makePaging: (num, now, len, type, url, build = null, colids) => {
         let html;
         const n = now ? parseInt(now) : 1
         const pageCount = Math.ceil(len / num);
+        const isBuild = build ? 1 : 0;
         if (build === null) {
             url = url.replace(/\&?page\=[0-9]/, '');
         }
-        html = '<div class="pageType1"><ul>';
-        html += '<li>共' + pageCount + '页</li>';
-        if (pageCount > 0) {
-            if (n === 1) {
-                html += '<li>第一页</li>';
-            } else {
-                if (build === null) {
-                    html += '<li><a href="' + url + '&page = 1">第一页</a></li>'
-                } else {
-                    html += '<li><a href="./index.html">第一页</a></li>'
-                }
-            }
-            for (let i = 1; i <= pageCount; i++) {
-                if (i === n) {
-                    html += '<li class="now">' + i + '</li>'
+        if (type === 1) {
+            html = '<div class="pageType1">\r\n'+new Array(4).join(' ')+'<ul>\r\n';
+            html += new Array(8).join(' ') + '<li>共' + pageCount + '页</li>\r\n';
+            if (pageCount > 0) {
+                if (n === 1) {
+                    html += new Array(8).join(' ') + '<li>第一页</li>\r\n';
                 } else {
                     if (build === null) {
-                        html += '<li><a href="' + url + '&page=' + i + '">' + i + '</a></li>'
+                        html += new Array(8).join(' ') + '<li><a href="' + url + '&page = 1">第一页</a></li>\r\n'
                     } else {
-                        if (i === 1) {
-                            html += '<li><a href="./index.html">' + i + '</a></li>'
+                        html += new Array(8).join(' ') + '<li><a href="./index.html">第一页</a></li>\r\n'
+                    }
+                }
+                for (let i = 1; i <= pageCount; i++) {
+                    if (i === n) {
+                        html += new Array(8).join(' ') + '<li class="now">' + i + '</li>\r\n'
+                    } else {
+                        if (build === null) {
+                            html += new Array(8).join(' ') + '<li><a href="' + url + '&page=' + i + '">' + i + '</a></li>\r\n'
                         } else {
-                            html += '<li><a href="./index_' + i + '.html">' + i + '</a></li>'
+                            if (i === 1) {
+                                html += new Array(8).join(' ') + '<li><a href="./index.html">' + i + '</a></li>\r\n'
+                            } else {
+                                html += new Array(8).join(' ') + '<li><a href="./index_' + i + '.html">' + i + '</a></li>\r\n'
+                            }
                         }
                     }
                 }
-            }
-            if (n === pageCount) {
-                html += '<li>尾页</li>'
-            } else {
-                if (build === null) {
-                    html += '<li><a href="' + url + '&page=' + pageCount + '">尾页</a></li>'
+                if (n === pageCount) {
+                    html += new Array(8).join(' ') + '<li>尾页</li>\r\n'
                 } else {
-                    html += '<li><a href="./index_' + pageCount + '.html">尾页</a></li>'
+                    if (build === null) {
+                        html += new Array(8).join(' ') + '<li><a href="' + url + '&page=' + pageCount + '">尾页</a></li>\r\n'
+                    } else {
+                        html += new Array(8).join(' ') + '<li><a href="./index_' + pageCount + '.html">尾页</a></li>\r\n'
+                    }
                 }
             }
+            html += new Array(4).join(' ') + '</ul>\r\n</div>'
+        } else if (type === 2) {
+            html = '<div class="pageType2">';
+            html += '<span>共' + pageCount + '页</span>';
+            html += '<span class="pageDown" data-page="' + now +'" data-build="'+isBuild+'">跳转到';
+            html += '<select class="page-select">';
+            for (let i = 1; i <= pageCount; i++) {
+                html += '<option value=' + i + '>' + i + '</option>';
+            }
+            html += '</select>';
+            html += '页</span>';
+            html += '</div>';
+        } else if (type === 3) {
+            html = '<div class="pageType3" data-sum="' + len + '" data-ids="'+ colids +'" data-build="'+isBuild+'">加载更多</div>';
         }
-        html += '</ul></div>'
         return html
     },
     buildPath: async (pathStr, path) => {    //第一个参数为子路径，格式如：a/b/c,后一个参数为父路径，格式如：./web/html
@@ -306,6 +352,106 @@ const util = {
                 }
             })
         })
+    },
+    //检索出该栏目下所有的终极子栏目
+    ultracolsInCols: async (cids, sqlCondition, id) => {
+        const allCols = await new Promise((resolve, reject) => {
+            redisClient.get(config.redis.colName, (err, v) => {
+                if (err) reject(err)
+                else {
+                    resolve(JSON.parse(v))
+                }
+            })
+        })
+        let condition = sqlCondition ? ',' + sqlCondition : '';
+        //参数是id,需要转成cid
+        if (id) {
+            if (Array.isArray(cids)) {
+                cids = cids.map(cid => {
+                    const tcol = util.filterCol('id=' + cid, allCols)
+                    return tcol[0].cid;
+                })
+            } else {
+                const col = util.filterCol('id=' + cids, allCols);
+                cids = col[0].cid;
+            }
+        }
+        return new Promise(resolve => {
+            let cols = [];
+            const iterateCols = colsArr => {
+                colsArr.forEach(col => {
+                    if (col.ultimate === 'true') {
+                        cols.push(col.cid)
+                    } else {
+                        iterateCols(util.filterCol('aid=' + col.cid + condition, allCols, null)) 
+                    }
+                })
+            }
+            if (Array.isArray(cids)) {
+                cids.forEach(cid => {
+                    let colsArr1 = util.filterCol('aid=' + cid + condition, allCols, null);
+                    if (colsArr1.length === 0) {
+                        cols.push(cid)
+                    }
+                    iterateCols(colsArr1)
+                })
+            } else {
+                let colsArr = util.filterCol('aid=' + cids + condition, allCols, null);
+                if (colsArr.length === 0) {
+                    resolve(cids)
+                } else {
+                    iterateCols(colsArr)
+                }
+            }
+            if (cols.length > 1) {
+                resolve(cols)
+            } else {
+                resolve(cols[0])
+            }
+        })
+    },
+    filterCol: (condition, colObjs, colOrder) => {
+        let cols = [];
+        let strArr = condition.split(',');
+        strArr = strArr.map(string => {
+            const objectArr = string.split('=');
+            let object = {}, objKey = objectArr[0], objValue = objectArr[1];
+            if (/\"/.test(objValue)) {
+                objValue = objValue.replace(/\"/g, '');
+            } else {
+                objValue = parseInt(objValue);
+            }
+            object[objKey] = objValue;
+            return object
+        })
+        Object.keys(colObjs).forEach(key => {
+            if (util.condiJudge(strArr, colObjs[key])) {
+                cols.push(colObjs[key]);
+            }
+        })
+        if (colOrder) {
+            let orderArr = colOrder.split('\,');
+            orderArr = orderArr.map(order => {
+                return order.split(/ +/)
+            })
+            cols.sort(util.compare(orderArr[0][0], orderArr[0][1], orderArr));
+        }
+        return cols
+    },
+    condiJudge: (strArr, col) => {
+        if (!col) return false
+        let num = 0;
+        strArr.forEach(obj => {
+            let firstKey = Object.keys(obj)[0];
+            if (col[firstKey] !== undefined && col[firstKey] === obj[firstKey]) {
+                num += 1;
+            }
+        })
+        if (num === strArr.length) {
+            return true
+        } else {
+            return false
+        }
     }
 }
 module.exports = util

@@ -42,5 +42,75 @@ module.exports = [
         method: 'get',
         url: '/admin/getWebName',
         middleware: noNeedLogin.getWebName
+    },
+    {
+        method: 'post',
+        url: '/getArtListClient',
+        middleware: noNeedLogin.getArtListClient
+    },
+    {
+        method: 'get',
+        url: '/getArtCon',
+        middleware: noNeedLogin.getArtCon
+    },
+    {
+        method: 'get',
+        url: '/getArtInCol',
+        middleware: noNeedLogin.getArtInCol
+    },
+    {
+        method: 'get',
+        url: '/getArtMes',
+        middleware: noNeedLogin.getArtMes
+    },
+    {
+        method: 'get',
+        url: '/equipList',
+        middleware: noNeedLogin.equipList
+    },
+    {
+        method: 'get',
+        url: '/newsList',
+        middleware: noNeedLogin.newsList
+    },
+    {
+        method: 'get',
+        url: '/getNavLists',
+        middleware: noNeedLogin.getNavLists
+    },
+    {
+        method: 'get',
+        url: '/getAdjacentArt',
+        middleware: noNeedLogin.getAdjacentArt
+    },
+    {
+        method: 'get',
+        url: '/getSearchArt',
+        middleware: noNeedLogin.getSearchArt
+    },
+    {
+        method: 'get',
+        url: '/getWebSetting',
+        middleware: noNeedLogin.getWebSetting
+    },
+    {
+        method: 'get',
+        url: '/getColMes',
+        middleware: noNeedLogin.getColMes
+    },
+    {
+        method: 'get',
+        url: '/getBanner',
+        middleware: noNeedLogin.getBanner
+    },
+    {
+        method: 'get',
+        url: '/getRecom',
+        middleware: noNeedLogin.getRecom
+    },
+    {
+        method: 'get',
+        url: '/loadMore',
+        middleware: noNeedLogin.loadMore
     }
 ]

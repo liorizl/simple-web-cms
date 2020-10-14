@@ -30,6 +30,7 @@ app.use(async (ctx, next) => {
         if (/^\/admin\/login|^\/admin\/getident|^\/admin\/checkIdentcode|^\/admin\/getWebName/i.test(path)) {
             await next()
         } else {
+            // console.log(ctx.cookies.get('user'), ctx.session.liori)
             if (!ctx.cookies.get('user') || !ctx.session.liori || ctx.cookies.get('user') !== ctx.session.liori) {
                 ctx.body = '你还没有登录，请登录后再操作！';
             }
@@ -41,16 +42,16 @@ app.use(async (ctx, next) => {
         await next();
     }
 })
-    ; (async () => {
-        const colObj = {}
-        const sqlAll = 'select * from columns where isUse = "true"';
-        let resultAll = await mysql.nquery(sqlAll);
-        resultAll = util.objKeysToLower(resultAll);
-        resultAll.forEach(res => {
-            colObj[res.id] = res;
-        })
-        redisClient.set(config.redis.colName, JSON.stringify(colObj), () => { console.log('redis数据' + config.redis.colName + '获取成功!') });
-    })()
+; (async () => {
+    const colObj = {}
+    const sqlAll = 'select * from columns where isUse = "true"';
+    let resultAll = await mysql.nquery(sqlAll);
+    resultAll = util.objKeysToLower(resultAll);
+    resultAll.forEach(res => {
+        colObj[res.id] = res;
+    })
+    redisClient.set(config.redis.colName, JSON.stringify(colObj), () => { console.log('redis数据' + config.redis.colName + '获取成功!') });
+})()
 const noNeedLogin = require('./router/noNeedLogin.js');
 const routerBasic = require('./router/routerBasic.js');
 const routerCol = require('./router/routerCol.js');
@@ -64,6 +65,7 @@ routerAll.forEach((route) => {
     router.register([route.url], [route.method], route.middleware)
 })
 app.use(router.routes());
+
 app.use(koaStatic(util.getPath(process.cwd())));
 app.use(koaStatic(process.cwd() + '/statics/'));
 app.listen(config.port, () => { console.log("server has started at " + config.port) });

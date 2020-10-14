@@ -6,7 +6,7 @@
         "user": "root",
         "password": "liori",
         "prot": "3306",
-        "database": "ndh_liori"
+        "database": "dahua-nuxt"
     },
     "useIdentCode": true,
     "identCode": "zyc",

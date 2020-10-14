@@ -8,8 +8,14 @@ const fs = require('fs');
 const md5 = require('md5-node');
 module.exports = {
     upfile: async ctx => {
-        const cid = parseInt(ctx.query.cid);
-        const pathEnd = await serverUtil.getColPath(cid);
+        const cid = ctx.query.cid;
+        const terminal = ctx.query.terminal;
+        let pathEnd;
+        if (terminal) {
+            pathEnd = await serverUtil.getColPath(cid, terminal)
+        } else {
+            pathEnd = await serverUtil.getColPath(parseInt(cid)) 
+        }
         const pathStatus = await util.statPath(pathEnd.pathEnd, 'isDir');
         if (pathStatus != 1) {
             await util.buildPath(pathEnd.pathCol, pathEnd.path);
@@ -35,8 +41,14 @@ module.exports = {
         })
     },
     getUpfiles: async ctx => {
-        const cid = parseInt(ctx.query.cid);
-        let pathEnd = await serverUtil.getColPath(cid);
+        const cid = ctx.query.cid;
+        const terminal = ctx.query.terminal;
+        let pathEnd;
+        if (terminal && cid === 'banner'){
+            pathEnd = await serverUtil.getColPath('banner', terminal);
+        } else {
+            pathEnd = await serverUtil.getColPath(parseInt(cid));
+        }
         const pathStatus = await util.statPath(pathEnd.pathEnd, 'isDir');
         if (pathStatus === 9) {
             ctx.body = { path: pathEnd.pathEnd.substr(6), files: [] }
@@ -166,5 +178,42 @@ module.exports = {
         } else {
             ctx.body = { myStatus: 0 }
         }
+    },
+    upBanner: async ctx => {
+        const {act, id} = ctx.query;
+        let sql
+        await serverUtil.getForm(ctx.req).then(async value => {
+            // console.log(value)
+            if (act === 'add') {
+                sql = 'insert into banner(title, pcurl, wapurl, pclink, waplink, isuse, orderby, uptime) ' + 
+                    'value("'+ value.title[0] +'", "'+ value.pcUrl[0] +'", "'+ value.wapUrl[0] +'", "'+ value.pcLink[0] +
+                    '", "'+ value.wapLink[0] +'", "'+ value.isUse[0] +'", '+ parseInt(value.orderBy[0]) +', "'+ util.dateFormat(new Date()) +'")';
+            } else {
+                sql = 'update banner set title="'+ value.title[0] +'", pcurl="'+ value.pcUrl[0] +'", wapurl="'+ value.wapUrl[0] +'",pclink="'+ value.pcLink[0] +
+                '",waplink="'+ value.wapLink[0] +'",isuse="'+ value.isUse[0] +'",orderby='+ parseInt(value.orderBy[0]) +' where id=' + parseInt(id);
+            }
+            const res = await mysql.nquery(sql);
+            let upStatus
+            if (res.affectedRows === 1) {
+                upStatus = 1
+            } else {
+                upStatus = 0
+            }
+            ctx.body = {
+                upStatus
+            }
+        })
+        
+    },
+    getBanner: async ctx => {
+        const sql = 'select * from banner order by orderBy, id desc';
+        const result = await mysql.nquery(sql);
+        ctx.body = result;
+    },
+    getBannerEdit: async ctx => {
+        const id = parseInt(ctx.query.id);
+        const sql = 'select * from banner where id=' + id;
+        const result = await mysql.nquery(sql);
+        ctx.body = result[0];
     }
-}
+ }

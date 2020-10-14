@@ -54,5 +54,10 @@ module.exports = [
         method: 'get',
         url: '/admin/buildFaCol',
         middleware: column.buildFaCol
+    },
+    {
+        method: 'post',
+        url: '/admin/checkColAlias',
+        middleware: column.checkColAlias
     }
 ]

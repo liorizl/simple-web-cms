@@ -3,24 +3,38 @@
     height: 30px;
     width: 600px;
 }
-
 .pageType1 ul {
     display: flex;
     justify-content: center;
     align-items: center;
 }
-
 .pageType1 ul li {
     padding: 0 10px;
     color: #666;
     margin: 0 5px;
 }
-
 .pageType1 ul li.now {
     background-color: #555;
     color: #FFF;
 }
-
 .pageType1 ul li a {
     color: #000;
+}
+.pageType2 {
+    margin: 10px auto;
+    text-align: center;
+    font-size: .875rem;
+}
+.pageType2 span {
+    margin-left: 10px;
+}
+.pageType3 {
+    width: 90%; 
+    height: 2rem;
+    margin: 1rem auto;
+    background-color: #b32734;
+    color: #FFF;
+    line-height: 2rem;
+    font-size: 0.875rem;
+    text-align: center;
 }

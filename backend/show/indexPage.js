@@ -9,7 +9,7 @@ const index = async (ctx) => {
 const getContent = async (build = null) => {
     let html, webSetting;
     const sqlWebSetting = 'select * from websetting';
-    const resWebSetting = mysql.nquery(sqlWebSetting);
+    const resWebSetting = await mysql.nquery(sqlWebSetting);
     webSetting = util.objKeysToLower(resWebSetting);
     const sql = 'select content from template where type = 1 and isUse = "true"';
     const result = await mysql.nquery(sql);

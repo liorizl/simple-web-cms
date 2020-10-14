@@ -118,7 +118,7 @@ module.exports = {
             })
         }).then(async colArr => {
             colArr[id].ultimate = ulti
-            redisClient.set('cols', JSON.stringify(colArr))
+            redisClient.set(config.redis.colName, JSON.stringify(colArr))
         })
         if (result.affectedRows === 1) {
             ctx.body = { myStatus: 1 };
@@ -160,5 +160,14 @@ module.exports = {
                 }
             }
         })
+    },
+    checkColAlias: async ctx => {
+        const {alias} = ctx.request.body
+        const sql = 'select id from columns where alias="'+alias+'"';
+        const res = await mysql.nquery(sql);
+        let myStatus = res.length === 0 ? 0 : 1
+        ctx.body = {
+            myStatus
+        }
     }
 }

@@ -48,4 +48,19 @@ module.exports = [
         url: '/admin/buildJs',
         middleware: other.buildJs
     },
+    {
+        method: 'post',
+        url: '/admin/upBanner',
+        middleware: other.upBanner
+    },
+    {
+        method: 'get',
+        url: '/admin/getBanner',
+        middleware: other.getBanner
+    },
+    {
+        method: 'get',
+        url: '/admin/getBannerEdit',
+        middleware: other.getBannerEdit
+    }
 ]

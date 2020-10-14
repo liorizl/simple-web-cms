@@ -32,16 +32,23 @@ module.exports = {
         }
         )
     },
-    getColPath: async cid => {
+    getColPath: async (cid, terminal = null) => {
         const configPath = config.staticWebPath + config.staticWebName
         const path = configPath + '/upfiles';
-        const picFamily = '/column';
-        const sql = 'select path1, path2 from columns where cid = ' + cid;
-        const result = await mysql.nquery(sql);
-        const pathCol = result[0].path2 ?
-            picFamily + "/" + result[0].path1 + "/" + result[0].path2 :
-            picFamily + "/" + result[0].path1;
-        const pathEnd = path + pathCol;
+        let pathEnd, pathCol;
+        if (cid !== 'banner') {
+            const picFamily = '/column';
+            const sql = 'select path1, path2 from columns where cid = ' + cid;
+            const result = await mysql.nquery(sql);
+            pathCol = result[0].path2 ?
+                picFamily + "/" + result[0].path1 + "/" + result[0].path2 :
+                picFamily + "/" + result[0].path1;
+            pathEnd = path + pathCol;
+        } else {
+            pathCol = '/banner/' + terminal;
+            pathEnd = path + pathCol;
+        }
+        
         return { pathEnd: pathEnd, path: path, pathCol: pathCol }
     },
     getAllCols: async (cid) => {

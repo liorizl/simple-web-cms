@@ -108,15 +108,15 @@ module.exports = {
                 } else {
                     articleName = artName;
                 }
-                sql = 'insert into article(fid, title, mainTitle, viceTitle, isIndex, isUse, headLine, suggest, outUrl, keywords, content, intro, picUrl, path, articleName, author, source, sourceUrl, useSourceUrl, ' +
+                sql = 'insert into article(fid, title, mainTitle, viceTitle, isIndex, isUse, headLine, suggest, outUrl, keywords, content, intro, picUrl, picUrl2, path, articleName, author, source, sourceUrl, useSourceUrl, ' +
                     'tempName, orderBy, hits, stars, upTime) value(' + parseInt(tid) + ', "' + value.title[0] + '", "' + value.mainTitle[0] + '", "' + value.viceTitle[0] + '", "' + serverUtil.getCheckbox(value.isIndex[0]) + '", "' + serverUtil.getCheckbox(value.isUse[0]) + '", ' +
                     parseInt(value.headLine[0]) + ', ' + parseInt(value.headLine[0]) + ', "' + value.outUrl[0] + '", "' + value.keywords[0] + '", ' +
-                    '"' + util.regexpContent(value.content[0]) + '", "' + articleIntro + '", "' + value.picUrl[0] + '", "' + value.path[0] + '", "' + articleName + '", "' + value.author[0] + '", ' +
+                    '"' + util.regexpContent(value.content[0]) + '", "' + articleIntro + '", "' + value.picUrl[0] + '", "' + value.picUrl2[0] + '", "' + value.path[0] + '", "' + articleName + '", "' + value.author[0] + '", ' +
                     '"' + value.source[0] + '", "' + value.sourceUrl[0] + '", "' + serverUtil.getCheckbox(value.useSourceUrl[0]) + '", "' + value.tempName[0] + '", ' + parseInt(value.orderBy[0]) + ', ' + parseInt(value.hits[0]) + ', ' + parseInt(value.stars[0]) + ', "' + util.dateFormat(new Date()) + '")';
             }
             else if (act === 'edit') {
                 sql = 'update article set title="' + value.title[0] + '", mainTitle="' + value.mainTitle[0] + '", viceTitle="' + value.viceTitle[0] + '", isIndex="' + serverUtil.getCheckbox(value.isIndex[0]) + '", ' +
-                    'isUse="' + serverUtil.getCheckbox(value.isUse[0]) + '", content="' + util.regexpContent(value.content[0]) + '", intro="' + articleIntro + '", picUrl="' + value.picUrl[0] + '", ' +
+                    'isUse="' + serverUtil.getCheckbox(value.isUse[0]) + '", content="' + util.regexpContent(value.content[0]) + '", intro="' + articleIntro + '", picUrl="' + value.picUrl[0] + '", picUrl2="' + value.picUrl2[0] + '",' +
                     'headLine=' + parseInt(value.headLine[0]) + ', suggest=' + parseInt(value.suggest[0]) + ', outUrl="' + value.outUrl[0] + '", keywords="' + value.keywords[0] + '", ' +
                     'path="' + value.path[0] + '", articleName="' + value.articleName[0] + '", author="' + value.author[0] + '", source="' + value.source[0] + '", sourceUrl="' + value.sourceUrl[0] + '", useSourceUrl="' + serverUtil.getCheckbox(value.useSourceUrl[0]) + '", ' +
                     'tempName="' + value.tempName[0] + '", orderBy=' + parseInt(value.orderBy[0]) + ', hits=' + parseInt(value.hits[0]) + ', stars=' + parseInt(value.stars[0]) + ', lastEditTime="' + util.dateFormat(new Date()) + '"' +

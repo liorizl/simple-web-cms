@@ -2,7 +2,9 @@ const mysql = require('../function/mysql.js');
 const util = require('../util/util.js');
 const redisClient = require('../function/redis.js');
 const config = require("../config/config.json");
-const beginReplace = async (html, ...arg) => {
+//...arg[0]: 'index or art or col' arg[1]: 'id or fid' arg[2]: page页数
+//arg[3]:url  arg[4]:build是否生成文件  arg[5]:webSetting
+const beginReplace = async (html, ...arg) => {  
     let regMatch, regExpAll, regExpG, promiseArr = [], promiseEnd, sum = null, num = null, pageList = null;
     regExpAll = /\[(litag)\].+\[\/\1\]/;
     regExpG = / *?\[(litag)\].+\[\/\1\]/g;
@@ -116,6 +118,8 @@ const replaceDynamicTag = async (tagStr, regExpAll, tag, ...arg) => {
                         reject(err)
                     });
                     break;
+                // case 'allArtCols':
+                //     break;
                 case 'position':
                     replacePosition(tagStr, regExpAll, tag, ...arg).then(async colArr => {
                         let tagParam = /\((.*?)\)/.exec(tagStr);
@@ -126,7 +130,7 @@ const replaceDynamicTag = async (tagStr, regExpAll, tag, ...arg) => {
                             const sql = 'select * from tagtemp where id=' + tagParam;
                             const resultSql = await mysql.nquery(sql);
                             if (resultSql.length === 0) {
-                                let str = '<div class="position">';
+                                let str = '<div class="nowPosi">';
                                 let last = colArr.pop();
                                 str += await replaceShortTag('<a href=[!--colurl--]>[!--title--]</a>>>', { self: colArr }, [], null, null, null, null, arg[5]);
                                 str += last;
@@ -179,7 +183,6 @@ const replacePosition = async (tagStr, regExpAll, tag, ...arg) => {
                             returnCol(sql, result.aid, ++i);
                         }
                     }
-
                 }
                 returnCol(sql, aid, i)
             })
@@ -212,12 +215,12 @@ const replacePosition = async (tagStr, regExpAll, tag, ...arg) => {
     })
 }
 const repalaceArtInCols = async (tagStr, regExpAll, tag, ...arg) => {
-    arg.push('isLoop');
+    arg.push('artInCols');
     return await repalaceArtInCol(tagStr, regExpAll, tag, ...arg)
 }
 const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
     return new Promise(async resolve => {
-        let tagCon, tarConArr;
+        let tagCon, tarConArr, colSqlCondition;
         tagCon = /\((.+?)\)/.exec(tagStr);
         if (tagCon) {
             tagCon = tagCon[1];
@@ -245,7 +248,10 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                 const introCut = parseInt(tarConArr[4]) > 0 ? parseInt(tarConArr[4]) : 0;  //简介截取长度,0为不截取
                 const paging = tarConArr[5] ? parseInt(tarConArr[5]) : 0;
                 const timeStyle = tarConArr[6] ? parseInt(tarConArr[6]) : 0;
-                const sqlCondition = tarConArr[7] && parseInt(tarConArr[7]) !== 0 ? tarConArr[7] : '';
+                let sqlCondition = tarConArr[7] && parseInt(tarConArr[7]) !== 0 ? tarConArr[7] : '';
+                if (/\,/.test(sqlCondition)) {
+                    sqlCondition = sqlCondition.split(',').join(' and ')
+                }
                 const orderBy = tarConArr[8] && parseInt(tarConArr[8]) !== 0 ? tarConArr[8] : '';
                 let tagParams = [];
                 tagParams = [num, titleCut, introCut, paging, timeStyle, orderBy, sqlCondition];
@@ -256,8 +262,13 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                 }
                 else {
                     let sql, idAll, sqlCondi, order;
-                    sqlCondi = sqlCondition ? ' and ' + sqlCondition : '';
-                    order = orderBy ? ' order by ' + orderBy : ''
+                    order = orderBy ? ' order by ' + orderBy : '';
+                    if (arg[6]) {
+                        colSqlCondition = tarConArr[11] && parseInt(tarConArr[11]) !== 0 ? tarConArr[11] : '';
+                    } else {
+                        colSqlCondition = tarConArr[9] && parseInt(tarConArr[9]) !== 0 ? tarConArr[9] : '';
+                    }
+                    sqlCondi = colSqlCondition ? ' and ' + colSqlCondition.replace(',', 'and') : '';
                     if (/\,+/.exec(tarConArr[0])) {
                         idAll = tarConArr[0].split(',');
                         idAll.forEach((id, index, idAll) => {
@@ -301,6 +312,7 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                             tagParams.push(styleClass);
                             const colOrderBy = tarConArr[10] && parseInt(tarConArr[10]) !== 0 ? tarConArr[10] : '';
                             if (colOrderBy) tagParams.push(colOrderBy);
+                            if (colSqlCondition) tagParams.push(colSqlCondition);
                             const regExpLoop = / *\[(loop)\](.*)\[\/\1\] */s;
                             let isLoop = regExpLoop.exec(temp);
                             if (!isLoop) {
@@ -311,13 +323,13 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                                 if (reSql.length >= 2) {
                                     let tempArr = [], promiseAll = [];
                                     for (let i = 0; i < reSql.length; i++) {
-                                        tempArr[i] = await replaceShortTag(temp.replace(isLoop[0], ''), { self: [reSql[i]] });
+                                        tempArr[i] = await replaceShortTag(temp, { self: [reSql[i]] }, [], null, null, null, null, arg[5]);
                                         promiseAll[i] = recurCol(reSql[i].cid, loopStr, tempList, tagParams, webset);
                                     }
                                     let html = ''
                                     Promise.all(promiseAll).then(htmlArr => {
                                         htmlArr.forEach((h, i) => {
-                                            html += tempArr[i] + h;
+                                            html += tempArr[i].replace(regExpLoop.exec(temp)[0], h);
                                         })
                                         resolve(html)
                                     })
@@ -329,21 +341,32 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                                     })
                                 }
                                 else {
-                                    temp = await replaceShortTag(temp, { self: [reSql[0]] });
+                                    temp = await replaceShortTag(temp, { self: [reSql[0]] }, [], null, null, null, null, arg[5]);
                                     recurCol(reSql[0].cid, loopStr, tempList, tagParams, webset).then(html => {
                                         temp = temp.replace(regExpLoop.exec(temp)[0], html)
                                         resolve(temp)
                                     })
                                 }
                             }
-                        } else {
+                        } else {   //artInCol标签
+                            const cids = cidAll.length > 1 ? cidAll : reSql[0].cid;
+                            let colCid
+                            //检查栏目下是否有子栏目  tarConArr[7]是sql查询条件
+                            await util.ultracolsInCols(cids).then(reCids => {
+                                if (Array.isArray(reCids)) {
+                                    cidAll = reCids
+                                } else {
+                                    colCid = reCids
+                                }
+                            })
                             let sql2, sqlWhere = '', sqlOrder = '', sqlLimit, artLen = null;
                             const havePageTag = /\[\!--pagelist--\]/i.exec(temp);
                             if (tarConArr[0] === '0') {
                                 sqlWhere = ''
                             } else {
-                                sqlWhere = cidAll.length > 1 ? ' where fid in (' + cidAll + ')' : ' where fid=' + reSql[0].cid;
+                                sqlWhere = cidAll.length > 1 ? ' where fid in (' + cidAll + ')' : ' where fid=' + colCid;
                             }
+                            sqlWhere = sqlCondition ? sqlWhere + ' and ' + sqlCondition : sqlWhere;
                             if (num > 0 && arg[2] >= 2) {
                                 sqlLimit = ' limit ' + (num * (arg[2] - 1)) + ',' + num;
                             }
@@ -366,7 +389,8 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                             if (artList.length === 0) {
                                 resolve("该栏目下没有文章" + tag + '<br>')
                             } else {
-                                temp = tarConArr[0] === '0' ? temp : await replaceShortTag(temp, { self: [reSql[0]] }, [num, 0, 0, paging], artLen, arg[2], arg[3], arg[4], arg[5]);
+                                const colids = tarConArr[0] === 'self' ? reSql[0].id : tarConArr[0];
+                                temp = tarConArr[0] === '0' ? temp : await replaceShortTag(temp, { self: [reSql[0]] }, [num, 0, 0, paging], artLen, arg[2], arg[3], arg[4], arg[5], null, null, colids);
                                 const tempList = reTemp[0].listcontent;
                                 const reg1 = / *?\[(listtemp)\]list\[\/\1\]/;
                                 const res1 = reg1.exec(temp);
@@ -404,51 +428,11 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
 }
 const recurCol = async (cid, loopStr, tempList, tagParams, webset) => {
     let htmlTempAll = '', x = 0, y = 0, tempIndent, tempListIndent, tempIndentLoopn;
-    const sqlCondition = tagParams[6] ? ',' + tagParams[6].toLowerCase() : '';
+    console.log(tagParams)
+    const sqlCondition = tagParams[6] ? ' and ' + tagParams[6].toLowerCase() : '';
     const order = tagParams[5] ? ' order by ' + tagParams[5] : '';
     const colOrder = tagParams[8] ? tagParams[8].toLowerCase() : null;
-    const condiJudge = (str, col) => {
-        if (!col) return false
-        let strArr = str.split(','), num = 0;
-        strArr = strArr.map(string => {
-            const objectArr = string.split('=')
-            let object = {}, objKey = objectArr[0], objValue = objectArr[1];
-            if (/\"/.test(objValue)) {
-                objValue = objValue.replace(/\"/g, '');
-            } else {
-                objValue = parseInt(objValue);
-            }
-            object[objKey] = objValue;
-            return object
-        })
-        strArr.forEach(obj => {
-            let firstKey = Object.keys(obj)[0]
-            if (col[firstKey] !== undefined && col[firstKey] === obj[firstKey]) {
-                num += 1
-            }
-        })
-        if (num === strArr.length) {
-            return true
-        } else {
-            return false
-        }
-    }
-    const filterCol = (condition, colObjs) => {
-        let cols = []
-        Object.keys(colObjs).forEach(key => {
-            if (condiJudge(condition, colObjs[key])) {
-                cols.push(colObjs[key]);
-            }
-        })
-        if (colOrder) {
-            let orderArr = colOrder.split('\,');
-            orderArr = orderArr.map(order => {
-                return order.split(/ +/)
-            })
-            cols.sort(util.compare(orderArr[0][0], orderArr[0][1], orderArr));
-        }
-        return cols
-    }
+    const colSqlCondition = tagParams[9] ? ',' + tagParams[9].toLowerCase() : '';
     const allCols = await new Promise((resolve, reject) => {
         redisClient.get(config.redis.colName, (err, v) => {
             if (err) reject(err)
@@ -473,7 +457,7 @@ const recurCol = async (cid, loopStr, tempList, tagParams, webset) => {
             const expList1 = / *\[(listtemp)\]list\[\/\1\]/;
             // const sql = 'select * from columns where aid=' + cid + ' and isUse="true"' + sqlCondition + order;
             // const resCol = await mysql.nquery(sql);
-            const resCol = filterCol('aid=' + cid + ',isuse="true"' + sqlCondition, allCols);
+            const resCol = util.filterCol('aid=' + cid + colSqlCondition, allCols, colOrder);
             if (resCol.length === 0) {
                 let htmlCon;
                 if (tagParams[0] === -1) {
@@ -481,20 +465,25 @@ const recurCol = async (cid, loopStr, tempList, tagParams, webset) => {
                 } else {
                     let sqlArt;
                     if (tagParams[0] > -1 && tagParams[0] !== 0) {
-                        sqlArt = 'select * from article where fid=' + cid + order + ' limit ' + tagParams[0];
+                        sqlArt = 'select * from article where fid=' + cid + sqlCondition + order + ' limit ' + tagParams[0];
                     } else {
-                        sqlArt = 'select * from article where fid=' + cid + order;
+                        sqlArt = 'select * from article where fid=' + cid + sqlCondition + order;
                     }
                     const resArt = await mysql.nquery(sqlArt);
                     htmlCon = resArt.length === 0 ?
                         '<li>该栏目没有文章!</li>' :
-                        await replaceShortTag(tempList, { self: resArt }, tagParams, null, null, null, null, webset);
+                        await replaceShortTag(tempList, { self: resArt }, tagParams, null, null, null, null, webset, 'linefeed');
                 }
                 if (nowIndex === 0) {
                     let noColTemp = /\[(loopn)\](.*)\[\/\1\]/s.exec(loopStr);
+                    let haveListTemp = expList.exec(loopStr)
+                    const listtempIndent = haveListTemp ? expList1.exec(loopStr)[0].indexOf('\[') : 0;
+                    htmlCon = util.increaseIndentLi(htmlCon, listtempIndent) ? util.increaseIndentLi(htmlCon, listtempIndent) : htmlCon;
                     if (noColTemp) {
                         noColTemp = noColTemp[2]
                         htmlTempAll = noColTemp.replace(expList, htmlCon);
+                    } else if (haveListTemp) {   //有listtemp标签就将它替换为文章
+                        htmlTempAll = loopStr.replace(expList, htmlCon);
                     }
                     resolve(htmlTempAll)
                 }
@@ -503,7 +492,8 @@ const recurCol = async (cid, loopStr, tempList, tagParams, webset) => {
                     if (!loopEnd) temp = temp + '\r\n';
                     if (expList1.exec(temp)) {
                         tempListIndent = expList1.exec(temp)[0].indexOf('\[');
-                        htmlCon = util.increaseIndentLi(htmlCon, tempListIndent, 4) ? util.increaseIndentLi(htmlCon, tempListIndent) : htmlCon;
+                        //增加空格为源代码对齐
+                        htmlCon = util.increaseIndentLi(htmlCon, tempListIndent) ? util.increaseIndentLi(htmlCon, tempListIndent) : htmlCon;
                     }
                     temp = temp.replace(expList, htmlCon);
                     if (loopEnd) {
@@ -513,12 +503,12 @@ const recurCol = async (cid, loopStr, tempList, tagParams, webset) => {
                     }
                 }
                 else {
-                    tempindent = temp.indexOf('\<');
+                    tempIndent = temp.indexOf('\<');
                     temp = temp.replace(/\[loopn\](\r\n) */, '').replace(/(\r\n)* *\[\/loopn\] */, '');
                     tempIndentLoopn = regLoop.exec(htmlTempAll) ? regLoop.exec(htmlTempAll)[0].indexOf('\[') : 0;
-                    temp = tempIndentLoopn !== 0 ? util.changeIndent(temp, tempindent, tempIndentLoopn) : temp;
+                    temp = tempIndentLoopn !== 0 ? util.changeIndent(temp, tempIndent, tempIndentLoopn) : temp;
                     tempListIndent = expList1.exec(temp)[0].indexOf('\[')
-                    htmlCon = util.increaseIndentLi(htmlCon, tempListIndent, 4) ? util.increaseIndentLi(htmlCon, tempListIndent) : htmlCon;
+                    htmlCon = util.increaseIndentLi(htmlCon, tempListIndent) ? util.increaseIndentLi(htmlCon, tempListIndent) : htmlCon;
                     if (loopEnd) {
                         temp = temp.replace(/\r\n$/, '')
                         temp = temp.replace(expList, htmlCon)
@@ -539,15 +529,20 @@ const recurCol = async (cid, loopStr, tempList, tagParams, webset) => {
                     if (haveLoopn) {
                         htmlTempAll = '[loop0][/loop0]'
                     } else {
-                        htmlTempAll = await replaceShortTag(loopStr, { self: resCol }, tagParams, null, null, null, null, webset);
-                        tempIndent = htmlTempAll.indexOf('\<');
-                        htmlTempAll = util.increaseIndentLi(htmlTempAll, tempIndent) ? util.increaseIndentLi(htmlTempAll, tempIndent) : htmlTempAll;
+                        if (expList.test(loopStr)) {  
+                            const resCols = util.filterCol('aid=' + cid + ',isuse="true"' + colSqlCondition, allCols, colOrder);
+                            let htmlColStr = await replaceShortTag(tempList, { self: resCols }, tagParams, null, null, null, null, webset, 'linefeed', 'tagInTagtemp');
+                            htmlTempAll = loopStr.replace(expList, htmlColStr);
+                        } else {
+                            htmlTempAll = htmlTempAll || loopStr;
+                            htmlTempAll = await replaceShortTag(htmlTempAll, { self: resCol }, tagParams, null, null, null, null, webset, 'linefeed', 'tagInTagtemp');
+                        }
                         resolve(htmlTempAll)
                     }
                 } else {
                     tempIndentLoopn = regLoop.exec(htmlTempAll) ? regLoop.exec(htmlTempAll)[0].indexOf('\[') : 0;
-                    tempindent = temp.indexOf('\<');
-                    temp = tempIndentLoopn !== 0 ? util.changeIndent(temp, tempindent, tempIndentLoopn) : temp;
+                    tempIndent = temp.indexOf('\<');
+                    temp = tempIndentLoopn !== 0 ? util.changeIndent(temp, tempIndent, tempIndentLoopn) : temp;
                     temp = temp.replace(/\r\n$/, '')
                     temp = temp.replace('[loopn]', '[loop' + nowIndex + ']').replace('[/loopn]', '[/loop' + nowIndex + ']');
                     if (!loopEnd) {
@@ -555,7 +550,6 @@ const recurCol = async (cid, loopStr, tempList, tagParams, webset) => {
                     }
                     if (exeLoop) htmlTempAll = htmlTempAll.replace(exeLoop[0], temp);
                 }
-                //for(let k = 0;k<resCol.length;k++){
                 for (let [k, col] of resCol.entries()) {
                     htmlTemp = await replaceShortTag(loopStr, { self: [resCol[k]] }, [], null, null, null, null, webset);
                     let styles = htmlTemp.match(/\{\$class\}/g);
@@ -637,17 +631,19 @@ const replaceSqlTag = async (tagStr, regExpAll, tag) => {
                 } else {
                     const sqlStr = sqlRes[0].sqlcontent;
                     const listStr = sqlRes[0].listcontent;
+                    const webset = await mysql.nquery('select * from websetting');
                     replaceSql(sqlStr, paramArr, tag).then(async sqlStrEnd => {
                         if (/^select/.test(sqlStrEnd)) {
                             await mysql.nquery(sqlStrEnd).then(async sqlResEnd => {
                                 if (sqlResEnd.length > 0) {
-                                    replaceShortTag(listStr, { self: sqlResEnd }, [], null, null, null, null, null, 'linefeed').then(html => {
+                                    replaceShortTag(listStr, { self: sqlResEnd }, [], null, null, null, null, webset, 'linefeed').then(html => {
                                         resolve(html)
                                     });
                                 } else {
                                     resolve('SQL标签：该栏目下没有文章！' + tag + "<br>");
                                 }
                             }).catch(err => {
+                                console.log(err)
                                 resolve('SQL查询语句错误！' + tag + "<br>");
                             });
                         } else {
@@ -723,7 +719,7 @@ const replaceField = async (html, sqlResult, tempNameList = null, webSetting = [
             let listDone = await replaceShortTag(tempList, { self: artList }, params, null, null, null, null, webSetting, 'linefeed');
             listDone = util.increaseIndent(listDone, listtempIndent)
             html = html.replace(reExec[0], listDone);
-            html = await replaceShortTag(html, sqlResult);
+            html = await replaceShortTag(html, sqlResult, [], null, null, null, null, webSetting);
             if (args[2] === 'build' && regexpPage) {
                 return { htmlC: html, num: num, sum: resAll, pageList: 'true' }
             } else {
@@ -734,14 +730,17 @@ const replaceField = async (html, sqlResult, tempNameList = null, webSetting = [
         return await replaceShortTag(html, sqlResult, [], null, null, null, null, webSetting);
     }
 }
-const replaceShortTag = (temp, reSql, argArr = [], ...args) => {   //参数temp, {self:[obj], parent:obj}, [num, titleCut, introCut, paging, timeStyle], artLen, page, url, 'build', webSetting=[obj], linefeed
+//参数temp, {self:[obj], parent:obj}, [num, titleCut, introCut, paging, timeStyle], artLen, page, url, 'build', webSetting=[obj], linefeed, tagInTagtemp, colids
+const replaceShortTag = (temp, reSql, argArr = [], ...args) => {   
     return new Promise(async resolve => {
         const regExec = /\[\!--(\w+)--\]/;
         let resEnd = '', newReSql, webset;
         newReSql = util.objKeysToLower(reSql);
         if (!newReSql) { resolve('内容对象参数不正确') }
         reSql = {};
-        webset = args[4] ? args[4][0] : null;
+        webset = args[4] ? 
+                    Array.isArray(args[4]) ? args[4][0] : args[4] : 
+                    null;
         //temp = temp.toLowerCase();
         const reShortTag = async (tempStr, reSqlObj, parent) => {
             return new Promise(resolve => {
@@ -800,10 +799,10 @@ const replaceShortTag = (temp, reSql, argArr = [], ...args) => {   //参数temp,
                                 break;
                             case 'pagelist':
                                 if (args[3] === 'build' && argArr[0] > 0 && argArr[3] > 0) {
-                                    tempStr = tempStr.replace(fieldString, util.makePaging(argArr[0], args[1], args[0], argArr[4], args[2], args[3]));
+                                    tempStr = tempStr.replace(fieldString, util.makePaging(argArr[0], args[1], args[0], argArr[3], args[2], args[3], args[7]));
                                 }
                                 else if (argArr[0] > 0 && argArr[3] > 0) {
-                                    tempStr = tempStr.replace(fieldString, util.makePaging(argArr[0], args[1], args[0], argArr[4], args[2]));
+                                    tempStr = tempStr.replace(fieldString, util.makePaging(argArr[0], args[1], args[0], argArr[3], args[2], null, args[7]));
                                 }
                                 else {
                                     tempStr = tempStr.replace(fieldString, '该分页没有设置显示条数或者分页样式！');
@@ -915,7 +914,11 @@ const replaceShortTag = (temp, reSql, argArr = [], ...args) => {   //参数temp,
         }
         for (let [i, re] of newReSql.self.entries()) {
             let reTemp = await reShortTag(temp, re, newReSql.parent);
-            if (i !== newReSql.self.length - 1 && args[5]) {
+            const regTag = /\[(litag)\].+\[\/\1\]/;
+            if (args[6] === 'tagInTagtemp' && regTag.test(reTemp)) {  //当标签模版中还有标签事继续解析
+                reTemp = await beginReplace(reTemp, 'col', re.id, null, null, null, webset);
+            }
+            if (i !== newReSql.self.length - 1 && args[5] === 'linefeed') {
                 reTemp = reTemp + '\r\n';
             }
             resEnd += reTemp;
