@@ -19,6 +19,6 @@
     "redis": {
         "host": "localhost",
         "port": 6379,
-        "colName": "pcdhcol"
+        "colName": "dhcol"
     }
 }

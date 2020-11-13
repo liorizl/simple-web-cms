@@ -2,7 +2,8 @@ const mysql = require('../function/mysql.js');
 const util = require('../util/util.js');
 const multiparty = require('multiparty');
 const serverUtil = require('./serverUtil.js');
-const jsTemp = require('../function/buildJsTemplate.js');
+const hitTemp = require('../function/hitJsTemplate.js');
+const bannerTemp = require('../function/bannerJsTemplate.js');
 const config = require("../config/config.json");
 const fs = require('fs');
 const md5 = require('md5-node');
@@ -158,18 +159,38 @@ module.exports = {
             ctx.body = { myStatus: 0, mes: '用户名或密码不正确!' }
         }
     },
-    buildJs: async ctx => {
-        const buildJsTemp = jsTemp(config.hostName, config.port);
+    buildHitsJs: async ctx => {
+        const hitJsTemp = hitTemp(config.hostName, config.port);
         //const path = config.staticWebPath+config.staticWebName+'/static/js/';  //生成到WEB目录下
         const path = './statics/static/js/';
         const exist = await util.statPath(path, 'isDir', 'create');
         if (exist === 1 || exist === 3) {
             await new Promise(resolve => {
-                fs.writeFile(path + 'showClick.js', buildJsTemp, err => {
+                fs.writeFile(path + 'showClick.js', hitJsTemp, err => {
                     if (err) {
                         resolve({ myStatus: 0 })
                     } else {
                         resolve({ myStatus: 1, name: 'showClick.js', path: path })
+                    }
+                })
+            }).then(value => {
+                ctx.body = value
+            })
+        } else {
+            ctx.body = { myStatus: 0 }
+        }
+    },
+    buildBannerJs: async ctx => {
+        const bannerJsTemp = bannerTemp(config.hostName, config.port);
+        const path = './statics/static/js/';
+        const exist = await util.statPath(path, 'isDir', 'create');
+        if (exist === 1 || exist === 3) {
+            await new Promise(resolve => {
+                fs.writeFile(path + 'showBanner.js', bannerJsTemp, err => {
+                    if (err) {
+                        resolve({ myStatus: 0 })
+                    } else {
+                        resolve({ myStatus: 1, name: 'showBanner.js', path: path })
                     }
                 })
             }).then(value => {

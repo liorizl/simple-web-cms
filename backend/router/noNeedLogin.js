@@ -112,5 +112,15 @@ module.exports = [
         method: 'get',
         url: '/loadMore',
         middleware: noNeedLogin.loadMore
+    },
+    {
+        method: 'get',
+        url: '/getSearchArtX',
+        middleware: noNeedLogin.getSearchArtX
+    },
+    {
+        method: 'get',
+        url: '/valiArtInCol',
+        middleware: noNeedLogin.valiArtInCol
     }
 ]

@@ -13,13 +13,17 @@ module.exports = {
         new CleanWebpackPlugin(),
     ],
     target: 'node',
-    externals: [nodeExternals(),{"../config/config.json":"commonjs ./config/config.json","./config/config.json":"commonjs ./config/config.json"}],
+    externals: [
+        nodeExternals(),
+        {
+            "../config/config.json": "commonjs ./config/config.json",
+            "./config/config.json": "commonjs ./config/config.json"
+        }
+    ],
     module: {
-        rules: [
-            {
-                test: /\.css/,
-                use: ["ignore-loader"]
-            }
-        ]
+        rules: [{
+            test: /\.css/,
+            use: ["ignore-loader"]
+        }]
     },
 }

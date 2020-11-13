@@ -15,7 +15,7 @@ module.exports = {
                 sql = 'update columns set ultimate="' + serverUtil.getCheckbox(value.ultimate[0]) + '", aid=' + parseInt(value.aid[0]) + ', title="' + value.colName[0] + '", alias="' + value.colNamePin[0] + '", ' +
                     'path1="' + value.path1[0] + '", path2="' + value.path2[0] + '", colImg="' + value.colImg[0] + '", ' +
                     'keyword="' + value.keyword[0] + '", description="' + value.describe[0] + '", isUse="' + serverUtil.getCheckbox(value.isUse[0]) + '", ' +
-                    'orderBy="' + value.orderBy + '", isNav="' + serverUtil.getCheckbox(value.isNav[0]) + '", outUrl="' + value.outUrl + '", tempMode="' + value.tempMode[0] + '", ' +
+                    'orderBy="' + value.orderBy + '", isNav="' + serverUtil.getCheckbox(value.isNav[0]) + '", suggest='+parseInt(value.suggest[0])+', outUrl="' + value.outUrl + '", tempMode="' + value.tempMode[0] + '", ' +
                     'tempCover="' + value.coverTemp[0] + '", tempList="' + value.listTemp[0] + '", listTempInClass="' + value.listTempInClass[0] + '", ' +
                     'tempContent="' + value.contentTemp[0] + '", listOrder="' + value.listOrder[0] + '", ' +
                     'listActive="' + value.listActive[0] + '", contentOrder="' + value.contentOrder[0] + '", contentActive="' + value.contentActive[0] + '", ' +
@@ -23,11 +23,11 @@ module.exports = {
                     'lastEditDate="' + util.dateFormat(new Date()) + '" where id=' + id;
             } else {
                 sql = 'insert into columns(cid, ultimate, is_root, aid, title, alias, path1, path2, colImg, ' +
-                    'keyword, description, isUse, orderBy, isNav, outUrl, tempMode, tempCover, ' +
+                    'keyword, description, isUse, orderBy, isNav, suggest, outUrl, tempMode, tempCover, ' +
                     'tempList, listTempInClass, tempContent, listOrder, listActive, contentOrder, contentActive, ' +
                     'hits, extendName, showNum, pageNum, upTime) value("' + cid + '", "' + serverUtil.getCheckbox(value.ultimate[0]) + '", "", ' +
                     aid + ', "' + value.colName[0] + '", "' + value.colNamePin[0] + '", "' + value.path1[0] + '", "' + value.path2[0] + '", "' + value.colImg[0] + '", "' + value.keyword[0] + '", ' +
-                    '"' + value.describe[0] + '", "' + serverUtil.getCheckbox(value.isUse[0]) + '", "' + value.orderBy + '", "' + serverUtil.getCheckbox(value.isNav[0]) + '", "' + value.outUrl + '", ' +
+                    '"' + value.describe[0] + '", "' + serverUtil.getCheckbox(value.isUse[0]) + '", "' + value.orderBy + '", "' + serverUtil.getCheckbox(value.isNav[0]) + '", '+parseInt(value.suggest[0])+', "' + value.outUrl + '", ' +
                     '"' + value.tempMode[0] + '", "' + value.coverTemp[0] + '", "' + value.listTemp[0] + '", "' + value.listTempInClass[0] + '", "' + value.contentTemp[0] + '", ' +
                     '"' + value.listOrder[0] + '", "' + value.listActive[0] + '", "' + value.contentOrder[0] + '", "' + value.contentActive[0] + '", ' +
                     '"' + value.hits[0] + '", "' + value.extend[0] + '", "' + value.showNum[0] + '", "' + value.pageNum[0] + '", "' + util.dateFormat(new Date()) + '")';
@@ -70,11 +70,11 @@ module.exports = {
             const cid = new Date().getTime();
             const aid = parseInt(value.position[0]) === 0 ? 0 : parseInt(value.cid[0]);
             const sql = 'insert into columns(cid, ultimate, is_root, aid, title, alias, path1, path2, colImg, ' +
-                'keyword, description, isUse, orderBy, isNav, outUrl, tempMode, tempCover, ' +
+                'keyword, description, isUse, orderBy, isNav, suggest, outUrl, tempMode, tempCover, ' +
                 'tempList, listTempInClass, tempContent, listOrder, listActive, contentOrder, contentActive, ' +
                 'hits, extendName, showNum, pageNum, upTime) value("' + cid + '", "' + serverUtil.getCheckbox(value.ultimate[0]) + '", "", ' +
                 aid + ', "' + value.colName[0] + '", "' + value.colNamePin[0] + '", "' + value.path1[0] + '", "' + value.path2[0] + '", "' + value.colImg[0] + '", "' + value.keyword[0] + '", ' +
-                '"' + value.describe[0] + '", "' + serverUtil.getCheckbox(value.isUse[0]) + '", "' + value.orderBy + '", "' + serverUtil.getCheckbox(value.isNav[0]) + '", "' + value.outUrl + '", ' +
+                '"' + value.describe[0] + '", "' + serverUtil.getCheckbox(value.isUse[0]) + '", "' + value.orderBy + '", "' + serverUtil.getCheckbox(value.isNav[0]) + '", '+ parseInt(value.suggest[0]) +', "' + value.outUrl + '", ' +
                 '"' + value.tempMode[0] + '", "' + value.coverTemp[0] + '", "' + value.listTemp[0] + '", "' + value.listTempInClass[0] + '", "' + value.contentTemp[0] + '", ' +
                 '"' + value.listOrder[0] + '", "' + value.listActive[0] + '", "' + value.contentOrder[0] + '", "' + value.contentActive[0] + '", ' +
                 '"' + value.hits[0] + '", "' + value.extend[0] + '", "' + value.showNum[0] + '", "' + value.pageNum[0] + '", "' + util.dateFormat(new Date()) + '")';

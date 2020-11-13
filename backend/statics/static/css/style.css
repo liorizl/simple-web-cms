@@ -29,7 +29,9 @@
     margin-left: 10px;
 }
 .pageType3 {
-    width: 90%; 
+    display: block;
+    width: 90%;
+    max-width: 340px;
     height: 2rem;
     margin: 1rem auto;
     background-color: #b32734;

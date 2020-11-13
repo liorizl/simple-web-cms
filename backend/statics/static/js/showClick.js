@@ -29,7 +29,7 @@
         hitIdNew.forEach(ids => {
             ids.forEach((id, i, ids) => {
                 if (typeof id !== 'number') {
-                    myajax({
+                    $.ajax({
                         async: 'false',
                         method: 'get',
                         // dataType: "jsonp",

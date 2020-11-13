@@ -2,6 +2,7 @@ const mysql = require('../function/mysql.js');
 const ip = require("ip");
 const config = require("../config/config.json");
 const util = require('../util/util.js');
+const mysqlModule = require("mysql");
 module.exports = {
     showHit: async ctx => {
         const id = parseInt(ctx.query.id);
@@ -93,7 +94,7 @@ module.exports = {
     },
     getArtCon: async ctx => {
         const id = parseInt(ctx.query.id);
-        const sql = 'select id, fid, title, keywords, description, picUrl, isIndex, path, isUse, upTime, hits, stars, articleName, content, intro from article where id=' + id;
+        const sql = 'select id, fid, title, keyword, description, picUrl, isIndex, path, isUse, upTime, hits, stars, articleName, content, intro from article where id=' + id;
         const artCon = await mysql.nquery(sql);
         ctx.body = artCon;
     },
@@ -154,21 +155,24 @@ module.exports = {
         }
     },
     getSearchArt: async ctx => {
-        const {keyword, scope} = ctx.query;
+        let {keyword, scope} = ctx.query;
+        keyword = keyword.slice(0, 8)
+        keyword = keyword.replace(/\<.*?\>*/g, '');
+        keyword = keyword.replace(/\=|\,|\:|"|'/g, '');
         const start = parseInt(ctx.query.start);
         const count = parseInt(ctx.query.count);
         let sql, sqlCount;
         switch (scope) {
             case 'content': 
-                sql = 'select id,fid,title,content,path from article where content like "%' + keyword + '%" order by id desc limit '+start+',' + count;
+                sql = 'select id,fid,title,content,path,articlename from article where content like "%' + keyword + '%" order by id desc limit '+start+',' + count;
                 sqlCount = 'select count(*) from article where content like "%' + keyword + '%"';
                 break;
             case 'column': 
-                sql = 'select id,alias,path1,title from columns where title like "%' + keyword + '%" order by id desc limit '+start+',' + count;
+                sql = 'select id,alias,path1,path2,title from columns where title like "%' + keyword + '%" order by id desc limit '+start+',' + count;
                 sqlCount = 'select count(*) from columns where title like "%' + keyword + '%"';
                 break;
             default:
-                sql = 'select id,fid,title,content,path from article where title like "%' + keyword + '%" order by id desc limit '+start+',' + count;
+                sql = 'select id,fid,title,content,path,articlename from article where title like "%' + keyword + '%" order by id desc limit '+start+',' + count;
                 sqlCount = 'select count(*) from article where title like "%' + keyword + '%"';
                 break;
         }
@@ -182,6 +186,85 @@ module.exports = {
             res,
             resCount
         };
+    },
+    getSearchArtX: async ctx => {
+        const pool = mysqlModule.createPool({
+            host: "localhost",
+            user: "root",
+            password: "liori",
+            prot: "3306",
+            database: "adadh"
+        });
+        const nquery = function (sql) {
+            return new Promise(
+                (resolve, reject) => {
+                    pool.getConnection((err, conn) => {
+                        if (err) {
+                            console.log('err')
+                            reject(err)
+                        }
+                        else {
+                            conn.query(sql, (error, result) => {
+                                if (error) {
+                                    reject({
+                                        sqlMessage: error.sqlMessage,
+                                        sqlState: error.sqlState,
+                                        sqlErrno: error.errno,
+                                        sqlStr: error.sql
+                                    })
+                                }
+                                else {
+                                    let sqlData = JSON.stringify(result);
+                                    sqlData = JSON.parse(sqlData)
+                                    resolve(sqlData)
+                                }
+                                conn.release()
+                            })
+                        }
+                    })
+                }
+            )
+        }
+        let searchword = ctx.query.searchword;
+        searchword = searchword.slice(0, 8)
+        searchword = searchword.replace(/\<.*?\>*/g, '');
+        searchword = searchword.replace(/\=|\,|\:|"|'/g, '');
+        const sql1 = 'select id,title,content,class1,class2,class3 from met_dhnews where content like "%' + searchword + '%" order by id desc';
+        const sql2 = 'select id,title,content,class1,class2,class3 from met_dhproduct where content like "%' + searchword + '%" order by id desc';
+        await Promise.all([nquery(sql1), nquery(sql2)]).then(async ([newsArt, proArt]) => {
+            if (newsArt.length > 0) {
+                let artI, colName;
+                for (let i = 0; i < newsArt.length; i++) {
+                    let con = newsArt[i].content;
+                    con = con.replace(/\<.*?\>/, '');
+                    newsArt[i].content = con;
+                    if (newsArt[i].class1 !== artI) {
+                        artI = newsArt[i].class1
+                        const sqlNewsArt = 'select foldername from met_dhcolumn where id=' + artI;
+                        const col = await nquery(sqlNewsArt);
+                        colName = col[0].foldername
+                    }
+                    newsArt[i].colName = colName
+                }
+            }
+            if (proArt.length > 0) {
+                let newI, colName1;
+                for (let i = 0; i < newsArt.length; i++) {
+                    let con = newsArt[i].content;
+                    con = con.replace(/\<.*?\>/, '');
+                    newsArt[i].content = con;
+                    if (newsArt[i].class1 !== newI) {
+                        newI = newsArt[i].class1
+                        const sqlNewsArt = 'select foldername from met_dhcolumn where id=' + newI;
+                        const col = await nquery(sqlNewsArt);
+                        colName1 = col[0].foldername
+                    }
+                    newsArt[i].colName = colName1
+                }
+            }
+            ctx.body = newsArt.concat(proArt);
+        })
+        
     },
     getWebSetting: async ctx => {
         const sql = 'select webName,keyword,description from websetting';
@@ -230,9 +313,28 @@ module.exports = {
             const where = Array.isArray(cols) ? 'fid in ('+ cols + ')' : 'fid='+ cols;
             const sql ='select id,title,picurl,path,articlename from article where '+ where +' limit '+ (page * 8) +',8';
             const res = await mysql.nquery(sql);
+            res.forEach(art => {
+                if (!art.picurl) {
+                    art.picurl = '/images/nopic.jpg'
+                }
+            })
             ctx.body = res;
         })
-        
+    },
+    valiArtInCol: async ctx => {
+        const alias = ctx.query.alias;
+        const id = parseInt(ctx.query.id);
+        const sql = 'select path from article where id=' + id;
+        const result = await mysql.nquery(sql);
+        let artInCol = false;
+        if (result.length > 0) {
+            let pathArr = result[0].path.split('/');
+            const pathAlias = pathArr.length > 1 ? pathArr[pathArr.length - 1] : pathArr[0];
+            if (pathAlias === alias) artInCol = true
+        }
+        ctx.body = {
+            artInCol,
+        }
     }
 }
 const getColClient = async (arr) => {

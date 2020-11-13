@@ -98,7 +98,8 @@ module.exports = {
         const act = ctx.query.act;
         await serverUtil.getForm(ctx.req).then(async value => {
             let sql, myStatus, build, insertId, articleIntro;
-            articleIntro = value.intro[0] ? util.replaceIntro(value.intro[0]) : util.replaceIntro(value.content[0]);
+            articleIntro = value.intro[0] ? util.replaceIntro(value.intro[0]) : '';
+            artDes = value.description[0] ? util.replaceDescription(value.description[0]) : '';
             if (act === 'add') {
                 let artName = value.articleName[0], articleName;
                 let haveName = await module.exports.checkArticleName(artName);
@@ -108,18 +109,19 @@ module.exports = {
                 } else {
                     articleName = artName;
                 }
-                sql = 'insert into article(fid, title, mainTitle, viceTitle, isIndex, isUse, headLine, suggest, outUrl, keywords, content, intro, picUrl, picUrl2, path, articleName, author, source, sourceUrl, useSourceUrl, ' +
-                    'tempName, orderBy, hits, stars, upTime) value(' + parseInt(tid) + ', "' + value.title[0] + '", "' + value.mainTitle[0] + '", "' + value.viceTitle[0] + '", "' + serverUtil.getCheckbox(value.isIndex[0]) + '", "' + serverUtil.getCheckbox(value.isUse[0]) + '", ' +
-                    parseInt(value.headLine[0]) + ', ' + parseInt(value.headLine[0]) + ', "' + value.outUrl[0] + '", "' + value.keywords[0] + '", ' +
+                sql = 'insert into article(fid, title, mainTitle, viceTitle, isIndex, isUse, headLine, suggest, outUrl, keyword, content, intro, picUrl, picUrl2, path, articleName, author, source, sourceUrl, useSourceUrl, ' +
+                    'tempName, description, orderBy, hits, stars, upTime) value(' + parseInt(tid) + ', "' + value.title[0] + '", "' + value.mainTitle[0] + '", "' + value.viceTitle[0] + '", "' + serverUtil.getCheckbox(value.isIndex[0]) + '", "' + serverUtil.getCheckbox(value.isUse[0]) + '", ' +
+                    parseInt(value.headLine[0]) + ', ' + parseInt(value.headLine[0]) + ', "' + value.outUrl[0] + '", "' + value.keyword[0] + '", ' +
                     '"' + util.regexpContent(value.content[0]) + '", "' + articleIntro + '", "' + value.picUrl[0] + '", "' + value.picUrl2[0] + '", "' + value.path[0] + '", "' + articleName + '", "' + value.author[0] + '", ' +
-                    '"' + value.source[0] + '", "' + value.sourceUrl[0] + '", "' + serverUtil.getCheckbox(value.useSourceUrl[0]) + '", "' + value.tempName[0] + '", ' + parseInt(value.orderBy[0]) + ', ' + parseInt(value.hits[0]) + ', ' + parseInt(value.stars[0]) + ', "' + util.dateFormat(new Date()) + '")';
+                    '"' + value.source[0] + '", "' + value.sourceUrl[0] + '", "' + serverUtil.getCheckbox(value.useSourceUrl[0]) + '", "' + value.tempName[0] + '", ' +
+                    '"' + artDes + '", ' + parseInt(value.orderBy[0]) + ', ' + parseInt(value.hits[0]) + ', ' + parseInt(value.stars[0]) + ', "' + util.dateFormat(new Date()) + '")';
             }
             else if (act === 'edit') {
                 sql = 'update article set title="' + value.title[0] + '", mainTitle="' + value.mainTitle[0] + '", viceTitle="' + value.viceTitle[0] + '", isIndex="' + serverUtil.getCheckbox(value.isIndex[0]) + '", ' +
                     'isUse="' + serverUtil.getCheckbox(value.isUse[0]) + '", content="' + util.regexpContent(value.content[0]) + '", intro="' + articleIntro + '", picUrl="' + value.picUrl[0] + '", picUrl2="' + value.picUrl2[0] + '",' +
-                    'headLine=' + parseInt(value.headLine[0]) + ', suggest=' + parseInt(value.suggest[0]) + ', outUrl="' + value.outUrl[0] + '", keywords="' + value.keywords[0] + '", ' +
+                    'headLine=' + parseInt(value.headLine[0]) + ', suggest=' + parseInt(value.suggest[0]) + ', outUrl="' + value.outUrl[0] + '", keyword="' + value.keyword[0] + '", ' +
                     'path="' + value.path[0] + '", articleName="' + value.articleName[0] + '", author="' + value.author[0] + '", source="' + value.source[0] + '", sourceUrl="' + value.sourceUrl[0] + '", useSourceUrl="' + serverUtil.getCheckbox(value.useSourceUrl[0]) + '", ' +
-                    'tempName="' + value.tempName[0] + '", orderBy=' + parseInt(value.orderBy[0]) + ', hits=' + parseInt(value.hits[0]) + ', stars=' + parseInt(value.stars[0]) + ', lastEditTime="' + util.dateFormat(new Date()) + '"' +
+                    'tempName="' + value.tempName[0] + '", description="'+ artDes +'", orderBy=' + parseInt(value.orderBy[0]) + ', hits=' + parseInt(value.hits[0]) + ', stars=' + parseInt(value.stars[0]) + ', lastEditTime="' + util.dateFormat(new Date()) + '"' +
                     ' where id = ' + parseInt(tid);
             }
             const result = await mysql.nquery(sql);
@@ -255,11 +257,11 @@ module.exports = {
         if (act === 'copy') {
             let sqlArts, arts;
             if (artId.length > 1) {
-                sqlArts = 'select fid, title, mainTitle, viceTitle, isIndex, isUse, headLine, suggest, outUrl, keywords, content, intro, picUrl, path, articleName, author, source, sourceUrl, useSourceUrl, ' +
-                    'tempName, orderBy, hits, stars, upTime from article where ' + sqlWhere + ' order by id asc';
+                sqlArts = 'select fid, title, mainTitle, viceTitle, isIndex, isUse, headLine, suggest, outUrl, keyword, content, intro, picUrl, path, articleName, author, source, sourceUrl, useSourceUrl, ' +
+                    'tempName, description, orderBy, hits, stars, upTime from article where ' + sqlWhere + ' order by id asc';
             } else {
-                sqlArts = 'select fid, title, mainTitle, viceTitle, isIndex, isUse, headLine, suggest, outUrl, keywords, content, intro, picUrl, path, articleName, author, source, sourceUrl, useSourceUrl, ' +
-                    'tempName, orderBy, hits, stars, upTime from article where ' + sqlWhere;
+                sqlArts = 'select fid, title, mainTitle, viceTitle, isIndex, isUse, headLine, suggest, outUrl, keyword, content, intro, picUrl, path, articleName, author, source, sourceUrl, useSourceUrl, ' +
+                    'tempName, description, orderBy, hits, stars, upTime from article where ' + sqlWhere;
             }
             const articles = await mysql.nquery(sqlArts);
             if (articles.length < 1) {
@@ -276,8 +278,8 @@ module.exports = {
                     return index === 0 ? cid : ar
                 })
             })
-            const sql = 'insert into article(fid, title, mainTitle, viceTitle, isIndex, isUse, headLine, suggest, outUrl, keywords, content, intro, picUrl, path, articleName, author, source, sourceUrl, useSourceUrl, ' +
-                'tempName, orderBy, hits, stars, upTime) values ?'
+            const sql = 'insert into article(fid, title, mainTitle, viceTitle, isIndex, isUse, headLine, suggest, outUrl, keyword, content, intro, picUrl, path, articleName, author, source, sourceUrl, useSourceUrl, ' +
+                'tempName, description, orderBy, hits, stars, upTime) values ?'
             const result = await mysql.multquery(sql, [arts]);
             ctx.body = { myStatus: 1, num: result.affectedRows }
         } else if (act === 'dele') {

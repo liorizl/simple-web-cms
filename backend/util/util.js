@@ -69,6 +69,12 @@ const util = {
         result = result.substr(0, 120);
         return result
     },
+    replaceDescription: content => {
+        const reg = /\<.*\>/gs;
+        let result = content.replace(reg, '');
+        result = result.substr(0, 120);
+        return result
+    },
     getPercent: (num, sum) => {
         return Math.ceil(((num + 1) / sum) * 100)
     },
@@ -304,7 +310,7 @@ const util = {
             html += '页</span>';
             html += '</div>';
         } else if (type === 3) {
-            html = '<div class="pageType3" data-sum="' + len + '" data-ids="'+ colids +'" data-build="'+isBuild+'">加载更多</div>';
+            html = '<a class="pageType3" data-sum="' + len + '" data-ids="'+ colids +'" data-build="'+isBuild+'">加载更多</a>';
         }
         return html
     },

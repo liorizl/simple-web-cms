@@ -45,7 +45,7 @@ const replaceTag = async (tag, regExpAll, ...arg) => {
                 let tagStr = resExec[2].replace(tagName + '.', "");
                 switch (tagName) {
                     case 'temp':
-                        replaceHtml(tagStr, regExpAll, tag).then(html => {
+                        replaceHtml(tagStr, regExpAll, tag, ...arg).then(html => {
                             html = util.increaseIndent(html, tagIndent);
                             resolve(html)
                         });
@@ -77,7 +77,7 @@ const replaceTag = async (tag, regExpAll, ...arg) => {
         }
     })
 }
-const replaceHtml = async (tagStr, regExpAll, tag) => {
+const replaceHtml = async (tagStr, regExpAll, tag, ...arg) => {
     return new Promise(async (resolve, reject) => {
         let result, resExec;
         const sql = 'select * from tag where callName="' + tagStr + '"';
@@ -88,8 +88,10 @@ const replaceHtml = async (tagStr, regExpAll, tag) => {
             result = result[0].content;
             resExec = regExpAll.exec(result)
             if (resExec) {
-                beginReplace(result).then(html => {
+                beginReplace(result, ...arg).then(html => {
                     resolve(html)
+                }).catch(err => {
+                    reject(err)
                 })
             } else {
                 resolve(result)
@@ -268,7 +270,7 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                     } else {
                         colSqlCondition = tarConArr[9] && parseInt(tarConArr[9]) !== 0 ? tarConArr[9] : '';
                     }
-                    sqlCondi = colSqlCondition ? ' and ' + colSqlCondition.replace(',', 'and') : '';
+                    sqlCondi = colSqlCondition ? ' and ' + colSqlCondition.replace(',', ' and ') : '';
                     if (/\,+/.exec(tarConArr[0])) {
                         idAll = tarConArr[0].split(',');
                         idAll.forEach((id, index, idAll) => {
@@ -285,7 +287,10 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                     else {
                         sql = 'select * from columns where id = ' + parseInt(tarConArr[0]) + sqlCondi + order;
                     }
-                    const reSql = tarConArr[0] === '0' ? [0] : await mysql.nquery(sql);
+                    const reSql = tarConArr[0] === '0' ? [0] : await mysql.nquery(sql).catch(err => {
+                        console.error(err);
+                        resolve(tag + '标签不正确');
+                    });
                     if (reSql.length === 0 && tarConArr[0] !== '0') {
                         resolve('没有内容或标签' + tag + '第一个参数（栏目名）或者标签sql条件不正确，导致查询不到栏目！<br>');
                     } else {
@@ -311,7 +316,7 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                             }
                             tagParams.push(styleClass);
                             const colOrderBy = tarConArr[10] && parseInt(tarConArr[10]) !== 0 ? tarConArr[10] : '';
-                            if (colOrderBy) tagParams.push(colOrderBy);
+                            tagParams.push(colOrderBy);
                             if (colSqlCondition) tagParams.push(colSqlCondition);
                             const regExpLoop = / *\[(loop)\](.*)\[\/\1\] */s;
                             let isLoop = regExpLoop.exec(temp);
@@ -323,7 +328,7 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                                 if (reSql.length >= 2) {
                                     let tempArr = [], promiseAll = [];
                                     for (let i = 0; i < reSql.length; i++) {
-                                        tempArr[i] = await replaceShortTag(temp, { self: [reSql[i]] }, [], null, null, null, null, arg[5]);
+                                        tempArr[i] = await replaceShortTag(temp, { self: [reSql[i]] }, [], null, null, null, null, webset);
                                         promiseAll[i] = recurCol(reSql[i].cid, loopStr, tempList, tagParams, webset);
                                     }
                                     let html = ''
@@ -332,12 +337,19 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                                             html += tempArr[i].replace(regExpLoop.exec(temp)[0], h);
                                         })
                                         resolve(html)
+                                    }).catch(err => {
+                                        console.error(err);
+                                        resolve(tag + '标签错误！');
                                     })
                                 }
                                 else if (reSql[0] === 0) {
+                                    temp = await replaceShortTag(temp, {self: webset}, [], null, null, null, null, arg[5]);
                                     recurCol(0, loopStr, tempList, tagParams, webset).then(html => {
                                         temp = temp.replace(regExpLoop.exec(temp)[0], html)
                                         resolve(temp)
+                                    }).catch(err => {
+                                        console.error(err);
+                                        resolve(tag + '标签错误！');
                                     })
                                 }
                                 else {
@@ -345,6 +357,9 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                                     recurCol(reSql[0].cid, loopStr, tempList, tagParams, webset).then(html => {
                                         temp = temp.replace(regExpLoop.exec(temp)[0], html)
                                         resolve(temp)
+                                    }).catch(err => {
+                                        console.error(err);
+                                        resolve(tag + '标签错误！');
                                     })
                                 }
                             }
@@ -359,7 +374,7 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                                     colCid = reCids
                                 }
                             })
-                            let sql2, sqlWhere = '', sqlOrder = '', sqlLimit, artLen = null;
+                            let sql2, sqlWhere = '', sqlOrder = '', sqlLimit = '', artLen = null;
                             const havePageTag = /\[\!--pagelist--\]/i.exec(temp);
                             if (tarConArr[0] === '0') {
                                 sqlWhere = ''
@@ -367,14 +382,13 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                                 sqlWhere = cidAll.length > 1 ? ' where fid in (' + cidAll + ')' : ' where fid=' + colCid;
                             }
                             sqlWhere = sqlCondition ? sqlWhere + ' and ' + sqlCondition : sqlWhere;
-                            if (num > 0 && arg[2] >= 2) {
-                                sqlLimit = ' limit ' + (num * (arg[2] - 1)) + ',' + num;
-                            }
-                            else {
-                                sqlLimit = num > 0 ? ' limit ' + num : '';
-                            }
-                            if (tarConArr[7] && tarConArr[7] !== '0') {
-                                sqlWhere += tarConArr[0] === '0' ? ' where ' + tarConArr[7] : ' and ' + tarConArr[7]
+                            if (/\[\!--pagelist--\]/.test(temp)) {   //模版里有分页标签才考虑分页
+                                if (num > 0 && arg[2] >= 2) {
+                                    sqlLimit = ' limit ' + (num * (arg[2] - 1)) + ',' + num;
+                                }
+                                else {
+                                    sqlLimit = num > 0 ? ' limit ' + num : '';
+                                }
                             }
                             if (orderBy) {
                                 sqlOrder = ' order by ' + tarConArr[8]
@@ -385,7 +399,10 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
                                 artLen = artAll.length;
                             }
                             sql2 = 'select * from article' + sqlWhere + sqlOrder + sqlLimit;
-                            let artList = await mysql.nquery(sql2);
+                            let artList = await mysql.nquery(sql2).catch(err => {
+                                console.error(err);
+                                resolve(tag + '标签不正确');
+                            });
                             if (artList.length === 0) {
                                 resolve("该栏目下没有文章" + tag + '<br>')
                             } else {
@@ -428,7 +445,6 @@ const repalaceArtInCol = async (tagStr, regExpAll, tag, ...arg) => {
 }
 const recurCol = async (cid, loopStr, tempList, tagParams, webset) => {
     let htmlTempAll = '', x = 0, y = 0, tempIndent, tempListIndent, tempIndentLoopn;
-    console.log(tagParams)
     const sqlCondition = tagParams[6] ? ' and ' + tagParams[6].toLowerCase() : '';
     const order = tagParams[5] ? ' order by ' + tagParams[5] : '';
     const colOrder = tagParams[8] ? tagParams[8].toLowerCase() : null;
@@ -457,7 +473,8 @@ const recurCol = async (cid, loopStr, tempList, tagParams, webset) => {
             const expList1 = / *\[(listtemp)\]list\[\/\1\]/;
             // const sql = 'select * from columns where aid=' + cid + ' and isUse="true"' + sqlCondition + order;
             // const resCol = await mysql.nquery(sql);
-            const resCol = util.filterCol('aid=' + cid + colSqlCondition, allCols, colOrder);
+            const condi = cid === 0 ? colSqlCondition.slice(1) : 'aid=' + cid + colSqlCondition;
+            const resCol = util.filterCol(condi, allCols, colOrder);
             if (resCol.length === 0) {
                 let htmlCon;
                 if (tagParams[0] === -1) {
@@ -469,7 +486,10 @@ const recurCol = async (cid, loopStr, tempList, tagParams, webset) => {
                     } else {
                         sqlArt = 'select * from article where fid=' + cid + sqlCondition + order;
                     }
-                    const resArt = await mysql.nquery(sqlArt);
+                    const resArt = await mysql.nquery(sqlArt).catch(err => {
+                        console.error(err);
+                        resolve('标签sql不正确');
+                    });
                     htmlCon = resArt.length === 0 ?
                         '<li>该栏目没有文章!</li>' :
                         await replaceShortTag(tempList, { self: resArt }, tagParams, null, null, null, null, webset, 'linefeed');
@@ -643,7 +663,7 @@ const replaceSqlTag = async (tagStr, regExpAll, tag) => {
                                     resolve('SQL标签：该栏目下没有文章！' + tag + "<br>");
                                 }
                             }).catch(err => {
-                                console.log(err)
+                                console.error(err)
                                 resolve('SQL查询语句错误！' + tag + "<br>");
                             });
                         } else {
@@ -735,8 +755,10 @@ const replaceShortTag = (temp, reSql, argArr = [], ...args) => {
     return new Promise(async resolve => {
         const regExec = /\[\!--(\w+)--\]/;
         let resEnd = '', newReSql, webset;
-        newReSql = util.objKeysToLower(reSql);
-        if (!newReSql) { resolve('内容对象参数不正确') }
+        if (reSql) {
+            newReSql = util.objKeysToLower(reSql);
+            if (!newReSql) { resolve('内容对象参数不正确') }
+        }
         reSql = {};
         webset = args[4] ? 
                     Array.isArray(args[4]) ? args[4][0] : args[4] : 
@@ -826,7 +848,7 @@ const replaceShortTag = (temp, reSql, argArr = [], ...args) => {
                                 if (reSqlObj.description) {
                                     tempStr = tempStr.replace(fieldString, reSqlObj.description);
                                 } else {
-                                    tempStr = tempStr.replace(fieldString, reSqlObj.intro.replace(/\<.*?\>/g, ''));
+                                    tempStr = tempStr.replace(fieldString, reSqlObj.intro.replace(/\<.*?\>|\r\n/g, ''));
                                 }
                                 break;
                             case 'webtitle':
@@ -843,12 +865,21 @@ const replaceShortTag = (temp, reSql, argArr = [], ...args) => {
                                     tempStr = tempStr.replace(fieldString, resReg[1]);
                                 }
                                 break;
-                            case 'keywords':
-                                if (!reSqlObj.keywords && webset.keyword) {
+                            case 'keyword':
+                                if (reSqlObj.keyword) {
+                                    tempStr = tempStr.replace(fieldString, reSqlObj.keyword);
+                                } else if (webset.keyword) {
                                     tempStr = tempStr.replace(fieldString, webset.keyword);
                                 }
-                                else if (reSqlObj.keywords) {
-                                    tempStr = tempStr.replace(fieldString, reSqlObj.keywords);
+                                else {
+                                    tempStr = tempStr.replace(fieldString, field);
+                                }
+                                break;
+                            case 'description':
+                                if (reSqlObj.description) {
+                                    tempStr = tempStr.replace(fieldString, reSqlObj.description);
+                                } else if (webset.description) {
+                                    tempStr = tempStr.replace(fieldString, webset.description);
                                 }
                                 else {
                                     tempStr = tempStr.replace(fieldString, field);
@@ -862,6 +893,13 @@ const replaceShortTag = (temp, reSql, argArr = [], ...args) => {
                                     tempStr = tempStr.replace(fieldString, '');
                                 }
                                 break;
+                            case 'picurl':
+                                if (!reSqlObj['picurl']) {
+                                    tempStr = tempStr.replace(fieldString, '/images/nopic.jpg');
+                                } else {
+                                    tempStr = tempStr.replace(fieldString, reSqlObj['picurl']);
+                                }
+                                break;
                             case 'source':
                                 if (reSqlObj[field]) {
                                     if (reSqlObj['usesourceurl'] === 'true') {
@@ -871,6 +909,13 @@ const replaceShortTag = (temp, reSql, argArr = [], ...args) => {
                                     }
                                 } else {
                                     tempStr = tempStr.replace(fieldString, '');
+                                }
+                                break;
+                            case 'indexpage':
+                                if (webset.indexmodel === 1) {
+                                    tempStr = tempStr.replace(fieldString, webset.indexpath);
+                                } else {
+                                    tempStr = tempStr.replace(fieldString, '/showIndex');
                                 }
                                 break;
                             default:
@@ -915,7 +960,7 @@ const replaceShortTag = (temp, reSql, argArr = [], ...args) => {
         for (let [i, re] of newReSql.self.entries()) {
             let reTemp = await reShortTag(temp, re, newReSql.parent);
             const regTag = /\[(litag)\].+\[\/\1\]/;
-            if (args[6] === 'tagInTagtemp' && regTag.test(reTemp)) {  //当标签模版中还有标签事继续解析
+            if (args[6] === 'tagInTagtemp' && regTag.test(reTemp)) {  //当标签模版中还有标签时继续解析
                 reTemp = await beginReplace(reTemp, 'col', re.id, null, null, null, webset);
             }
             if (i !== newReSql.self.length - 1 && args[5] === 'linefeed') {

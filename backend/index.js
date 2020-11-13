@@ -45,7 +45,9 @@ app.use(async (ctx, next) => {
 ; (async () => {
     const colObj = {}
     const sqlAll = 'select * from columns where isUse = "true"';
-    let resultAll = await mysql.nquery(sqlAll);
+    let resultAll = await mysql.nquery(sqlAll).catch(err => {
+        console.log(err)
+    });
     resultAll = util.objKeysToLower(resultAll);
     resultAll.forEach(res => {
         colObj[res.id] = res;
