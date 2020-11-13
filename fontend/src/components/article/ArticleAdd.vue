@@ -79,9 +79,9 @@
                         </span>
                     </div>
                     <div class="input">
-                        <span class="input-title"><label for="keywords">文章关键词</label></span>
+                        <span class="input-title"><label for="keyword">文章关键词</label></span>
                         <span class="input-con padding">
-                            <input type="text" id="keywords" v-model="keywords" name="keywords" size="50">
+                            <input type="text" id="keyword" v-model="keyword" name="keyword" size="50">
                         </span>
                     </div>
                     <div class="input">
@@ -139,6 +139,12 @@
                         <span class="input-title"><label for="outUrl">外部链接</label></span>
                         <span class="input-con">
                             <input type="text" id="outUrl" v-model="outUrl" name="outUrl" size="50">填写后将链接到此地址
+                        </span>
+                    </div>
+                    <div class="input">
+                        <span class="input-title"><label for="description">文章描述</label><br>&nbsp;(用于顶部meta标签)</span>
+                        <span class="input-con padding">
+                            <textarea id="description" v-model="description" name="description" rows="6" cols="80"></textarea>
                         </span>
                     </div>
                     <div class="input">
@@ -236,7 +242,7 @@ export default {
             headLine: 0,
             suggest: 0,
             outUrl: '',
-            keywords: '',
+            keyword: '',
             picUrl: '',
             picUrl2: '',
             intro: '',
@@ -249,6 +255,7 @@ export default {
             authorList: [],
             content: '内容加载中',
             cComReady: false,
+            description: null,
             hits: 0,
             stars: 0,
             orderBy: 0,
@@ -309,7 +316,7 @@ export default {
                                 this.headLine = result.headLine
                                 this.suggest = result.suggest
                                 this.outUrl = result.outUrl
-                                this.keywords = result.keywords
+                                this.keyword = result.keyword
                                 this.picUrl = result.picUrl
                                 this.picUrl2 = result.picUrl2
                                 this.intro = result.intro
@@ -319,6 +326,7 @@ export default {
                                 this.author = result.author
                                 this.content = result.content
                                 this.cComReady = true
+                                this.description = result.description
                                 this.hits = result.hits
                                 this.stars = result.stars
                                 this.orderBy = result.orderBy

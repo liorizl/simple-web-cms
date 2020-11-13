@@ -19,7 +19,7 @@
                 <div class="input">
                     <span class="input-title"><label for="content">标签内容</label></span>
                     <span class="input-con padding">
-                        <textarea name="content" id="content" v-model="content" cols="100" rows="34"></textarea>
+                        <textarea name="content" id="content" v-model="content" cols="120" rows="34"></textarea>
                     </span>
                 </div>
                 <div class="input padding"><input class="btn marginLeft " type="button" value="提交" @click="upTag"></div>

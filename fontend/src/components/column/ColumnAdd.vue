@@ -96,6 +96,19 @@
                         </span>
                     </div>
                     <div class="input">
+                        <span class="input-title"><label for="suggest">栏目推荐：</label></span>
+                        <span class="input-con">
+                            <select name="suggest" id="suggest" v-model="suggest">
+                                <option :value.number="0">不推荐</option>
+                                <option :value.number="1">一级推荐</option>
+                                <option :value.number="2">二级推荐</option>
+                                <option :value.number="3">三级推荐</option>
+                                <option :value.number="4">四级推荐</option>
+                                <option :value.number="5">五级推荐</option>
+                            </select>
+                        </span>
+                    </div>
+                    <div class="input">
                         <span class="input-title"><label for="outUrl">地址重定向：</label></span>
                         <span class="input-con">
                             <input type="text" id="outUrl" v-model="outUrl" name="outUrl" size="40" />
@@ -272,6 +285,7 @@ export default {
             orderBy: 0,
             isUse: true,
             isNav: true,
+            suggest: 0,
             outUrl: '',
             tempMode: 1,
             coverTemp: null,
@@ -328,6 +342,7 @@ export default {
                     this.orderBy = resData.orderBy
                     this.isUse = resData.isUse === 'true' ? true : false
                     this.isNav = resData.isNav === 'true' ? true : false
+                    this.suggest = resData.suggest
                     this.outUrl = resData.outUrl
                     this.tempMode = resData.tempMode
                     this.coverTemp = resData.tempCover

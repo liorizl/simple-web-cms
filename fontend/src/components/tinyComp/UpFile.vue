@@ -194,23 +194,20 @@ export default {
             }
         },
         getNowCol(e) {
-            let num = e.target.selectedIndex
-            let url
+            let num = e.target.selectedIndex, url
             if (this.colListArr[num].cid === 'wap' || this.colListArr[num].cid === 'pc') {
                 this.nowTer = this.colListArr[num].cid
                 url = '/admin/getUpfiles?cid=banner&terminal=' + this.nowTer
             } else {
-                url = '/admin/getUpfiles?cid=' + this.cid
+                url = '/admin/getUpfiles?cid=' + this.colListArr[num].cid
                 this.cid = this.colListArr[num].cid
             }
-            
-            console.log(url)
             this.axios({
                 method: 'get',
                 url: url
             }).then(res => {
                 if (res.status === 200) {
-                     this.filePath = this.colListArr[num].path
+                    this.filePath = this.colListArr[num].path
                     const resData = res.data
                     this.filePath = resData.path
                     this.fileNames = resData.files

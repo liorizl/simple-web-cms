@@ -67,10 +67,15 @@
                 <span class="liTitle">分页器显示</span>
                 <span class="liCon">
                     <select name="pagition" id="pagition" v-model="pagition">
-                        <option value="0">不显示</option>
-                        <option value="1">样式1</option>
+                        <option :value.number="0">不显示</option>
+                        <option :value.number="1">样式1</option>
+                        <option :value.number="2">样式2</option>
+                        <option :value.number="3">样式3</option>
                     </select>
                 </span>
+                <span class="pageIntro" v-if="pagition === 1">上一页 1 2 3 4 下一页</span>
+                <span class="pageIntro" v-if="pagition === 2">当前第1页 跳转到X页</span>
+                <span class="pageIntro" v-if="pagition === 3">点击查看更多</span>
             </li>
             <li>
                 <span class="liTitle">时间显示</span>
@@ -380,6 +385,9 @@ export default {
     }
     li.borderRight {
         border-right: 1px solid @borderColor;
+        .pageIntro {
+            margin-left: 10px;
+        }
     }
 
     li.allLine {

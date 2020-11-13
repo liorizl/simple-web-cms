@@ -193,7 +193,7 @@ export default {
 </script>
 
 <style  lang="less">
-@icon-margin-right: 40px;
+@icon-margin-right: 30px;
 @li-background-color: #999;
 .flexColInArt {
     display: flex;

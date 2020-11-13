@@ -8,7 +8,7 @@
             </div>
             <div class="tag-format">
                 格式：<input type="text" name="" 
-                value="[litag]dynamic.artInCol(栏目ID,模版ID,显示条数,标题截取,简介截取,是否分页,时间显示,附加SQL条件,排序)[/litag]" 
+                value="[litag]dynamic.artInCol(栏目ID,模版ID,显示条数,标题截取,简介截取,是否分页,时间显示,文章表SQL条件,文章排序,栏目表SQL条件)[/litag]" 
                 size="100">
             </div>
             <div class="tag-param">
@@ -28,8 +28,9 @@
                         启用分页需要在标签模版中加入 [!--pagelist--],分页样式表在/statics/static/css/style.css
                     </td></tr>
                     <tr ><td >7、时间显示</td><td>0表示不显示时间,1,2,3表示时间格式</td></tr>
-                    <tr ><td >8、附加SQL条件</td><td>没有则填0，多个用英文逗号,隔开，并加上单引号,如:'headLine=1,picUrl!=""',<br>字段属性为数字不加引号,其他都要添加双引号</td></tr>
+                    <tr ><td >8、文章表SQL条件</td><td>没有则填0，多个用英文逗号,隔开，并加上单引号,如:'headLine=1,picUrl!=""',<br>字段属性为数字不加引号,其他都要添加双引号</td></tr>
                     <tr ><td >9、文章排序</td><td>多个用英文的逗号,分割并加上单引号 。 如:'hits,id desc'</td></tr>
+                    <tr ><td >10、栏目表SQL条件</td><td>格式同 文章表SQL条件</td></tr>
                     <tr><td colspan="2">
                         注：该标签前2个参数必填，后面的参数可以省略，但是如果要设置后面的某个参数，该参数前面的参数必须要加上，<br>
                         比如：要设置排序参数，栏目ID到排序参数中间的参数必须写上<br>
@@ -46,7 +47,7 @@
             </div>
             <div class="tag-format">
                 格式：<input type="text" name="" 
-                value="[litag]dynamic.artInCols(栏目ID,模版ID,显示条数,标题截取,简介截取,是否分页,时间显示,附加SQL条件,排序,样式类名)[/litag]" 
+                value="[litag]dynamic.artInCols(栏目ID,模版ID,显示条数,标题截取,简介截取,是否分页,时间显示,文章SQL条件,排序,样式类名,栏目排序,栏目表SQL条件)[/litag]" 
                 size="100">
             </div>
             <div class="tag-param">
@@ -60,13 +61,14 @@
                     <tr ><td >5、简介截取</td><td>0表示不截取</td></tr>
                     <tr ><td >6、显示分页器</td><td>0表示不显示，<span style="color:red">考虑到现实中多层嵌套分页不大可能使用，所以此分页功能没开发</span></td></tr>
                     <tr ><td >7、时间显示</td><td>0表示不显示时间,1,2,3表示时间格式</td></tr>
-                    <tr ><td >8、附加SQL条件</td><td>没有则填0，多个用英文逗号,隔开，并加上单引号,如:'headLine=1,picUrl!=""',<br>字段属性为数字不加引号,其他都要添加双引号</td></tr>
+                    <tr ><td >8、文章SQL条件</td><td>没有则填0，多个用英文逗号,隔开，并加上单引号,如:'headLine=1,picUrl!=""',<br>字段属性为数字不加引号,其他都要添加双引号</td></tr>
                     <tr ><td >9、文章排序</td><td>多个用英文的逗号,分割并加上单引号 。 如:'hits,id desc'</td></tr>
                     <tr ><td >
                         10、样式类名</td><td>多个用英文的逗号,分割并加上单引号 。 如:'class1,class2',第一个为第一层栏目的类名，第二个为第二层，以此类推
                         缺省或不够将会用'class1,class2,...'代替，<br>如果一层栏目有多个类名则加上中括号,如:'[class-1-1,class-1-2],[class-2-1,class-2-2]'
                     </td></tr>
                     <tr ><td >11、栏目排序</td><td>格式跟文章排序一样,多个用英文的逗号,分割并加上单引号 。 如:'hits,id desc'</td></tr>
+                    <tr ><td >12、栏目表SQL条件</td><td>格式同 文章表SQL条件</td></tr>
                     <tr><td colspan="2">
                         注：用法同artInCol标签，但是此标签可以将所有栏目循环显示出来，不管嵌套多少层，如果显示条数为-1将不会显示文章(artInCol无此功能)。<br>
                         <span style="color:red">因为要逐层检索数据并套入模版，所以程序使用同步的方式，如果栏目嵌套较多解析标签的速度会慢很多！</span>
@@ -83,7 +85,7 @@
                                 <div class="tdDiv-right">
                                     <p>页面模版属性，其中[loop][/loop]这对标签必须要有，</p>
                                     <p> [loopn][/loopn]没有此标签只会循环一次，二级子栏目将会被忽略，</p>
-                                    <p> [listtemp]list[/listtemp]用来循环输入列表模版的内容，可省略，如果显示条数为-1将循环显示栏目，反之显示内容</p>
+                                    <p> [listtemp]list[/listtemp]用来循环输入列表模版的内容，可省略，如果显示条数为-1将循环显示栏目，反之显示文章</p>
                                     <p>此标签可以用来循环显示栏目，比如导航。</p>
                                     <p>&lt;ul&gt&lt;/ul&gt换成其他标签如果不显示文章的情况下生成的html源码会有多余的空格。</p>
                                     <p>{$class}标签会解析为类名。</p>
