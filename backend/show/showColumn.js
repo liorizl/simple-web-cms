@@ -34,9 +34,9 @@ const getContent = async (id, page, url, build = null) => {
         return { myStatus: 0, id: id, errMes: '模版错误，该id的栏目没有绑定模版' }
     }
     html = resultTemp[0].content;
-    let tempNameList = resultTemp[0];
-    delete tempNameList.content;
-    htmlC = await replaceTag.replaceField(html, { self: result, parent: {} }, tempNameList, webSetting, page, url, build);
+    let tempMes = resultTemp[0];
+    delete tempMes.content;
+    htmlC = await replaceTag.replaceField(html, { self: result, parent: {} }, tempMes, webSetting, page, url, build);
     numTemp = htmlC.num || null;
     sumTemp = htmlC.sum || null;
     pageListTemp = htmlC.pageList || null;

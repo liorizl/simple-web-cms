@@ -27,12 +27,13 @@
                     window.location.pathname = pathName;
                 } else {
                     if (/page/.test(search)) {
-                        const regexp = new RegExp('(?<=page\=)(\d+)')
+                        const regexp = new RegExp('(?<=page\\=)(\\d+)$')
                         search = search.replace(regexp, toPage);
                     } else {
                         search += '&page=' + toPage;
                     }
                     window.location.search = search;
+                    
                 }
             })
         }

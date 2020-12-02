@@ -700,51 +700,84 @@ const replaceSql = (sqlStr, paramArr, tag) => {
         }
     })
 }
-const replaceField = async (html, sqlResult, tempNameList = null, webSetting = [], ...args) => {
+//tempMes 模版信息   args 0:page 1: url 2:build?
+const replaceField = async (html, sqlResult, tempMes = null, webSetting = [], ...args) => {
     const regexp = / *\[(listtemp)\]list\[\/\1\]/;
     const regexpPage = /\[\!--pagelist--\]/i.exec(html);
     const reExec = regexp.exec(html);
-    const num = tempNameList ? tempNameList.num : null;
     sqlResult = sqlResult.parent === undefined ? { self: sqlResult, parent: {} } : sqlResult;
-    if (reExec) {
+    if (reExec && tempMes && tempMes.contentList) {
+        const cids = await util.ultracolsInCols(sqlResult.self[0].cid, 'isuse="true"');
+        const sqlCondi = tempMes.sqlCondi !== '0' ? ' and ' + tempMes.sqlCondi.replace(/\,/g, ' and ') : '';
+        const sqlOrder = tempMes.sqlOrder !== '0' ? ' ' + tempMes.sqlOrder : ' id desc';
+        const pagination = tempMes.pagination;
+        const num = tempMes.num || 0;
+        const titleCut = tempMes.titleCut || null;
+        const introCut = tempMes.introCut || null;
+        const dateType = tempMes.dateType || null;
+        const tempList = tempMes.contentList;
         const listtempIndent = reExec[0].indexOf('\[');
-        const sqlAll = 'select * from article  where fid=' + sqlResult.self[0].cid;
-        let resAll = await mysql.nquery(sqlAll)
-        resAll = resAll.length;
         let limit;
         if (num > 0) {
             if (args[0] >= 2) {
-                limit = 'limit ' + num * (args[0] - 1) + ',' + num;
+                limit = ' limit ' + num * (args[0] - 1) + ',' + num;
             } else {
-                limit = 'limit ' + tempNameList.num;
+                limit = ' limit ' + tempMes.num;
             }
         } else {
-            limit = ''
+            limit = '';
         }
-        html = await replaceShortTag(html, sqlResult, [num, 0, 0, 1], resAll, args[0], args[1], args[2], webSetting);
-        const titleCut = tempNameList.titleCut === 0 ? null : tempNameList.titleCut;
-        const introCut = tempNameList.introCut === 0 ? null : tempNameList.introCut;
-        const tempList = tempNameList.contentList;
-        const params = [0, titleCut, introCut]
-        const sql = 'select * from article  where fid=' + sqlResult.self[0].cid + ' order by orderBy, id desc ' + limit;
-        const artList = await mysql.nquery(sql);
+        const sqlAll = Array.isArray(cids) ? 
+                    'select * from article where fid in (' + cids + ') ' + sqlCondi + ' order by' + sqlOrder :
+                    'select * from article where fid = ' + cids + sqlCondi + ' order by' + sqlOrder;
+        const sqlArts = sqlAll + limit;
+        let artLen = null;
+        if (regexpPage) { //有分页标签
+            if (num < 1) {
+                return {
+                    htmlC: '模版选项格式不正确，使用分页标签，但每页显示的数量不正确！'
+                }
+            }
+            if (pagination !== 1 && pagination !== 2 && pagination !== 3) {
+                return {
+                    htmlC: '分页样式不正确！'
+                }
+            }
+            let resAll = await mysql.nquery(sqlAll).catch(err => {
+                return {
+                    htmlC: '模版选项格式不正确，导致sql语句无法正确运行！'
+                }
+            });
+            artLen = resAll.length;
+        }
+        let artList = await mysql.nquery(sqlArts).catch(err => {
+            return {
+                error: '模版选项格式不正确，导致sql语句无法正确运行！'
+            }
+        });
+        if (artList.error) {
+            return {
+                htmlC: artList.error
+            }
+        }
+        let contentList
         if (artList.length === 0) {
-            html = html.replace(reExec[0], '该栏目下没有文章<br>');
-            if (args[2] === 'build' && regexpPage) {
-                return { htmlC: html, num: num, sum: resAll, pageList: 'true' }
-            } else {
-                return { htmlC: html }
-            }
+            contentList = '该栏目下和子栏目（子栏目存在的话）没有文章！'
         } else {
-            let listDone = await replaceShortTag(tempList, { self: artList }, params, null, null, null, null, webSetting, 'linefeed');
-            listDone = util.increaseIndent(listDone, listtempIndent)
-            html = html.replace(reExec[0], listDone);
-            html = await replaceShortTag(html, sqlResult, [], null, null, null, null, webSetting);
-            if (args[2] === 'build' && regexpPage) {
-                return { htmlC: html, num: num, sum: resAll, pageList: 'true' }
-            } else {
-                return { htmlC: html }
-            }
+            contentList = await replaceShortTag(tempList, { self: artList }, [num, titleCut, introCut, pagination, dateType], null, args[0], args[1], args[2], webSetting, 'linefeed');
+        }
+        contentList = util.increaseIndent(contentList, listtempIndent);
+        html = html.replace(regexp, contentList);
+        html = await replaceShortTag(html, sqlResult, [num, null, null, pagination, null], artLen, args[0], args[1], args[2], webSetting, null, null, sqlResult.self[0].id);
+        if (args[2] === 'build' && regexpPage) {
+            return { htmlC: html, num: num, sum: artLen, pageList: 'true' }
+        } else {
+            return { htmlC: html }
+        }
+    }
+    else if(reExec && tempMes === null) {
+        return {
+            htmlC: '首页和内容页模版不要使用[listtemp]list[/listtemp]'
         }
     } else {
         return await replaceShortTag(html, sqlResult, [], null, null, null, null, webSetting);

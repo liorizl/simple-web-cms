@@ -35,10 +35,10 @@ module.exports = {
                     const sql2 = 'select * from user_session where sessionId = "' + userId + '"';
                     const haveUser = await mysql.nquery(sql2);
                     if (haveUser.length === 0) {
-                        const sqlInsertSession = 'insert into user_session(sessionId, expire, data, count) value("' + userId + '", ' + expire + ', "' + mysession.user + '", 0)';
+                        const sqlInsertSession = 'insert into user_session(sessionId, expire, data, loginip, count) value("' + userId + '", ' + expire + ', "' + mysession.user + '", "'+ ip +'", 0)';
                         mysql.nquery(sqlInsertSession)
                     } else {
-                        const sqlUpdateSession = 'update user_session set expire = ' + expire + ', data = "' + mysession.user + '", count = ' + (haveUser[0].count + 1) + ' where sessionId = "' + userId + '"';
+                        const sqlUpdateSession = 'update user_session set expire = ' + expire + ', data = "' + mysession.user + '", loginip = "' + ip + '", count = ' + (haveUser[0].count + 1) + ' where sessionId = "' + userId + '"';
                         mysql.nquery(sqlUpdateSession)
                     }
                 }
@@ -49,8 +49,9 @@ module.exports = {
         
     },
     autoLogin: async ctx => {
+        const ip = ctx.request.body.ip;
         const userCookie = ctx.cookies.get('user');
-        const sql = 'select sessionId, expire, data from user_session where data = "' + userCookie + '"';
+        const sql = 'select sessionId, expire, data from user_session where data = "' + userCookie + '" and loginip = "' + ip + '"';
         const result = await mysql.nquery(sql);
         const newDate = new Date().getTime();
         if (result.length > 0) {
@@ -58,11 +59,11 @@ module.exports = {
                 ctx.body = { myStatus: 0, errMes: '自动登录已过期, 请重新登录！' }
             }
             else {
-                ctx.session.liori = result[0].data
+                ctx.session.liori = result[0].data;
                 ctx.body = { myStatus: 1, user: result[0].sessionId }
             }
         } else {
-            ctx.body = { myStatus: 0, errMes: '自动登录已过期或没启用, 请重新登录！' }
+            ctx.body = { myStatus: 0, errMes: '自动登录已过期或其他原因, 请重新登录！' }
         }
     },
     checkIdentCode: ctx => {

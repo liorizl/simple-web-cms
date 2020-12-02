@@ -42,8 +42,8 @@ app.use(async (ctx, next) => {
         await next();
     }
 })
-; (async () => {
-    const colObj = {}
+;(async () => {
+    let colObj = {}
     const sqlAll = 'select * from columns where isUse = "true"';
     let resultAll = await mysql.nquery(sqlAll).catch(err => {
         console.log(err)

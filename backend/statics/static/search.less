@@ -1,0 +1,89 @@
+.search-con {
+    border: 1px solid rgba(0,0,0,0.14);
+    border-radius: 10px;
+    margin: 30px auto;
+    .search-title {
+        display: flex; align-items: center; justify-content: center;
+        height: 40px;
+        margin-top: 10px;
+        .search-text {
+            width: 200px; height: 26px;
+            border: 1px solid #999;
+            border-radius: 5px;
+            text-indent: .5em;
+            outline: #999;
+            background-color: #fff;
+            &:focus{
+                border-color: #409eff;
+            }
+        }
+        .search-button {
+            width: 70px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            margin-left: 15px;
+            border: 1px solid #666;
+            border-radius: 4px;
+            color: #333;
+            cursor: pointer;
+            outline: none;
+            &:hover {
+                border-color: #409eff;
+                color: #409eff;
+            }
+            &:active {
+                background-color: #e1eaf3;
+                border-color: #409eff;
+                color: #0681fc;
+            }
+        }
+        span {
+            font-size: 14px;
+            margin-left: 25px;
+        }
+        .search-select {
+            margin-left: 10px;
+            outline: none;
+            width: 100px; height: 24px;
+        }
+    }
+    .search-res {
+        width: 90%;
+        margin: 10px auto;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #ededed;
+        &:first-of-type {
+            margin-top: 20px;
+        }
+        .search-res-title {
+            font: 500 18px/42px 'microsoft yahei';
+            display: flex; justify-content: space-between;
+            a {
+                display: inline-block
+            }
+            span {
+                display: inline-block;
+                margin-right: 10px; color: #999;
+            }
+        }
+        .search-res-source {
+            font: 1rem/2rem 'microsoft yahei';
+            a {
+                color: #62a8ea;
+            }
+        }
+        .search-res-intro {
+            font: 1rem/2rem 'microsoft yahei';
+        }
+    }
+    .search-more {
+        margin: 20px auto;
+        width: 300px;
+        text-align: center;
+        .result-more {
+            cursor: pointer;
+        }
+        .result-no-more {
+            color: #777;
+        }
+    }
+}

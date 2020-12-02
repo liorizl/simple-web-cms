@@ -3,10 +3,10 @@
     "author": "liori",
     "mysql": {
         "host": "localhost",
-        "user": "your mysql user",
-        "password": "your mysql psd",
+        "user": "root",
+        "password": "liori",
         "prot": "3306",
-        "database": "your database name"
+        "database": "dahua-nuxt"
     },
     "useIdentCode": true,
     "identCode": "zyc",

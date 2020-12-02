@@ -149,6 +149,12 @@ module.exports = {
         const sqlPre =  'select id, title from article where id >' + parseInt(id) + ' and fid = ' + parseInt(cid) + ' and isUse="true" order by id asc limit 1';
         const sqlNext = 'select id, title from article where id <' + parseInt(id) + ' and fid = ' + parseInt(cid) + ' and isUse="true" order by id desc limit 1';
         const arts = await Promise.all([mysql.nquery(sqlPre), mysql.nquery(sqlNext)])
+        .catch(err => {
+            ctx.body = {
+                preArt: err,
+                nextArt: err
+            }
+        })
         ctx.body = {
             preArt: arts[0][0],
             nextArt: arts[1][0]
@@ -164,15 +170,15 @@ module.exports = {
         let sql, sqlCount;
         switch (scope) {
             case 'content': 
-                sql = 'select id,fid,title,content,path,articlename from article where content like "%' + keyword + '%" order by id desc limit '+start+',' + count;
+                sql = 'select id,fid,title,content,path,articlename from article where content like "%' + keyword + '%" and isuse="true" order by id desc limit '+start+',' + count;
                 sqlCount = 'select count(*) from article where content like "%' + keyword + '%"';
                 break;
             case 'column': 
-                sql = 'select id,alias,path1,path2,title from columns where title like "%' + keyword + '%" order by id desc limit '+start+',' + count;
+                sql = 'select id,alias,path1,path2,title from columns where title like "%' + keyword + '%" and isuse="true" order by id desc limit '+start+',' + count;
                 sqlCount = 'select count(*) from columns where title like "%' + keyword + '%"';
                 break;
             default:
-                sql = 'select id,fid,title,content,path,articlename from article where title like "%' + keyword + '%" order by id desc limit '+start+',' + count;
+                sql = 'select id,fid,title,content,path,articlename from article where title like "%' + keyword + '%" and isuse="true" order by id desc limit '+start+',' + count;
                 sqlCount = 'select count(*) from article where title like "%' + keyword + '%"';
                 break;
         }
@@ -278,13 +284,13 @@ module.exports = {
         ctx.body = res[0];
     },
     getBanner: async ctx => {
-        const sql = 'select * from banner order by id desc';
+        const sql = 'select * from banner where isuse="true" order by id desc';
         const result = await mysql.nquery(sql);
         ctx.body = result;
     },
     getRecom: async ctx => {
         const scope = ctx.query.scope
-        const sql = 'select id,title,picurl,path from article where suggest=1 order by orderBy, id desc';
+        const sql = 'select id,title,picurl,path from article where suggest=1 and isuse = "true" order by orderBy, id desc';
         const res = await mysql.nquery(sql);
         let resEnd = [];
         if (scope === 'xm') {

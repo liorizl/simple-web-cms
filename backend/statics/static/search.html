@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>搜索-大华医学美容医院</title>
+    <script src="/js/vue.min.js"></script>
+    <script src="/js/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" href="./search.css">
+    <link rel="stylesheet" href="/css/global.css">
+</head>
+<body>
+    <div class="top">
+        <div class="top-slogan">让您的世界更美丽</div>
+        <div class="top-weixin">
+            我们的微信
+            <div class="wx-erwei slideBlock">
+                <div class="sBArrow"></div>
+                <div class="top-wx-con sBContent">
+                    <img src="/images/erwei.jpg" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="head">
+        <div class="logo">
+            <img src="/images/logo.jpg" alt="">
+        </div>
+        <div class="tel">
+            <a href="tel:028-86693687">028-86693687</a>
+        </div>
+    </div>
+    <nav class="nav">
+        <div class="nav-item">
+            <span class="nav-item-title">大华项目导航</span>
+            <div class="nav-item-hid">
+                <ul class="nav-list-ul">
+                    <li>
+                        <div class="nav-list-ul-title">
+                            <a href="/xm/fssmr">
+                                <span>非手术美容</span>
+                            </a>
+                        </div>
+                        <div class="nav-list-list">
+                            <a href="/xm/fssmr/zfyf">植发育发</a>
+                            <a href="/xm/fssmr/bns">玻尿酸</a>
+                            <a href="/xm/fssmr/gxjd">光纤精雕</a>
+                            <a href="/xm/fssmr/zscz">注射除皱</a>
+                        </div>
+                    </li> 
+                    <li>
+                        <div class="nav-list-ul-title">
+                            <a href="/xm/plastic">
+                                <span>美容外科</span>
+                            </a>
+                        </div>
+                        <div class="nav-list-list">
+                            <a href="/xm/plastic/ybzx">眼部整形</a>
+                            <a href="/xm/plastic/bbzx">鼻部整形</a>
+                            <a href="/xm/plastic/lbsx">脸部塑形</a>
+                            <a href="/xm/plastic/xbzx">胸部整形</a>
+                        </div>
+                    </li> 
+                    <li>
+                        <div class="nav-list-ul-title">
+                            <a href="/xm/pifu">
+                                <span>美容皮肤科</span>
+                            </a>
+                        </div>
+                        <div class="nav-list-list">
+                            <a href="/xm/pifu/qbmr">祛斑美白</a>
+                            <a href="/xm/pifu/nfcz">抗衰除皱</a>
+                            <a href="/xm/pifu/bh">疤痕</a>
+                            <a href="/xm/pifu/xws">洗纹身</a>
+                            <a href="/xm/pifu/tuom">脱毛</a>
+                        </div>
+                    </li> 
+                </ul>
+            </div>
+        </div>
+        <div class="nav-main">
+            <a href="/">首页</a>
+            <a href="/xm/">大华项目</a>
+            <a class="nav-main-more">
+                <span class="nav-more-span1"></span>
+                <span class="nav-more-span2"></span>
+                <span class="nav-more-span3"></span>
+            </a>
+        </div>
+    </nav>
+    <nav class="nav-hidden">
+        <a href="/">网站首页</a>
+        <a href="/xm/">大华项目</a>
+        <a href="/hd/">最新活动</a>
+        <a href="/news/">新闻中心</a>
+        <a href="/experts/">医师团队</a>
+        <a href="/sheb/">激光设备</a>
+        <a href="/about/">关于大华</a>
+    </nav>
+
+    <div class="box-width search-con">
+        <div class="search-title">
+            <input type="text" class="search-text" placeholder="请输入" v-model="keyword">
+            <button class="search-button" @click="subSeach(start, count, true)">提交</button>
+        </div>
+        <div class="search-title search-title1">
+            <select class="search-select" v-model="searchScope">
+                <option value="title">文章标题</option>
+                <option value="content">文章内容</option>
+                <option value="column">栏目名称</option>
+            </select>
+            <span>搜索范围</span>
+        </div>
+        <template v-if="artList === null">
+            <div class="search-res" v-if="searching">正在搜索中....请稍候!</div>
+        </template>
+        <template v-else>
+            <template v-if="artList && artList.length > 0">
+                    <div class="search-res" v-for="(art, index) in artList">
+                        <div class="search-res-title">
+                            <template v-if="nowScope === 'column'">
+                                <a :href="'/'+art.path1+'/'+art.path2" v-html="titleFormat(art.title)">
+                                </a>
+                            </template>
+                            <template v-else-if="nowScope === 'title'">
+                                <a :href="art.path + '/' + art.articlename + '.html'" v-html="titleFormat(art.title)">
+                                </a>
+                            </template>
+                            <template v-else>
+                                <a :href="art.path + '/' + art.articlename + '.html'">
+                                    {{art.title}}
+                                </a>
+                            </template>
+                            <span>{{index + 1}}</span>
+                        </div>
+                        <div class="search-res-intro" v-if="nowScope === 'content'">
+                            <span v-html="contentFormat(art.content, true)"></span>
+                        </div>
+                        <div class="search-res-intro" v-else-if="nowScope === 'title'">
+                            <span v-html="contentFormat(art.content, false)"></span>
+                        </div>
+                    </div>
+            </template>
+            <template v-else>
+                <div class="search-res">没有搜索到任何内容!</div>
+            </template>
+        </template>
+        <div class="search-more">
+            <span v-if="searching === 2 && artList.length > 0 && artList.length < len" class="result-more" @click="getMore">点击显示更多内容</span>
+            <span v-else-if="searching === 2 && artList && artList.length >= len && len !== 0" class="result-no-more" >没有更多内容了</span>
+            <span v-else-if="searching === 1 && len > 0">搜索中...</span>
+        </div>
+    </div>
+    <footer class="footer">
+        <p>蜀ICP备11010417号</p>
+        <p>四川省成都市青羊区东城根上街99号</p>
+        <p>皮肤1：028-86277496 | 皮肤2：028-86698473 <br> 皮肤3：028-86272671 | 整 形：028-86274755 <br>  纹 绣：028-86270614 | 美 体：028-86699763</p>
+    </footer>
+    <div class="zxFix">
+        <span class="fix-tel">电话咨询</span>
+        <span class="fix-zx">医师咨询</span>
+    </div>
+<script>
+    function myajax(argObj) {
+        let xhr = XMLHttpRequest ? new XMLHttpRequest : new ActiveXObject("Microsoft.XMLHTTP")
+        const method = argObj.method || 'get'
+        const async = argObj.async || true
+        const data = argObj.data || null
+        return new Promise((resolve, reject) => {
+            xhr.open(method, argObj.url,async)
+            if (method.toLowerCase === 'post') {
+                xhr.send(data)
+            } else {
+                xhr.send(null)
+            }
+            if (!async) {
+                if (xhr.response) resolve(JSON.parse(xhr.response));
+                else reject('Ajax查询错误')
+            } else {
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        if (xhr.response) resolve(JSON.parse(xhr.response))
+                        else reject('Ajax查询错误')
+                    }
+                }
+            }
+        })
+    }
+    const webConfig = {
+        itemName: 'xm'
+    }
+    let search = window.location.search, query = {}
+    search =search.slice(1)
+    const searchArr = search.split('&')
+    searchArr.forEach(item => {
+        const itemArr = item.split('=')
+        query[itemArr[0]] = itemArr[1]
+    })
+    let vue = new Vue({
+        el: '.search-con',
+        data() {
+            return {
+                artList: null,
+                keyword: null,
+                searching: 0,  // 0还没开始搜索， 1搜索中，2搜索结束
+                searchScope: 'content',
+                nowScope: null,
+                start: 0,
+                count: 6,  //显示条数
+                len: 0,      //搜索的总条数
+            }
+        },
+        created() {
+            this.keyword = query.keyword || ''
+            this.keyword = decodeURI(this.keyword)
+            if (this.keyword) {
+                this.subSeach(this.start, this.count, false)
+            }
+        },
+        methods: {
+            subSeach(start, count, btnSub) {
+                if (btnSub) start = this.start = 0
+                if (!this.keyword) {
+                    alert('请输入要查找的内容!')
+                    return
+                } else {
+                    this.keyword = this.keyword.slice(0, 8)
+                    this.keyword = this.keyword.replace(/\<.*?\>*/g, '')
+                    this.keyword = this.keyword.replace(/\=|\,|\:|"|'/g, '')
+                    this.searching = 1
+                    myajax({
+                        url: 'http://125.65.109.138:3010/getSearchArt?keyword=' + this.keyword + '&scope=' + this.searchScope + '&start=' + start + '&count=' + count
+                    }).then( res => {
+                        this.artList =  res.res
+                        this.len = res.resCount || this.len
+                        this.start += this.count
+                        this.nowScope = this.searchScope
+                        this.searching = 2
+                    }).catch(err => {
+                        this.searching = 2
+                    })
+                }
+            },
+            contentFormat(content, mark) {
+                const regHtmlTag = new RegExp('\<\/?(?!br).*?\>', 'g')
+                content = content.replace(regHtmlTag, '')
+                const regCon = new RegExp(this.keyword + '.+', 's')
+                // const regCon = new RegExp('(?<=[\。\.\,\，\r\、\?])[^\。\.]*?' + this.keyword + '.+', 's') //IOS里这样写要出错
+                const resReg = regCon.exec(content)
+                if (resReg) content = resReg[0]
+                if (mark) content = content.replace(this.keyword, '<span style="color:red">'+this.keyword+'</span>')
+                if (content.length > 150) content = content.substr(0, 150).concat('....')
+                return content
+            },
+            titleFormat(title) {
+                return title = title.replace(this.keyword, '<span style="color:red">'+this.keyword+'</span>')
+            },
+            getMore () {
+                this.searching = 1
+                myajax({
+                    url: 'http://125.65.109.138:3010/getSearchArt?keyword=' + this.keyword + '&scope=' + this.searchScope + '&start=' + this.start + '&count=' + this.count
+                }).then( res => {
+                    const arts = res.res
+                    this.artList =  this.artList.concat(arts)
+                    this.start += this.count
+                    this.searching = 2
+                }).catch(err => {
+                    this.searching = 2
+                })
+            }
+        },
+        mounted () {
+            const maxHeight = this.maxHeight = screen.height
+            const searchEle = document.getElementsByClassName('search-con')[0]
+            const top = searchEle.offsetTop
+            const footer = document.getElementsByClassName('footer')[0]
+            const footerHeight = footer.offsetHeight
+            searchEle.style.minHeight = maxHeight - top -footerHeight - 40 + 'px'
+        }
+    })
+</script>
+<script>
+$('.top-weixin').eq(0).click(()=> {
+    let styles = $('.wx-erwei')[0].style
+    if (styles.visibility !== 'visible') {
+        styles.visibility = 'visible'
+        styles.opacity = 1
+    } else {
+        styles.visibility = 'hidden'
+        styles.opacity = 0
+    }
+})
+$('.nav-main-more:eq(0)').click((e)=> {
+    let opacity = $('.nav-more-span2')[0].style.opacity
+    if (opacity === '0') {
+        $('.nav-more-span2')[0].style.opacity = 1
+        $('.nav-more-span1')[0].style.transform = 'rotate(0)'
+        $('.nav-more-span3')[0].style.transform = 'rotate(0)'
+        $('.nav-hidden').eq(0).slideUp()
+    } else {
+        $('.nav-more-span2')[0].style.opacity = 0
+        $('.nav-more-span1')[0].style.transform = 'rotate(45deg)'
+        $('.nav-more-span3')[0].style.transform = 'rotate(-45deg)'
+        $('.nav-hidden').eq(0).slideDown()
+    }
+})
+$('.nav-item-title:eq(0)').click(()=> {
+    $('.nav-item-hid').slideToggle()
+})
+</script>
+</body>
+</html>

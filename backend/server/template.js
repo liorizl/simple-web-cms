@@ -20,9 +20,10 @@ module.exports = {
             let sql, result;
             if (act === 'add') {
                 if (parseInt(value.type[0]) === 3) {
-                    sql = 'insert into template(title, type, isUse, num, titleCut, introCut, dateType, content, contentList, upTime)' +
+                    sql = 'insert into template(title, type, isUse, num, titleCut, introCut, sqlCondi, sqlOrder, pagination, dateType, content, contentList, upTime)' +
                         'value("' + value.title[0] + '", ' + parseInt(value.type[0]) + ', "' + serverUtil.getCheckbox(value.isUse[0]) + '", ' + parseInt(value.num[0]) + ', ' +
-                        parseInt(value.titleCut[0]) + ', ' + parseInt(value.introCut[0]) + ', ' + parseInt(value.dateType[0]) + ', ' +
+                        parseInt(value.titleCut[0]) + ', ' + parseInt(value.introCut[0]) + ', "' + value.sqlCondi[0] + '" , "' + value.sqlOrder[0] + '",' + 
+                        parseInt(value.pagination[0]) + ', ' + parseInt(value.dateType[0]) + ', ' +
                         '"' + util.regexpContent(value.content[0]) + '", "' + util.regexpContent(value.contentList[0]) + '", "' + util.dateFormat(new Date()) + '")';
                 } else {
                     sql = 'insert into template(title, type, isUse, content, upTime)' +
@@ -36,7 +37,9 @@ module.exports = {
                 let id = parseInt(ctx.query.id)
                 if (parseInt(value.type[0]) === 3) {
                     sql = 'update template set title="' + value.title[0] + '", type=' + parseInt(value.type[0]) + ', isUse="' + serverUtil.getCheckbox(value.isUse[0]) + '", ' +
-                        'num=' + parseInt(value.num[0]) + ', titleCut=' + parseInt(value.titleCut[0]) + ', introCut=' + parseInt(value.introCut[0]) + ', dateType=' + parseInt(value.dateType[0]) + ', ' +
+                        'num=' + parseInt(value.num[0]) + ', titleCut=' + parseInt(value.titleCut[0]) + ', introCut=' + parseInt(value.introCut[0]) + ', ' +
+                        'sqlCondi="' + value.sqlCondi[0] + '", sqlOrder="' + value.sqlOrder[0] + 
+                        '", pagination=' + parseInt(value.pagination[0]) + ', dateType=' + parseInt(value.dateType[0]) + ', ' +
                         'content="' + util.regexpContent(value.content[0]) + '", contentList="' + util.regexpContent(value.contentList[0]) + '" where id=' + id;
                 } else {
                     sql = 'update template set title="' + value.title[0] + '", type=' + parseInt(value.type[0]) + ', isUse="' + serverUtil.getCheckbox(value.isUse[0]) + '", ' +

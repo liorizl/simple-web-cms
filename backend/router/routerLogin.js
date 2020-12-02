@@ -6,7 +6,7 @@ module.exports = [
         middleware: login.login
     },
     {
-        method: 'get',
+        method: 'post',
         url: '/admin/autoLogin',
         middleware: login.autoLogin
     },

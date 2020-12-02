@@ -93,6 +93,7 @@ module.exports = {
             const sql = 'select aid from columns where id = ' + colId;
             const result = await mysql.nquery(sql);
             const aid = result[0].aid;
+            console.log({ myStatus: myStatus, id: colId, aid: aid })
             ctx.body = { myStatus: myStatus, id: colId, aid: aid }
         })
     },
@@ -142,6 +143,7 @@ module.exports = {
         ctx.body = result;
     },
     buildFaCol: async (ctx, next) => {
+        console.log(ctx.query)
         const cid = parseInt(ctx.query.cid)
         const sql = 'select id, aid from columns where cid = ' + cid;
         const result = await mysql.nquery(sql);

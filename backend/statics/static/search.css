@@ -1,0 +1,102 @@
+.search-con {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 10px;
+  margin: 30px auto;
+}
+.search-con .search-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  height: 40px;
+  margin-top: 10px;
+}
+.search-title1 {
+    margin-top: 0;
+}
+.search-con .search-title .search-text {
+  width: 200px;
+  height: 26px;
+  border: 1px solid #999;
+  border-radius: 5px;
+  text-indent: 0.5em;
+  outline: #999;
+  background-color: #fff;
+}
+.search-con .search-title .search-text:focus {
+  border-color: #409eff;
+}
+.search-con .search-title .search-button {
+  width: 70px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 15px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  color: #333;
+  cursor: pointer;
+  outline: none;
+}
+.search-con .search-title .search-button:hover {
+  border-color: #409eff;
+  color: #409eff;
+}
+.search-con .search-title .search-button:active {
+  background-color: #e1eaf3;
+  border-color: #409eff;
+  color: #0681fc;
+}
+.search-con .search-title span {
+  font-size: 14px;
+  margin-left: 25px;
+}
+.search-con .search-title .search-select {
+  margin-left: 10px;
+  outline: none;
+  width: 100px;
+  height: 24px;
+}
+.search-con .search-res {
+  width: 90%;
+  margin: 10px auto;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ededed;
+}
+.search-con .search-res:first-of-type {
+  margin-top: 20px;
+}
+.search-con .search-res .search-res-title {
+  font: 500 1rem/2.4rem 'microsoft yahei';
+  display: flex;
+  justify-content: space-between;
+}
+.search-con .search-res .search-res-title a {
+  display: inline-block;
+}
+.search-con .search-res .search-res-title span:nth-of-type(2) {
+  display: inline-block;
+  margin-right: 10px;
+  color: #999;
+}
+.search-con .search-res .search-res-source {
+  font: 1rem/2rem 'microsoft yahei';
+}
+.search-con .search-res .search-res-source a {
+  color: #62a8ea;
+}
+.search-con .search-res .search-res-intro {
+  font: .875rem/2rem 'microsoft yahei';
+}
+.search-con .search-more {
+  margin: 20px auto;
+  width: 300px;
+  text-align: center;
+}
+.search-con .search-more .result-more {
+  cursor: pointer;
+}
+.search-con .search-more .result-no-more {
+  color: #777;
+}
