@@ -53,8 +53,11 @@ export default {
         if (cookieUser) {
             this.status = '自动登录中...'
             this.axios({
-                method: 'get',
+                method: 'post',
                 url: '/admin/autoLogin',
+                data: {
+                    ip: returnCitySN.cip
+                }
             }).then(res => {
                 if (res.status === 200) {
                     if (res.data.myStatus === 1) {

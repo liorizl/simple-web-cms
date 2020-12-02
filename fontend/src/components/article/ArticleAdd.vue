@@ -452,7 +452,7 @@ export default {
                                                     this.$set(this.propData, 'build', { status: 1, name: '父栏目', id: res2.data.colId })
                                                     const buildFaCol = (cid) => {
                                                         this.axios({
-                                                            url: '/admin/buildFaCol?cid = ' + cid
+                                                            url: '/admin/buildFaCol?cid=' + cid
                                                         }).then(result => {
                                                             if (result.status === 200) {
                                                                 if (result.data.myStatus === 1) {

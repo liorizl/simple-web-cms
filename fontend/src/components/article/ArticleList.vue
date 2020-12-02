@@ -19,7 +19,9 @@
                         <span class="checkbox"><input type="checkbox" :value="article.id" v-model="checkArt"></span>
                         <span class="id">{{article.id}}</span>
                         <span class="havePic" :class="article.picUrl ? ['picIcon', 'iconfont'] : ''"></span>
-                        <span class="title isLink" @click="showArticle(article.id, index)">{{article.title.length > 22 ? article.title.substr(0, 20) : article.title}}</span>
+                        <span class="title isLink" :class="article.isUse==='false'?'notUse':''" @click="showArticle(article.id, index)">
+                            {{article.title.length > 22 ? article.title.substr(0, 20) : article.title}}
+                        </span>
                         <span class="uptime">{{article.upTime}}</span>
                         <span class="hit">{{article.hits}}</span>
                         <span class="star">{{article.stars}}</span>

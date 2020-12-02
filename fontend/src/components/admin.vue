@@ -117,7 +117,6 @@ export default {
                 this.axios({
                     method: 'get',
                     url: '/admin/checkSession',
-                    params: { cookieUser: cookieUser }
                 }).then(res => {
                     if (res.status === 200) {
                         if (res.data.myStatus === 0) {

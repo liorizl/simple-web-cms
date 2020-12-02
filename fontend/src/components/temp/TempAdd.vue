@@ -30,19 +30,44 @@
                     <div class="input">
                         <span class="input-title"><label for="title">标题截取字数</label></span>
                         <span class="input-con">
-                            <input type="number" id="titleCut" v-model="titleCut" name="titleCut">
+                            <input type="number" id="titleCut" class="inputNumber" v-model:number="titleCut" name="titleCut" min="0">
                         </span>
                     </div>
                     <div class="input">
                         <span class="input-title"><label for="title">简介截取字数</label></span>
                         <span class="input-con">
-                            <input type="number" id="introCut" v-model="introCut" name="introCut">
+                            <input type="number" id="introCut" v-model:number="introCut" name="introCut" class="inputNumber" min="0">
                         </span>
                     </div>
                     <div class="input">
                         <span class="input-title"><label for="title">显示条数</label></span>
                         <span class="input-con">
-                            <input type="number" id="num" v-model="num" name="num">
+                            <input type="number" id="num" v-model:number="num" name="num" class="inputNumber" min="0">
+                        </span>
+                    </div>
+                    <div class="input">
+                        <span class="input-title"><label for="sqlCondi">sql条件</label></span>
+                        <span class="input-con">
+                            <input type="text" id="sqlCondi" v-model="sqlCondi" name="sqlCondi">
+                            <span>多个用逗号隔开,等号后面的字符串用双引号",（数据库文章表的搜索条件，栏目表只要启用都会搜索）</span>
+                        </span>
+                    </div>
+                    <div class="input">
+                        <span class="input-title"><label for="sqlOrder">排序</label></span>
+                        <span class="input-con">
+                            <input type="text" id="sqlOrder" v-model="sqlOrder" name="sqlOrder">
+                            <span>多个用逗号隔开</span>
+                        </span>
+                    </div>
+                    <div class="input">
+                        <span class="input-title"><label for="pagination">分页样式</label></span>
+                        <span class="input-con">
+                            <select name="pagination" id="pagination" v-model="pagination">
+                                <option :value.number="0">不分页</option>
+                                <option :value.number="1">上一页 1 2 3  下一页</option>
+                                <option :value.number="2">当前第1页 跳转到2页</option>
+                                <option :value.number="3">点击查看更多</option>
+                            </select>
                         </span>
                     </div>
                     <div class="input">
@@ -110,6 +135,9 @@ export default {
             num: 0,
             titleCut: 0,
             introCut: 0,
+            sqlCondi: 0,
+            sqlOrder: 0,
+            pagination: 0,
             dateTypeText: 'y-m-d',
             dateType: '1',
             content: null,
@@ -140,6 +168,9 @@ export default {
                         this.titleCut = resData.titleCut
                         this.introCut = resData.introCut
                         this.contentList = resData.contentList
+                        this.sqlCondi = resData.sqlCondi
+                        this.sqlOrder = resData.sqlOrder
+                        this.pagination = resData.pagination
                         this.dateType = resData.dateType.toString()
                     }
                     this.posiList.push({ name: '编辑模版' })
@@ -166,12 +197,17 @@ export default {
     },
     methods: {
         subTemp() {
+            if (this.pagination && this.num < 1) {
+                alert('启用分页一定要设置显示的数量！')
+                return
+            }
             this.propData.showSub = true
             let formData = new FormData(formTemp);
             if (formData.get('isUse') !== 'on') {
                 formData.append('isUse', 'off')
             }
             formData.append('type', this.type)
+            formData.set('sqlCondi', this.sqlCondi.replace(/\"/g, '\\"'))
             this.axios({
                 method: 'post',
                 url: this.id ? '/admin/upTemp?act=' + this.act + '&id=' + this.id : '/admin/upTemp?act=' + this.act,
