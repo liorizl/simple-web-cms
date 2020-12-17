@@ -127,9 +127,10 @@ module.exports = {
         const result = await mysql.nquery(sql);
         ctx.body = result
     },
-    newsList: async ctx => {
-        const cid = parseInt(ctx.query.cid);
-        const sql = 'select id,title,intro,picUrl,hits,upTime,path from article where fid=' + cid + ' and isUse="true"  order by id desc limit 8';
+    newsList: async ctx => {   //新闻和活动
+        const newsid = parseInt(ctx.query.newscid);
+        const activeid = parseInt(ctx.query.activecid);
+        const sql = 'select id,title,intro,picUrl,hits,upTime,path from article where (fid=' + newsid + ' or fid=' + activeid + ') and isUse="true"  order by id desc limit 8';
         const result = await mysql.nquery(sql);
         ctx.body = result
     },
