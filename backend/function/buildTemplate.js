@@ -37,18 +37,18 @@ function change(proNum,nowNum,nowStatus,failedMes) {
     if (nowStatus) document.getElementById("nowStatus").innerHTML = nowStatus;
     var failedHtml = document.getElementsByClassName("failed-ul")[0];
     if (failedMes){
-        if(failedHtml.getElementsByTagName("li")[0].innerText !== "无"){
+        if(failedHtml.getElementsByTagName("li")[0].innerText !== "无") {
             document.getElementsByClassName("failed-ul")[0].innerHTML = failedHtml.innerHTML + "<li>" + failedMes + "</li>"
         }else {
             document.getElementsByClassName("failed-ul")[0].innerHTML = "<li>" + failedMes + "</li>"
         }
     } 
 }
-function getSum(sum){
+function getSum(sum) {
     document.getElementById("sum").innerHTML = sum;
     if(sum === 0 && nowNum)  document.getElementById("nowNum").innerHTML = 0;
 }
-function buildEnd(mes){
+function buildEnd(mes) {
     document.getElementById("title").innerHTML = "生成${title}完毕";
     document.getElementById("nowStatus").innerHTML = mes;
 }
