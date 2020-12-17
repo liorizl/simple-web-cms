@@ -86,7 +86,7 @@
                         <span class="input-con padding">
                             <textarea name="content" id="content" v-model="content" cols="120" rows="18"></textarea>
                             <br>
-                            <span style="margin-left:20px;">可以使用：[listtemp]list[/listtemp]</span>
+                            <span style="margin-left:20px;">可以使用：[listtemp]list[/listtemp],分页需要加上标签[!--pagelist--]</span>
                         </span>
                     </div>
                     <div class="input">

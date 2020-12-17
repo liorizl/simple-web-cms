@@ -22,7 +22,7 @@
                 <label for="check"></label>
                 <input type="checkbox" id="check" v-model="recordSession">12小时内自动登录
             </div>
-            <input class="loginBtn" type="button" value="登录" @click.stop="login"  >
+            <input class="loginBtn" type="button" value="登录" @click.stop="login" >
             <div class="errMes">
                 {{status}}
             </div>
@@ -94,6 +94,9 @@ export default {
         }
     },
     methods: {
+        test() {
+            console.log(111)
+        },
         login: function () {
             if (!this.identCode) {
                 this.status = '请输入认证码！'
