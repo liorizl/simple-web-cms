@@ -1,7 +1,7 @@
 # 网站后台管理系统
 ## 安装步骤
 * 根据自己的操作系统系统下载安装所需软件nodejs,mysql，redis。本项目使用的nodejs版本为10.15.3,mysql版本为5.7.20,redis为windows64位3.0.503版<br>
-* 下载代码,fontend和backend不需要放在一起.分别安装所需的包:在文件目录下进入命令行输入npm install(npm i),如下图<br>
+* 下载代码,frontend和backend不需要放在一起.分别安装所需的包:在文件目录下进入命令行输入npm install(npm i),如下图<br>
 ![](http://125.65.109.138:3012/static/otherimg/01.png)<br>
 ![](http://125.65.109.138:3012/static/otherimg/02.png)
 * 使用mysql工具数据库文件lioricms.sql导入到mysql数据库。
