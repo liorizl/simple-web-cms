@@ -207,7 +207,7 @@ export default {
                 formData.append('isUse', 'off')
             }
             formData.append('type', this.type)
-            formData.set('sqlCondi', this.sqlCondi.replace(/\"/g, '\\"'))
+            if (this.type === '2') formData.set('sqlCondi', this.sqlCondi.replace(/\"/g, '\\"'))
             this.axios({
                 method: 'post',
                 url: this.id ? '/admin/upTemp?act=' + this.act + '&id=' + this.id : '/admin/upTemp?act=' + this.act,

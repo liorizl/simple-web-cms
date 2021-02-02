@@ -12,6 +12,8 @@
 
 <script>
 import util from '../../../static/util.js'
+import vueRouter from 'vue-router'
+const { isNavigationFailure, NavigationFailureType } = vueRouter
 export default {
     name: "article-info",
     components: {
@@ -184,6 +186,9 @@ export default {
             this.activeClassId = e.id
             if (this.$parent.$refs.appCon) this.$parent.$refs.appCon.scrollIntoView()
             this.$router.push({ name: 'articleList', query: { cid: e.cid }, params: { title: e.title } })
+            .catch(err => {
+                // console.log('点击了相同的链接！')
+            })
         },
     },
     mounted() {

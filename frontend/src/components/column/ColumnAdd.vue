@@ -450,31 +450,40 @@ export default {
             }
         },
         checkAlias() {
-            if (this.aliasTimer) {
-                clearTimeout(this.aliasTimer)
-            }
-            const goCheck = () =>{
-                this.axios({
-                    method: 'post',
-                    url: '/admin/checkColAlias',
-                    data: {
-                        alias: this.colNamePin
-                    }
-                }).then(res => {
-                    if (res.status === 200) {
-                        if (res.data.myStatus === 1) {
-                            this.aliasErrMes = '该栏目别名已经存在，请更换'
+            if (this.propData.status === 0) { //没提交的时候才检查
+                if (this.aliasTimer) {
+                    clearTimeout(this.aliasTimer)
+                }
+                const goCheck = () =>{
+                    this.axios({
+                        method: 'post',
+                        url: '/admin/checkColAlias',
+                        data: {
+                            alias: this.colNamePin
                         }
+                    }).then(res => {
+                        if (res.status === 200) {
+                            if (res.data.myStatus === 1) {
+                                this.aliasErrMes = '该栏目别名已经存在，请更换'
+                            }
+                            this.aliasTimer = null
+                        }
+                    }).catch(err => {
                         this.aliasTimer = null
-                    }
-                }).catch(err => {
-                    this.aliasTimer = null
-                    console.log(err)
-                })
+                        console.log(err)
+                    })
+                }
+                this.aliasTimer = setTimeout(goCheck, 500) 
             }
-            this.aliasTimer = setTimeout(goCheck, 500) 
         },
         subCol() {
+            const checkAliasDone = () => {
+                if (this.aliasTimer) {
+                    alert('正在检查栏目名称，请稍等！')
+                    setTimeout(checkAliasDone, 1000)
+                }
+            }
+            checkAliasDone()
             if (!this.colName) {
                 this.alertMes[0] = "栏目名为空！"
                 this.$set(this.errInput, 0, 'errInput')
@@ -605,11 +614,13 @@ export default {
             if (index === 0) {
                 this.path1 = this.colNamePin
                 this.path2 = ''
+                this.aid = 0
             } else {
                 this.path1 = this.colListArr[index - 1].path2 ?
                     this.colListArr[index - 1].path1 + '/' + this.colListArr[index - 1].path2 :
                     this.colListArr[index - 1].path1
                 this.path2 = this.colNamePin
+                this.aid = this.colListArr[index - 1].cid
             }
             if (this.$route.params.act === 'add') {
                 if (index != 0) {

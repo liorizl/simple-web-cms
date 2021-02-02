@@ -45,12 +45,12 @@ export default {
         };
     },
     created() {
-        this.num = this.$store.state.webSetting.listNum;
+        this.num = this.$store.state.webSetting.listNum || this.num ;
         this.getLoginList();
     },
     watch: {
         $route(to, from) {
-            this.num = this.$store.state.webSetting.listNum;
+            this.num = this.$store.state.webSetting.listNum || this.num;
             this.getLoginList();
         }
     },

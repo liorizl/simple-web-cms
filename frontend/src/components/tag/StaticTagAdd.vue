@@ -46,7 +46,7 @@ export default {
             callName: null,
             content: null,
             posiList: [{ url: { temp: 'tagList', query: { type: 1 } }, name: '静态标签' }],
-            propData: { showSub: false, status: 0, pageName: '栏目', query: { type: 1 }, router: 'tagList' },
+            propData: { showSub: false, status: 0, pageName: '静态标签', query: { type: 1 }, router: 'tagList' },
         }
     },
 

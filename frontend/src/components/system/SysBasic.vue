@@ -112,6 +112,7 @@ export default {
             author: '',
             propData: { showSub: false, status: 0, act: '修改', pageName: '设置', router: 'sysBasic' },
             posiList: [{ name: '网站基本设置' }],
+            act: null
         }
     },
     created() {
@@ -120,22 +121,27 @@ export default {
             url: '/admin/getSetting'
         }).then(res => {
             if (res.status === 200) {
-                let result = res.data
-                this.webName = result.webName
-                this.webUrl = result.webUrl
-                this.keyword = result.keyword
-                this.description = result.description
-                this.indexPath = result.indexPath
-                this.pagePath = result.pagePath
-                this.indexModel = result.indexModel
-                this.pageModel = result.pageModel
-                this.buildCol = result.buildCol
-                this.buildFaCol = result.buildFaCol
-                this.buildArt = result.buildArt
-                this.buildFaArt = result.buildFaArt
-                this.listNum = result.listNum
-                this.extendName = result.extendName
-                this.author = result.author
+                if (res.data.length === 0) {
+                    this.act = 'add'
+                } else {
+                    this.act = 'edit'
+                    let result = res.data
+                    this.webName = result.webName
+                    this.webUrl = result.webUrl
+                    this.keyword = result.keyword
+                    this.description = result.description
+                    this.indexPath = result.indexPath
+                    this.pagePath = result.pagePath
+                    this.indexModel = result.indexModel
+                    this.pageModel = result.pageModel
+                    this.buildCol = result.buildCol
+                    this.buildFaCol = result.buildFaCol
+                    this.buildArt = result.buildArt
+                    this.buildFaArt = result.buildFaArt
+                    this.listNum = result.listNum
+                    this.extendName = result.extendName
+                    this.author = result.author
+                }
             }
         })
     },
@@ -155,7 +161,7 @@ export default {
             let formData = new FormData(webSetting)
             this.axios({
                 method: 'post',
-                url: '/admin/upSetting',
+                url: '/admin/upSetting?act=' + this.act,
                 data: formData
             }).then(res => {
                 if (res.status === 200) {

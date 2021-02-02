@@ -71,6 +71,10 @@ export default {
             propData: { showSub: false, status: 0, pageName: '修改管理员密码', router: 'editPst' },
         }
     },
+    created(){
+        // this.$set(this.propData, 'router', 'login')
+        this.propData.router = 'login'
+    },
     methods: {
         checkPsdSame() {
             if (this.psd1 === this.psd2 && this.psd1 !== null) {
@@ -89,6 +93,7 @@ export default {
         subUser() {
             this.checkPsdSame()
             this.checkPsdFormat()
+            
             if (!this.psdWrong && !this.psdNotSame && this.name) {
                 this.propData.showSub = true
                 this.axios({
@@ -113,7 +118,23 @@ export default {
             }
         },
         refreshPage() {
-            this.reload()
+            if (this.propData.status === 1 && this.propData.resStatus === 1) {
+                this.axios({
+                    url: '/admin/deleSession'
+                }).then(res => {
+                    if (res.status === 200) {
+                        if (res.data.myStatus === 1) {
+                            this.$cookies.remove('user')
+                            this.$cookies.remove('userName')
+                            this.$router.push({ path: '/login' })
+                        } else {
+                            alert('登出失败！')
+                        }
+                    }
+                })
+            } else {
+                this.reload()
+            }
         },
         reEdit() {
             this.propData.showSub = false

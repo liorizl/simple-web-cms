@@ -189,7 +189,6 @@ export default {
         },
         goLink(cid) {
             this.$router.push({ name: 'articleList', query: { cid: cid } })
-
         },
         refreshPage() {
             this.num = this.$store.state.webSetting.listNum
