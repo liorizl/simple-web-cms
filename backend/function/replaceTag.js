@@ -473,7 +473,9 @@ const recurCol = async (cid, loopStr, tempList, tagParams, webset) => {
             const expList1 = / *\[(listtemp)\]list\[\/\1\]/;
             // const sql = 'select * from columns where aid=' + cid + ' and isUse="true"' + sqlCondition + order;
             // const resCol = await mysql.nquery(sql);
-            const condi = cid === 0 ? colSqlCondition.slice(1) : 'aid=' + cid + colSqlCondition;
+            // 我也不知道当初为什么会写出这么错误的一句
+            // const condi = cid === 0 ? colSqlCondition.slice(1) : 'aid=' + cid + colSqlCondition;
+            const condi = 'aid=' + cid + colSqlCondition;
             const resCol = util.filterCol(condi, allCols, colOrder);
             if (resCol.length === 0) {
                 let htmlCon;
@@ -539,7 +541,7 @@ const recurCol = async (cid, loopStr, tempList, tagParams, webset) => {
                 }
                 if (x === y) {
                     if (tagParams[0] === -1) {
-                        htmlTempAll = htmlTempAll.replace(/\ *\<(ul)\>.+?\<\/\1\>(\r\n)*/sg, '');
+                        htmlTempAll = htmlTempAll.replace(/\ *\<(ul).*?\>.+?\<\/\1\>(\r\n)*/sg, '');
                     }
                     resolve(htmlTempAll)
                 }
