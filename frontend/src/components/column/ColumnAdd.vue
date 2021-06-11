@@ -797,13 +797,11 @@ export default {
                 })
                 if (this.ultimate === true && this.act === '添加栏目') {
                     this.tempMode = 2
-                    console.log(this.act)
                 }
                 
             } else {
                 if (this.ultimate === true && this.act === '添加栏目') {
                     this.tempMode = 2
-                    console.log(this.act)
                 }
             }
         },
